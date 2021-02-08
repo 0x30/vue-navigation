@@ -204,7 +204,7 @@ export const Navigation = defineComponent({
         vnode.shapeFlag |= 256;
         stacks.push(vnode);
       }
-      return stacks[stacks.length - 1] ?? vnode;
+      return stacks[stacks.length - 1] || vnode;
     };
   },
 });
