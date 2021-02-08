@@ -1,24 +1,29 @@
 {
   "name": "vue-navigation",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
+  "main": "dist/vue-navigation.cjs.js",
+  "unpkg": "dist/vue-navigation.global.js",
+  "jsdelivr": "dist/vue-navigation.global.js",
+  "module": "dist/vue-navigation.esm-bundler.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rollup -c rollup.config.js",
+    "test:unit": "jest --coverage"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-node-resolve": "^11.1.1",
+    "@rollup/plugin-typescript": "^8.1.1",
     "@types/jest": "^26.0.20",
     "jest": "^26.6.3",
+    "rollup": "^2.38.5",
+    "rollup-plugin-typescript2": "^0.29.0",
     "ts-jest": "^26.5.0",
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "vue-router": "^4.0.3",
-    "vue": "^3.0.5"
+    "vue": "^3.0.5",
+    "vue-router": "^4.0.3"
   }
 }
