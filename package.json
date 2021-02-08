@@ -1,5 +1,5 @@
 {
-  "name": "vue-navigation",
+  "name": "@0x30/vue-navigation",
   "version": "1.0.0",
   "main": "dist/vue-navigation.cjs.js",
   "unpkg": "dist/vue-navigation.global.js",
@@ -25,5 +25,18 @@
   "dependencies": {
     "vue": "^3.0.5",
     "vue-router": "^4.0.3"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0x30/vue-navigation.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/0x30/vue-navigation/issues"
+  },
+  "homepage": "https://github.com/0x30/vue-navigation#readme",
+  "description": ""
 }
