@@ -16,8 +16,8 @@ import {
   currentDelta,
   currentDirection,
   NavigationDirection,
+  useRouterListen,
 } from "../utils/libRouter";
-import { useRouterListen } from "../../dist";
 import { useRouter } from "vue-router";
 
 type KeepAliveContext = {

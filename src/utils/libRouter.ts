@@ -56,9 +56,7 @@ export const useRouterListen = (
         1
       );
 
-      return _p.call(this, to).catch(() => {
-        //
-      });
+      return _p.call(this, to);
     };
 
     const _r = router.replace;
@@ -72,9 +70,7 @@ export const useRouterListen = (
         1
       );
 
-      return _r.call(this, to).catch(() => {
-        //
-      });
+      return _r.call(this, to);
     };
   }
 
