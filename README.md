@@ -1,4 +1,4 @@
-## vue-navgation
+## vue-navgation [![beta](https://img.shields.io/npm/v/@0x30/vue-navigation)](https://www.npmjs.com/package/@0x30/vue-navigation)
 
 模仿ios `UINavigationController` 缓存页面的方式，前进新的视图，back从堆栈中拉取缓存的视图
 
