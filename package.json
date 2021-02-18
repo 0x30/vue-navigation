@@ -1,6 +1,6 @@
 {
   "name": "@0x30/vue-navigation",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "dist/vue-navigation.cjs.js",
   "unpkg": "dist/vue-navigation.global.js",
   "jsdelivr": "dist/vue-navigation.global.js",
