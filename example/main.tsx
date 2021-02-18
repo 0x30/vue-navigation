@@ -11,6 +11,21 @@ import { Navigation } from "../src/components/Vuenavigation";
 import { currentDirection, useRouterListen } from "../src/utils/libRouter";
 
 const Page = defineComponent({
+  created() {
+    console.log("页面[", this.title, "] ---- created");
+  },
+  mounted() {
+    console.log("页面[", this.title, "] ---- mounted");
+  },
+  unmounted() {
+    console.log("页面[", this.title, "] ---- unmounted");
+  },
+  activated() {
+    console.log("页面[", this.title, "] ---- activated");
+  },
+  deactivated() {
+    console.log("页面[", this.title, "] ---- deactivated");
+  },
   props: { title: String },
   setup: props => {
     const countRef = ref(0);
@@ -29,9 +44,19 @@ const Page = defineComponent({
           {dateString}
           count: {countRef.value}
           <button onClick={() => countRef.value++}>counnt +1</button>
-          <RouterLink to="/a">to a</RouterLink>
-          <RouterLink to="/b">to b</RouterLink>
-          <RouterLink to="/c">to c</RouterLink>
+          <RouterLink to="/a">push to a</RouterLink>
+          <RouterLink to="/b">push to b</RouterLink>
+          <RouterLink to="/c">push to c</RouterLink>
+          <hr />
+          <RouterLink to="/a" replace={true}>
+            replace to a
+          </RouterLink>
+          <RouterLink to="/b" replace={true}>
+            replace to b
+          </RouterLink>
+          <RouterLink to="/c" replace={true}>
+            replace to c
+          </RouterLink>
           <button onClick={() => useRouter().push("b")}>to b</button>
         </div>
       );
@@ -89,8 +114,6 @@ const App = defineComponent(() => {
     return (
       <RouterView>
         {({ Component }: any) => {
-          console.log("??? 啥意思");
-
           return (
             <div>
               <div>当前方向：{currentDirection}</div>
