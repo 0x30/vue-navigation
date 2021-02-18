@@ -1,10 +1,10 @@
 import { RouteLocationRaw, Router } from "vue-router";
 
-export enum NavigationDirection {
+export const enum NavigationDirection {
   back = "back",
   forward = "forward",
   replace = "replace",
-  unknown = "unknow",
+  unknown = ""
 }
 
 declare interface NavigationCallback {
@@ -29,7 +29,7 @@ const exec = (
 ) => {
   currentDelta = delta;
   currentDirection = direction;
-  hooks.forEach((hook) => hook(to, from, direction, delta));
+  hooks.forEach(hook => hook(to, from, direction, delta));
 };
 
 export const useRouterListen = (
@@ -38,15 +38,20 @@ export const useRouterListen = (
 ) => {
   callback && hooks.add(callback);
 
-  if ((router as any)._0x30_navigation_listened === undefined) {
-    (router as any)._0x30_navigation_listened = 0;
+  if ((router as any).___0x30_navigation_listened === undefined) {
+    (router as any).___0x30_navigation_listened = 0;
 
     router.options.history.listen((to, from, info) => {
-      exec(to, from, info.direction, info.delta);
+      exec(
+        to,
+        from,
+        (info.direction as string) as NavigationDirection,
+        info.delta
+      );
     });
 
     const _p = router.push;
-    router.push = function (to: RouteLocationRaw) {
+    router.push = function(to: RouteLocationRaw) {
       if (typeof to === "string") to = { path: to };
 
       exec(
@@ -60,7 +65,7 @@ export const useRouterListen = (
     };
 
     const _r = router.replace;
-    router.replace = function (to: RouteLocationRaw) {
+    router.replace = function(to: RouteLocationRaw) {
       if (typeof to === "string") to = { path: to };
 
       exec(

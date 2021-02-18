@@ -9,14 +9,14 @@ import {
   RendererElement,
   RendererNode,
   SuspenseBoundary,
-  VNode,
+  VNode
 } from "vue";
 import { isArray, invokeArrayFns } from "@vue/shared";
 import {
   currentDelta,
   currentDirection,
   NavigationDirection,
-  useRouterListen,
+  useRouterListen
 } from "../utils/libRouter";
 import { useRouter } from "vue-router";
 
@@ -94,8 +94,8 @@ export const Navigation = defineComponent({
         p: patch,
         m: move,
         um: _unmount,
-        o: { createElement },
-      },
+        o: { createElement }
+      }
     } = sharedContext;
     const storageContainer = createElement("div");
 
@@ -148,7 +148,7 @@ export const Navigation = defineComponent({
     }
 
     onBeforeUnmount(() => {
-      stacks.forEach((cached) => {
+      stacks.forEach(cached => {
         const { subTree, suspense } = instance;
         const vnode = getInnerChild(subTree);
         if (cached.type === vnode.type) {
@@ -208,7 +208,8 @@ export const Navigation = defineComponent({
         vnode.shapeFlag |= 256;
         stacks.push(vnode);
       }
+
       return stacks[stacks.length - 1] || vnode;
     };
-  },
+  }
 });
