@@ -4,7 +4,7 @@ export enum NavigationDirection {
   back = "back",
   forward = "forward",
   replace = "replace",
-  unknown = "unknow"
+  unknown = "unknow",
 }
 
 declare interface NavigationCallback {
@@ -29,16 +29,16 @@ const exec = (
 ) => {
   currentDelta = delta;
   currentDirection = direction;
-  hooks.forEach(hook => hook(to, from, direction, delta));
+  hooks.forEach((hook) => hook(to, from, direction, delta));
 };
 
 export const useRouterListen = (
   router: Router,
   callback: NavigationCallback | undefined = undefined
 ) => {
-  if ((router as any)._listened === true) {
-    callback && hooks.add(callback);
-  } else {
+  callback && hooks.add(callback);
+
+  if ((router as any)._listened === false) {
     (router as any)._listened = true;
 
     router.options.history.listen((to, from, info) => {
@@ -46,7 +46,7 @@ export const useRouterListen = (
     });
 
     const _p = router.push;
-    router.push = function(to: RouteLocationRaw) {
+    router.push = function (to: RouteLocationRaw) {
       if (typeof to === "string") to = { path: to };
 
       exec(
@@ -62,7 +62,7 @@ export const useRouterListen = (
     };
 
     const _r = router.replace;
-    router.replace = function(to: RouteLocationRaw) {
+    router.replace = function (to: RouteLocationRaw) {
       if (typeof to === "string") to = { path: to };
 
       exec(
