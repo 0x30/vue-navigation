@@ -17,6 +17,8 @@ import {
   currentDirection,
   NavigationDirection,
 } from "../utils/libRouter";
+import { useRouterListen } from "../../dist";
+import { useRouter } from "vue-router";
 
 type KeepAliveContext = {
   renderer: any;
@@ -74,6 +76,8 @@ export const Navigation = defineComponent({
   inheritRef: true,
   __isKeepAlive: true,
   setup: (_, { slots }) => {
+    useRouterListen(useRouter());
+
     const stacks: VNode[] = [];
 
     const instance = getCurrentInstance()! as any;
