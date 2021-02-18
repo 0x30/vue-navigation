@@ -8,6 +8,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "serve": "vue-cli-service serve",
+    "build-pages": "vue-cli-service build",
     "build": "rollup -c rollup.config.js",
     "test:unit": "jest --coverage"
   },
