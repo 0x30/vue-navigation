@@ -1,5 +1,6 @@
 import {
   callWithAsyncErrorHandling,
+  cloneVNode,
   ComponentInternalInstance,
   defineComponent,
   getCurrentInstance,
@@ -179,7 +180,15 @@ export const Navigation = defineComponent({
         return rawVNode;
       }
 
-      const vnode = getInnerChild(rawVNode);
+      let vnode = getInnerChild(rawVNode);
+
+      // clone vnode if it's reused because we are going to mutate it
+      if (vnode.el) {
+        vnode = cloneVNode(vnode);
+        if (rawVNode.shapeFlag & 128) {
+          rawVNode.ssContent = vnode;
+        }
+      }
 
       if (
         currentDirection === NavigationDirection.back ||
