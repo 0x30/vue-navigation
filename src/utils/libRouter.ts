@@ -38,8 +38,8 @@ export const useRouterListen = (
 ) => {
   callback && hooks.add(callback);
 
-  if ((router as any)._listened === false) {
-    (router as any)._listened = true;
+  if ((router as any)._0x30_navigation_listened === false) {
+    (router as any)._0x30_navigation_listened = true;
 
     router.options.history.listen((to, from, info) => {
       exec(to, from, info.direction, info.delta);
