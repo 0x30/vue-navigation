@@ -1,4 +1,4 @@
-name: BLOG-CI
+name: github-pages
 
 on:
   push:
