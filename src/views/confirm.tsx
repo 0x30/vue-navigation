@@ -8,10 +8,6 @@ const Page = defineComponent({
     onResult: Function as PropType<(res: boolean) => void>,
   },
   setup: (props) => {
-    const cancel = () => {
-      back();
-    };
-
     useTransitionEnter((el, done) => {
       anime({
         targets: el,
@@ -31,7 +27,7 @@ const Page = defineComponent({
     });
 
     const click = async (res: boolean) => {
-      await back();
+      back();
       props.onResult?.(res);
     };
 

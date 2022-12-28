@@ -1,17 +1,12 @@
-import { defineAsyncComponent, defineComponent, ref } from "vue";
-import { push } from "./core";
+import { defineComponent, ref } from "vue";
+import { toDetail } from "./routers";
 
 const Page = defineComponent({
   name: "PageDetail",
   props: {
     id: String,
   },
-  setup: (props) => {
-    const toDetail = (id: number) => {
-      const Detail = defineAsyncComponent(() => import("./views/detail"));
-      push(<Detail id={id} />);
-    };
-
+  setup: () => {
     const count = ref(0);
 
     return () => (
