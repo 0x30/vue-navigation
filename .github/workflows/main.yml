@@ -19,7 +19,7 @@ jobs:
           node-version: 16.17.1
 
       - run: npm install
-      - run: npm run build-pages
+      - run: npm run build
 
       - name: GitHub Pages
         uses: crazy-max/ghaction-github-pages@v2.2.0
