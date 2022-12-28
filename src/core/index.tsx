@@ -118,6 +118,7 @@ export const useDeactivated = (hook: () => void) => {
  * 路由堆栈,存储 app stacks
  */
 const routerStack: App[] = [];
+(window as any).routerStack = routerStack;
 // 当前的 state
 let currentState: any = undefined;
 
@@ -204,7 +205,7 @@ export const navigation = () => {
   return {
     install() {
       window.addEventListener("popstate", async (event) => {
-        if (currentState === undefined) return;
+        if (!currentState) return;
 
         /// 获取最后一个 backHookId
         const localLastBackHookId = lastBackHookId;
@@ -239,7 +240,9 @@ export const navigation = () => {
           .forEach((app, index, array) =>
             unmounted(index === array.length - 1, app, localLastBackHookId)
           );
-        currentState = event.state;
+
+        if (routerStack.length === 0) currentState = undefined;
+        else currentState = event.state;
       });
     },
   };
