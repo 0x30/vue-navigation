@@ -5,7 +5,7 @@
     "build": "vue-tsc && vite build",
     "build-lib": "vue-tsc && vite build --config vite.config.lib.ts",
     "preview": "vite preview",
-    "npm": "npm publish --registry https://registry.npmjs.org"
+    "publish": "npm publish --registry https://registry.npmjs.org"
   },
   "dependencies": {
     "vue": "^3.2.45"
