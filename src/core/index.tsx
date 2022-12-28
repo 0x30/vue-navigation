@@ -1,7 +1,7 @@
 import {
-  App,
-  Component,
-  ComponentInternalInstance,
+  type App,
+  type Component,
+  type ComponentInternalInstance,
   createApp,
   getCurrentInstance,
   nextTick,
@@ -121,9 +121,6 @@ const routerStack: App[] = [];
 // 当前的 state
 let currentState: any = undefined;
 
-/// 需要执行动画的实例id
-let NeedAnimatedInstanceId: number | undefined = undefined;
-
 const getLastApp = () => routerStack[routerStack.length - 1];
 const getLastInstance = () => getLastApp()?._instance;
 
@@ -236,20 +233,19 @@ export const navigation = () => {
         const result = backCheck(-diffValue);
         if (result !== undefined) await result;
 
-        /// 配置需要执行动画的 instance id
-        NeedAnimatedInstanceId = getLastInstance()?.uid;
-
         /// 销毁 组件
         routerStack
           .splice(currentState.index + diffValue + 1)
-          .forEach((app) => unmounted(app, localLastBackHookId));
+          .forEach((app, index, array) =>
+            unmounted(index === array.length - 1, app, localLastBackHookId)
+          );
         currentState = event.state;
       });
     },
   };
 };
 
-const unmounted = (app?: App, backHookId?: string) => {
+const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
   if (app === undefined) return;
 
   const _unmounted = () => {
@@ -260,7 +256,7 @@ const unmounted = (app?: App, backHookId?: string) => {
   };
 
   /// 只有 最顶层的 一个需要执行动画
-  if (app._instance?.uid === NeedAnimatedInstanceId) {
+  if (needAnimated) {
     getHookFromInstance<Function>(app._instance, ExtensionHooks.close)?.apply(
       null,
       [
@@ -292,7 +288,7 @@ const mounted = (compoent: Component, replace: boolean) => {
     /// 在页面 replace 动画执行完成后 unmounted 倒数第二个 app
     let replaceDone = () => {
       if (replace === false) return;
-      unmounted(routerStack.splice(routerStack.length - 2, 1)[0]);
+      unmounted(false, routerStack.splice(routerStack.length - 2, 1)[0]);
     };
 
     // 创建 app
