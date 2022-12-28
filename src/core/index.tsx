@@ -242,7 +242,7 @@ export const navigation = () => {
           );
 
         if (routerStack.length === 0) currentState = undefined;
-        else currentState = event.state;
+        else currentState = window.history.state;
       });
     },
   };
