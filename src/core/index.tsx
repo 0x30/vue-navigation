@@ -28,12 +28,13 @@ enum ExtensionHooks {
   onLeaveBefore = "_olb",
   onActivated = "_oa",
   onDeactivated = "_oda",
+  cancelBatchId = "_cbi",
 }
 
 const setHookToInstance = (
   target: ComponentInternalInstance | null,
   type: ExtensionHooks,
-  hook: Function | undefined
+  hook: any
 ) => {
   if (target) {
     (target.appContext as any)[type] = hook;
@@ -120,9 +121,6 @@ const routerStack: App[] = [];
 // 当前的 state
 let currentState: any = undefined;
 
-/// 当前返回审核批次 id
-let currentBatchId: string | undefined = undefined;
-
 /// 需要执行动画的实例id
 let NeedAnimatedInstanceId: number | undefined = undefined;
 
@@ -149,7 +147,8 @@ const backCheck = (deltaCount: number) => {
 
   // local id 保存
   const batchId = randomId();
-  currentBatchId = batchId;
+  setHookToInstance(instance, ExtensionHooks.cancelBatchId, batchId);
+
   const hook = getHookFromInstance<Function>(
     instance,
     ExtensionHooks.onLeaveBefore
@@ -173,9 +172,19 @@ const backCheck = (deltaCount: number) => {
 
     const result = hook();
     if (result instanceof Promise || typeof result["then"] === "function") {
-      if ((await result) === true && currentBatchId === batchId) _resolve();
+      if (
+        (await result) === true &&
+        getHookFromInstance<string>(instance, ExtensionHooks.cancelBatchId) ===
+          batchId
+      )
+        _resolve();
     } else {
-      if (result && currentBatchId === batchId) _resolve();
+      if (
+        result &&
+        getHookFromInstance<string>(instance, ExtensionHooks.cancelBatchId) ===
+          batchId
+      )
+        _resolve();
     }
   });
 };
@@ -309,8 +318,9 @@ const mounted = (compoent: Component, replace: boolean) => {
               else _done();
             }}
             onLeave={(el, done) => {
-              const _done = () => {
+              const _done = async () => {
                 done();
+                await nextTick();
                 closeDone?.();
               };
               const hook = getHookFromInstance<Function>(
