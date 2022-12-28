@@ -1,13 +1,13 @@
 import {
   type App,
   type Component,
-  type ComponentInternalInstance,
   createApp,
   getCurrentInstance,
   nextTick,
   onMounted,
   ref,
   Transition,
+  type AppContext,
 } from "vue";
 
 const randomId = () => `_${Math.random().toString(32).slice(2)}`;
@@ -32,32 +32,32 @@ enum ExtensionHooks {
 }
 
 const setHookToInstance = (
-  target: ComponentInternalInstance | null,
+  target: AppContext | undefined,
   type: ExtensionHooks,
   hook: any
 ) => {
   if (target) {
-    (target.appContext as any)[type] = hook;
+    (target as any)[type] = hook;
   }
 };
 
 const addHookToInstance = (
-  target: ComponentInternalInstance | null,
+  target: AppContext | undefined,
   type: ExtensionHooks,
   hook: Function | undefined
 ) => {
   if (target) {
-    const hooks = (target.appContext as any)[type] ?? [];
-    (target.appContext as any)[type] = [...hooks, hook];
+    const hooks = (target as any)[type] ?? [];
+    (target as any)[type] = [...hooks, hook];
   }
 };
 
 const getHookFromInstance = <T extends any>(
-  target: ComponentInternalInstance | null,
+  target: AppContext | undefined,
   type: ExtensionHooks
 ) => {
   if (target) {
-    return (target.appContext as any)[type] as T;
+    return (target as any)[type] as T;
   }
   return undefined;
 };
@@ -68,7 +68,11 @@ const getHookFromInstance = <T extends any>(
  */
 export const useLeaveBefore = (hook: () => boolean | Promise<boolean>) => {
   onMounted(() => {
-    setHookToInstance(getCurrentInstance(), ExtensionHooks.onLeaveBefore, hook);
+    setHookToInstance(
+      getCurrentInstance()?.appContext,
+      ExtensionHooks.onLeaveBefore,
+      hook
+    );
   });
 };
 
@@ -80,7 +84,11 @@ export const useTransitionEnter = (
   hook: (el: Element, done: () => void) => void
 ) => {
   onMounted(() => {
-    setHookToInstance(getCurrentInstance(), ExtensionHooks.onEnter, hook);
+    setHookToInstance(
+      getCurrentInstance()?.appContext,
+      ExtensionHooks.onEnter,
+      hook
+    );
   });
 };
 
@@ -92,7 +100,11 @@ export const useTransitionLeave = (
   hook: (el: Element, done: () => void) => void
 ) => {
   onMounted(() => {
-    setHookToInstance(getCurrentInstance(), ExtensionHooks.onLeave, hook);
+    setHookToInstance(
+      getCurrentInstance()?.appContext,
+      ExtensionHooks.onLeave,
+      hook
+    );
   });
 };
 
@@ -101,7 +113,11 @@ export const useTransitionLeave = (
  */
 export const useActivated = (hook: () => void) => {
   onMounted(() => {
-    addHookToInstance(getCurrentInstance(), ExtensionHooks.onActivated, hook);
+    addHookToInstance(
+      getCurrentInstance()?.appContext,
+      ExtensionHooks.onActivated,
+      hook
+    );
   });
 };
 
@@ -110,7 +126,11 @@ export const useActivated = (hook: () => void) => {
  */
 export const useDeactivated = (hook: () => void) => {
   onMounted(() => {
-    addHookToInstance(getCurrentInstance(), ExtensionHooks.onDeactivated, hook);
+    addHookToInstance(
+      getCurrentInstance()?.appContext,
+      ExtensionHooks.onDeactivated,
+      hook
+    );
   });
 };
 
@@ -123,7 +143,6 @@ const routerStack: App[] = [];
 let currentState: any = undefined;
 
 const getLastApp = () => routerStack[routerStack.length - 1];
-const getLastInstance = () => getLastApp()?._instance;
 
 /**
  * 返回页面判断
@@ -140,8 +159,10 @@ const getLastInstance = () => getLastApp()?._instance;
  * @returns
  */
 const backCheck = (deltaCount: number) => {
+  console.log(routerStack, routerStack.length);
+
   const app = getLastApp();
-  const instance = app?._instance;
+  const instance = app?._context;
 
   // local id 保存
   const batchId = randomId();
@@ -151,6 +172,9 @@ const backCheck = (deltaCount: number) => {
     instance,
     ExtensionHooks.onLeaveBefore
   );
+
+  console.log(hook, app, instance, "返回交叉");
+
   if (hook === undefined) return undefined;
 
   /// 为了防止多次返回 提前返回
@@ -260,7 +284,7 @@ const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
 
   /// 只有 最顶层的 一个需要执行动画
   if (needAnimated) {
-    getHookFromInstance<Function>(app._instance, ExtensionHooks.close)?.apply(
+    getHookFromInstance<Function>(app._context, ExtensionHooks.close)?.apply(
       null,
       [
         () => {
@@ -268,7 +292,7 @@ const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
 
           /// tigger activated hooks
           getHookFromInstance<Function[]>(
-            getLastInstance(),
+            getLastApp()?._context,
             ExtensionHooks.onActivated
           )?.forEach((func) => func.apply?.(null));
 
@@ -305,10 +329,14 @@ const mounted = (compoent: Component, replace: boolean) => {
         let target = getCurrentInstance();
         onMounted(() => {
           target = getCurrentInstance();
-          setHookToInstance(target, ExtensionHooks.close, (done: Function) => {
-            closeDone = done;
-            isShow.value = false;
-          });
+          setHookToInstance(
+            target?.appContext,
+            ExtensionHooks.close,
+            (done: Function) => {
+              closeDone = done;
+              isShow.value = false;
+            }
+          );
         });
 
         return () => (
@@ -324,7 +352,7 @@ const mounted = (compoent: Component, replace: boolean) => {
               };
 
               const hook = getHookFromInstance<Function>(
-                target,
+                target?.appContext,
                 ExtensionHooks.onEnter
               );
               if (hook) hook?.apply(null, [el, _done]);
@@ -337,7 +365,7 @@ const mounted = (compoent: Component, replace: boolean) => {
                 closeDone?.();
               };
               const hook = getHookFromInstance<Function>(
-                target,
+                target?.appContext,
                 ExtensionHooks.onLeave
               );
 
@@ -360,7 +388,7 @@ const mounted = (compoent: Component, replace: boolean) => {
 
     /// tigger activated hooks
     getHookFromInstance<Function[]>(
-      getLastInstance(),
+      getLastApp()?._context,
       ExtensionHooks.onDeactivated
     )?.forEach((func) => func.apply?.(null));
 
