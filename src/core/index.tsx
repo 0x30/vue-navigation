@@ -189,6 +189,20 @@ const backCheck = (deltaCount: number) => {
   });
 };
 
+/**
+ * 示例
+````ts
+import { createApp } from 'vue'
+
+const app = createApp({
+  // ...
+})
+
+app.use(navigation())
+````
+
+在 app,创建后 use 开始启用 该插件
+ */
 export const navigation = () => {
   return {
     install() {
@@ -358,6 +372,24 @@ const mounted = (compoent: Component, replace: boolean) => {
 
 /**
  * 前进方法
+ *
+ * ```tsx
+ * import Component from "./component"
+ *
+ * push(<Component prop1={1} />)
+ * ```
+ *
+ * 异步加载组件使用 vue 自带的 `defineAsyncComponent`
+ *
+ * ```tsx
+ * const Component = defineAsyncComponent(() => import("./component"));
+ * push(<Component prop1={1} />);
+ * ```
+ *
+ * 方法返回 `Promise<void>`, 在页面完成跳转后 `promise.reslove`
+ *
+ * 组件可以通过设置 `useTransitionEnter` 设置页面动画,如果设置动画则会在动画执行完成后, `promise.reslove`
+ *
  * @param component 组件
  */
 export const push = (component: Component) => {
@@ -366,6 +398,24 @@ export const push = (component: Component) => {
 
 /**
  * 替换方法
+ *
+ * ```tsx
+ * import Component from "./component"
+ *
+ * replace(<Component prop1={1} />)
+ * ```
+ *
+ * 异步加载组件使用 vue 自带的 `defineAsyncComponent`
+ *
+ * ```tsx
+ * const Component = defineAsyncComponent(() => import("./component"));
+ * replace(<Component prop1={1} />);
+ * ```
+ *
+ * 方法返回 `Promise<void>`, 在页面完成跳转后 `promise.reslove`
+ *
+ * 组件可以通过设置 `useTransitionEnter` 设置页面动画,如果设置动画则会在动画执行完成后, `promise.reslove`
+ *
  * @param component 组件
  */
 export const replace = (component: Component) => {
@@ -376,7 +426,12 @@ let backHooks: Record<string, Function> = {};
 let lastBackHookId: string | undefined = undefined;
 
 /**
- * 返回方法
+ * 返回当前最顶部页面方法
+ *
+ * 方法返回 `Promise<void>`, 在页面完成跳转后 `promise.reslove`
+ *
+ * 组件可以通过设置 `useTransitionLeave` 设置页面离开动画,如果设置动画则会在动画执行完成后, `promise.reslove`
+ *
  * @param delta 返回次数 uint
  */
 export const back = (delta: number = 1) => {
