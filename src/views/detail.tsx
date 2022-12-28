@@ -1,12 +1,12 @@
 import anime from "animejs";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import {
   back,
   useLeaveBefore,
   useTransitionEnter,
   useTransitionLeave,
 } from "../core";
-import { useConfirm } from "../routers";
+import { replaceDetail, toDetail, useConfirm } from "../routers";
 
 const Page = defineComponent({
   name: "PageDetail",
@@ -40,10 +40,23 @@ const Page = defineComponent({
       });
     });
 
+    const count = ref(0);
+
     return () => (
       <div class="page">
         <button onClick={cancel}>cancel</button>
         <div>id: {props.id}</div>
+
+        <button onClick={() => count.value++}>count: {count.value}</button>
+
+        <h2>list</h2>
+        {new Array(10).fill(1).map((v, i) => (
+          <div key={i}>
+            <button onClick={() => toDetail(i)}>push</button>
+            <button onClick={() => replaceDetail(i)}>replace</button>
+            id - {i}
+          </div>
+        ))}
       </div>
     );
   },

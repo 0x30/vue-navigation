@@ -42,7 +42,8 @@ const Page = defineComponent({
         }}
       >
         <div style={{ padding: "100px 0", background: "red" }}>
-          <button onClick={() => click(true)}>ok</button>
+          <h2>是否返回?</h2>
+          <button onClick={() => click(true)}>sure</button>
           <button onClick={() => click(false)}>no</button>
         </div>
       </div>

@@ -1,9 +1,14 @@
 import { defineAsyncComponent } from "vue";
-import { push } from "./core";
+import { push, replace } from "./core";
 
 export const toDetail = (id: number) => {
   const Component = defineAsyncComponent(() => import("./views/detail"));
   push(<Component id={id} />);
+};
+
+export const replaceDetail = (id: number) => {
+  const Component = defineAsyncComponent(() => import("./views/detail"));
+  replace(<Component id={id} />);
 };
 
 export const useConfirm = () => {
