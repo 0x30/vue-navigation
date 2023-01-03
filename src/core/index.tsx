@@ -31,7 +31,7 @@ enum ExtensionHooks {
   cancelBatchId = "_cbi",
 }
 
-const setHookToInstance = (
+const setValueToAppContext = (
   target: AppContext | undefined,
   type: ExtensionHooks,
   hook: any
@@ -41,7 +41,7 @@ const setHookToInstance = (
   }
 };
 
-const addHookToInstance = (
+const addValueToAppContext = (
   target: AppContext | undefined,
   type: ExtensionHooks,
   hook: Function | undefined
@@ -52,7 +52,7 @@ const addHookToInstance = (
   }
 };
 
-const getHookFromInstance = <T extends any>(
+const getValueFromAppContext = <T extends any>(
   target: AppContext | undefined,
   type: ExtensionHooks
 ) => {
@@ -67,13 +67,11 @@ const getHookFromInstance = <T extends any>(
  * 请保证该方法只被注册一次,多次注册将覆盖
  */
 export const useLeaveBefore = (hook: () => boolean | Promise<boolean>) => {
-  onMounted(() => {
-    setHookToInstance(
-      getCurrentInstance()?.appContext,
-      ExtensionHooks.onLeaveBefore,
-      hook
-    );
-  });
+  setValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.onLeaveBefore,
+    hook
+  );
 };
 
 /**
@@ -83,13 +81,11 @@ export const useLeaveBefore = (hook: () => boolean | Promise<boolean>) => {
 export const useTransitionEnter = (
   hook: (el: Element, done: () => void) => void
 ) => {
-  onMounted(() => {
-    setHookToInstance(
-      getCurrentInstance()?.appContext,
-      ExtensionHooks.onEnter,
-      hook
-    );
-  });
+  setValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.onEnter,
+    hook
+  );
 };
 
 /**
@@ -99,39 +95,33 @@ export const useTransitionEnter = (
 export const useTransitionLeave = (
   hook: (el: Element, done: () => void) => void
 ) => {
-  onMounted(() => {
-    setHookToInstance(
-      getCurrentInstance()?.appContext,
-      ExtensionHooks.onLeave,
-      hook
-    );
-  });
+  setValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.onLeave,
+    hook
+  );
 };
 
 /**
  * use activeated 活跃的时候 hook
  */
 export const useActivated = (hook: () => void) => {
-  onMounted(() => {
-    addHookToInstance(
-      getCurrentInstance()?.appContext,
-      ExtensionHooks.onActivated,
-      hook
-    );
-  });
+  addValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.onActivated,
+    hook
+  );
 };
 
 /**
  * use activeated 非活跃的时候 hook
  */
 export const useDeactivated = (hook: () => void) => {
-  onMounted(() => {
-    addHookToInstance(
-      getCurrentInstance()?.appContext,
-      ExtensionHooks.onDeactivated,
-      hook
-    );
-  });
+  addValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.onDeactivated,
+    hook
+  );
 };
 
 /**
@@ -166,9 +156,9 @@ const backCheck = (deltaCount: number) => {
 
   // local id 保存
   const batchId = randomId();
-  setHookToInstance(instance, ExtensionHooks.cancelBatchId, batchId);
+  setValueToAppContext(instance, ExtensionHooks.cancelBatchId, batchId);
 
-  const hook = getHookFromInstance<Function>(
+  const hook = getValueFromAppContext<Function>(
     instance,
     ExtensionHooks.onLeaveBefore
   );
@@ -187,7 +177,7 @@ const backCheck = (deltaCount: number) => {
 
   return new Promise<void>(async (resolve) => {
     const _resolve = () => {
-      setHookToInstance(instance, ExtensionHooks.onLeaveBefore, undefined);
+      setValueToAppContext(instance, ExtensionHooks.onLeaveBefore, undefined);
       window.history.go(-deltaCount);
       resolve();
     };
@@ -196,14 +186,14 @@ const backCheck = (deltaCount: number) => {
     if (result instanceof Promise || typeof result["then"] === "function") {
       if (
         (await result) === true &&
-        getHookFromInstance<string>(instance, ExtensionHooks.cancelBatchId) ===
+        getValueFromAppContext<string>(instance, ExtensionHooks.cancelBatchId) ===
           batchId
       )
         _resolve();
     } else {
       if (
         result &&
-        getHookFromInstance<string>(instance, ExtensionHooks.cancelBatchId) ===
+        getValueFromAppContext<string>(instance, ExtensionHooks.cancelBatchId) ===
           batchId
       )
         _resolve();
@@ -284,14 +274,14 @@ const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
 
   /// 只有 最顶层的 一个需要执行动画
   if (needAnimated) {
-    getHookFromInstance<Function>(app._context, ExtensionHooks.close)?.apply(
+    getValueFromAppContext<Function>(app._context, ExtensionHooks.close)?.apply(
       null,
       [
         () => {
           _unmounted();
 
           /// tigger activated hooks
-          getHookFromInstance<Function[]>(
+          getValueFromAppContext<Function[]>(
             getLastApp()?._context,
             ExtensionHooks.onActivated
           )?.forEach((func) => func.apply?.(null));
@@ -329,7 +319,7 @@ const mounted = (compoent: Component, replace: boolean) => {
         let target = getCurrentInstance();
         onMounted(() => {
           target = getCurrentInstance();
-          setHookToInstance(
+          setValueToAppContext(
             target?.appContext,
             ExtensionHooks.close,
             (done: Function) => {
@@ -351,7 +341,7 @@ const mounted = (compoent: Component, replace: boolean) => {
                 resolve();
               };
 
-              const hook = getHookFromInstance<Function>(
+              const hook = getValueFromAppContext<Function>(
                 target?.appContext,
                 ExtensionHooks.onEnter
               );
@@ -364,7 +354,7 @@ const mounted = (compoent: Component, replace: boolean) => {
                 await nextTick();
                 closeDone?.();
               };
-              const hook = getHookFromInstance<Function>(
+              const hook = getValueFromAppContext<Function>(
                 target?.appContext,
                 ExtensionHooks.onLeave
               );
@@ -387,7 +377,7 @@ const mounted = (compoent: Component, replace: boolean) => {
     }
 
     /// tigger activated hooks
-    getHookFromInstance<Function[]>(
+    getValueFromAppContext<Function[]>(
       getLastApp()?._context,
       ExtensionHooks.onDeactivated
     )?.forEach((func) => func.apply?.(null));
