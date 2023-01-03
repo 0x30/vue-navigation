@@ -149,8 +149,6 @@ const getLastApp = () => routerStack[routerStack.length - 1];
  * @returns
  */
 const backCheck = (deltaCount: number) => {
-  console.log(routerStack, routerStack.length);
-
   const app = getLastApp();
   const instance = app?._context;
 
@@ -162,8 +160,6 @@ const backCheck = (deltaCount: number) => {
     instance,
     ExtensionHooks.onLeaveBefore
   );
-
-  console.log(hook, app, instance, "返回交叉");
 
   if (hook === undefined) return undefined;
 
@@ -186,15 +182,19 @@ const backCheck = (deltaCount: number) => {
     if (result instanceof Promise || typeof result["then"] === "function") {
       if (
         (await result) === true &&
-        getValueFromAppContext<string>(instance, ExtensionHooks.cancelBatchId) ===
-          batchId
+        getValueFromAppContext<string>(
+          instance,
+          ExtensionHooks.cancelBatchId
+        ) === batchId
       )
         _resolve();
     } else {
       if (
         result &&
-        getValueFromAppContext<string>(instance, ExtensionHooks.cancelBatchId) ===
-          batchId
+        getValueFromAppContext<string>(
+          instance,
+          ExtensionHooks.cancelBatchId
+        ) === batchId
       )
         _resolve();
     }
