@@ -8,6 +8,8 @@ import {
   ref,
   Transition,
   type AppContext,
+  defineComponent,
+  onUnmounted,
 } from "vue";
 
 const randomId = () => `_${Math.random().toString(32).slice(2)}`;
@@ -201,67 +203,6 @@ const backCheck = (deltaCount: number) => {
   });
 };
 
-/**
- * 示例
-````ts
-import { createApp } from 'vue'
-
-const app = createApp({
-  // ...
-})
-
-app.use(navigation())
-````
-
-在 app,创建后 use 开始启用 该插件
- */
-export const navigation = () => {
-  return {
-    install() {
-      window.addEventListener("popstate", async (event) => {
-        if (!currentState) return;
-
-        /// 获取最后一个 backHookId
-        const localLastBackHookId = lastBackHookId;
-
-        let diffValue = 0;
-
-        if (
-          // 如果 event.state is null,则说明 返回到了 没有状态的 页面了,则说明是 返回到顶层了
-          event.state === null ||
-          // 如果 session 和 当前 state session 不一样了,则说明 是在页面 刷新了
-          event.state.session !== currentState.session
-        ) {
-          diffValue = -(currentState.index + 1);
-        } else {
-          diffValue = event.state.index - currentState.index;
-        }
-
-        if (diffValue === 0) return;
-        /// 前进处理
-        if (diffValue >= 1) {
-          window.history.go(-diffValue);
-          return;
-        }
-
-        /// 检查 是否可以返回
-        const result = backCheck(-diffValue);
-        if (result !== undefined) await result;
-
-        /// 销毁 组件
-        routerStack
-          .splice(currentState.index + diffValue + 1)
-          .forEach((app, index, array) =>
-            unmounted(index === array.length - 1, app, localLastBackHookId)
-          );
-
-        if (routerStack.length === 0) currentState = undefined;
-        else currentState = window.history.state;
-      });
-    },
-  };
-};
-
 const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
   if (app === undefined) return;
 
@@ -341,6 +282,8 @@ const mounted = (compoent: Component, replace: boolean) => {
                 resolve();
               };
 
+              console.log(routerStack);
+
               const hook = getValueFromAppContext<Function>(
                 target?.appContext,
                 ExtensionHooks.onEnter
@@ -349,6 +292,8 @@ const mounted = (compoent: Component, replace: boolean) => {
               else _done();
             }}
             onLeave={(el, done) => {
+              console.log(routerStack);
+
               const _done = async () => {
                 done();
                 await nextTick();
@@ -463,4 +408,84 @@ export const back = (delta: number = 1) => {
     };
     window.history.go(-Math.abs(delta));
   });
+};
+
+const listenPopState = () => {
+  const handler = async (event: PopStateEvent) => {
+    if (!currentState) return;
+
+    /// 获取最后一个 backHookId
+    const localLastBackHookId = lastBackHookId;
+
+    let diffValue = 0;
+
+    if (
+      // 如果 event.state is null,则说明 返回到了 没有状态的 页面了,则说明是 返回到顶层了
+      event.state === null ||
+      // 如果 session 和 当前 state session 不一样了,则说明 是在页面 刷新了
+      event.state.session !== currentState.session
+    ) {
+      diffValue = -(currentState.index + 1);
+    } else {
+      diffValue = event.state.index - currentState.index;
+    }
+
+    if (diffValue === 0) return;
+    /// 前进处理
+    if (diffValue >= 1) {
+      window.history.go(-diffValue);
+      return;
+    }
+
+    /// 检查 是否可以返回
+    await backCheck(-diffValue);
+
+    /// 销毁 组件
+    routerStack
+      .splice(currentState.index + diffValue + 1)
+      .forEach((app, index, array) =>
+        unmounted(index === array.length - 1, app, localLastBackHookId)
+      );
+
+    if (routerStack.length === 0) currentState = undefined;
+    else currentState = window.history.state;
+  };
+
+  return {
+    add: () => window.addEventListener("popstate", handler),
+    remove: () => window.removeEventListener("popstate", handler),
+  };
+};
+
+export const Navigator = defineComponent({
+  name: "NavigatorController",
+  setup: (props, { slots }) => {
+    const { add, remove } = listenPopState();
+    onMounted(add);
+    onUnmounted(remove);
+    return () => slots.default?.();
+  },
+});
+
+/**
+ * 示例
+````ts
+import { createApp } from 'vue'
+
+const app = createApp({
+  // ...
+})
+
+app.use(navigation())
+````
+
+在 app,创建后 use 开始启用 该插件
+ */
+export const navigation = () => {
+  return {
+    install() {
+      const { add } = listenPopState();
+      add();
+    },
+  };
 };
