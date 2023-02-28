@@ -24,18 +24,28 @@ const Page = defineComponent({
 
     useTransitionEnter((el, done) => {
       anime({
-        targets: el,
+        targets: el.from,
+        translateX: ["0", "-50%"],
+        duration: 1000,
+      });
+      anime({
+        targets: el.to,
         translateX: ["100%", "0"],
-        duration: 800,
+        duration: 1000,
         complete: done,
       });
     });
 
     useTransitionLeave((el, done) => {
       anime({
-        targets: el,
+        targets: el.to,
+        translateX: ["-50%", "0%"],
+        duration: 1000,
+      });
+      anime({
+        targets: el.from,
         translateX: ["0", "100%"],
-        duration: 800,
+        duration: 1000,
         complete: done,
       });
     });

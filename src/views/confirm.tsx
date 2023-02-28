@@ -10,7 +10,7 @@ const Page = defineComponent({
   setup: (props) => {
     useTransitionEnter((el, done) => {
       anime({
-        targets: el,
+        targets: el.to,
         translateY: ["100%", "0"],
         duration: 800,
         complete: done,
@@ -19,7 +19,7 @@ const Page = defineComponent({
 
     useTransitionLeave((el, done) => {
       anime({
-        targets: el,
+        targets: el.from,
         translateY: ["0", "100%"],
         duration: 800,
         complete: done,

@@ -76,13 +76,19 @@ export const useLeaveBefore = (hook: () => boolean | Promise<boolean>) => {
   );
 };
 
+export type TransitionAmimatorHook = (
+  elements: {
+    from?: Element;
+    to?: Element;
+  },
+  done: () => void
+) => void;
+
 /**
  * 在页面进入时设置 动画执行方法
  * 请保证该方法只被注册一次,多次注册将覆盖
  */
-export const useTransitionEnter = (
-  hook: (el: Element, done: () => void) => void
-) => {
+export const useTransitionEnter = (hook: TransitionAmimatorHook) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onEnter,
@@ -94,9 +100,7 @@ export const useTransitionEnter = (
  * 在页面离开时设置 动画执行方法
  * 请保证该方法只被注册一次,多次注册将覆盖
  */
-export const useTransitionLeave = (
-  hook: (el: Element, done: () => void) => void
-) => {
+export const useTransitionLeave = (hook: TransitionAmimatorHook) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onLeave,
@@ -282,29 +286,39 @@ const mounted = (compoent: Component, replace: boolean) => {
                 resolve();
               };
 
-              console.log(routerStack);
-
-              const hook = getValueFromAppContext<Function>(
+              const hook = getValueFromAppContext<TransitionAmimatorHook>(
                 target?.appContext,
                 ExtensionHooks.onEnter
               );
-              if (hook) hook?.apply(null, [el, _done]);
+              if (hook)
+                hook?.apply(null, [
+                  {
+                    from: routerStack[routerStack.length - 2]?._container,
+                    to: el,
+                  },
+                  _done,
+                ]);
               else _done();
             }}
             onLeave={(el, done) => {
-              console.log(routerStack);
-
               const _done = async () => {
                 done();
                 await nextTick();
                 closeDone?.();
               };
-              const hook = getValueFromAppContext<Function>(
+              const hook = getValueFromAppContext<TransitionAmimatorHook>(
                 target?.appContext,
                 ExtensionHooks.onLeave
               );
 
-              if (hook) hook?.apply(null, [el, _done]);
+              if (hook)
+                hook?.apply(null, [
+                  {
+                    from: el,
+                    to: routerStack[routerStack.length - 1]?._container,
+                  },
+                  _done,
+                ]);
               else _done();
             }}
           >
@@ -410,7 +424,11 @@ export const back = (delta: number = 1) => {
   });
 };
 
-const listenPopState = () => {
+const listenPopState = (app: App) => {
+  routerStack.push(app);
+  currentState = { index: 0, session: currentSessionId };
+  window.history.pushState(currentState, "");
+
   const handler = async (event: PopStateEvent) => {
     if (!currentState) return;
 
@@ -460,7 +478,9 @@ const listenPopState = () => {
 export const Navigator = defineComponent({
   name: "NavigatorController",
   setup: (props, { slots }) => {
-    const { add, remove } = listenPopState();
+    const { add, remove } = listenPopState(
+      getCurrentInstance()!.appContext.app
+    );
     onMounted(add);
     onUnmounted(remove);
     return () => slots.default?.();
@@ -483,8 +503,8 @@ app.use(navigation())
  */
 export const navigation = () => {
   return {
-    install() {
-      const { add } = listenPopState();
+    install(app: App) {
+      const { add } = listenPopState(app);
       add();
     },
   };
