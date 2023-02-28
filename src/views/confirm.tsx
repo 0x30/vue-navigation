@@ -27,7 +27,7 @@ const Page = defineComponent({
     });
 
     const click = async (res: boolean) => {
-      back();
+      await back();
       props.onResult?.(res);
     };
 
