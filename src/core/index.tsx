@@ -134,7 +134,6 @@ export const useDeactivated = (hook: () => void) => {
  * 路由堆栈,存储 app stacks
  */
 const routerStack: App[] = [];
-(window as any).routerStack = routerStack;
 // 当前的 state
 let currentState: any = undefined;
 
