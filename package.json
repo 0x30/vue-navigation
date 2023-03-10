@@ -33,5 +33,9 @@
     "url": "https://github.com/0x30/vue-navigation/issues"
   },
   "homepage": "https://github.com/0x30/vue-navigation#readme",
-  "description": ""
+  "description": "",
+  "files": [
+    "dist/*.js",
+    "dist/core/index.d.ts"
+  ]
 }
