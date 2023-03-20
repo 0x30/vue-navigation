@@ -240,6 +240,14 @@ const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
   }
 };
 
+/**
+ * 获取 APP 下的 子node, 用于 执行 动画
+ */
+const getChildren = (ele?: HTMLElement) => {
+  if (ele?.childElementCount === 1) return ele.children[0];
+  return ele;
+};
+
 const mounted = (compoent: Component, replace: boolean) => {
   return new Promise<void>((resolve) => {
     // 创建 container
@@ -292,7 +300,9 @@ const mounted = (compoent: Component, replace: boolean) => {
               if (hook)
                 hook?.apply(null, [
                   {
-                    from: routerStack[routerStack.length - 2]?._container,
+                    from: getChildren(
+                      routerStack[routerStack.length - 2]?._container
+                    ),
                     to: el,
                   },
                   _done,
@@ -314,7 +324,9 @@ const mounted = (compoent: Component, replace: boolean) => {
                 hook?.apply(null, [
                   {
                     from: el,
-                    to: routerStack[routerStack.length - 1]?._container,
+                    to: getChildren(
+                      routerStack[routerStack.length - 1]?._container
+                    ),
                   },
                   _done,
                 ]);
@@ -326,7 +338,7 @@ const mounted = (compoent: Component, replace: boolean) => {
         );
       },
     });
-    app.mount(container);
+    const a = app.mount(container);
 
     if (replace === false) {
       // 维护 history state
