@@ -333,7 +333,7 @@ const mounted = (compoent: Component, replace: boolean) => {
               else _done();
             }}
           >
-            {isShow.value ? <compoent /> : null}
+            {isShow.value ? compoent : null}
           </Transition>
         );
       },
