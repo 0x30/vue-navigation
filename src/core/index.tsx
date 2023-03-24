@@ -10,6 +10,8 @@ import {
   type AppContext,
   defineComponent,
   onUnmounted,
+  onDeactivated,
+  onActivated,
 } from "vue";
 
 const randomId = () => `_${Math.random().toString(32).slice(2)}`;
@@ -112,6 +114,7 @@ export const useTransitionLeave = (hook: TransitionAmimatorHook) => {
  * use activeated 活跃的时候 hook
  */
 export const useActivated = (hook: () => void) => {
+  onActivated(hook);
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onActivated,
@@ -123,6 +126,7 @@ export const useActivated = (hook: () => void) => {
  * use activeated 非活跃的时候 hook
  */
 export const useDeactivated = (hook: () => void) => {
+  onDeactivated(hook);
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onDeactivated,
@@ -338,7 +342,7 @@ const mounted = (compoent: Component, replace: boolean) => {
         );
       },
     });
-    const a = app.mount(container);
+    app.mount(container);
 
     if (replace === false) {
       // 维护 history state
