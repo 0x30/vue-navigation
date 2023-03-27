@@ -26,13 +26,13 @@ const currentSessionId = randomId();
  * close 存储 close 关闭方法
  */
 enum ExtensionHooks {
-  onEnter = "_oe",
-  onLeave = "_ol",
-  close = "_c",
-  onLeaveBefore = "_olb",
-  onActivated = "_oa",
-  onDeactivated = "_oda",
-  cancelBatchId = "_cbi",
+  onEnter = "_vn_vn_oe",
+  onLeave = "_vn_ol",
+  close = "_vn_c",
+  onLeaveBefore = "_vn_olb",
+  onActivated = "_vn_oa",
+  onDeactivated = "_vn_oda",
+  cancelBatchId = "_vn_cbi",
 }
 
 const setValueToAppContext = (
@@ -132,6 +132,22 @@ export const useDeactivated = (hook: () => void) => {
     ExtensionHooks.onDeactivated,
     hook
   );
+};
+
+const execAnimator = (
+  type: ExtensionHooks,
+  from?: Element,
+  to?: Element,
+  context?: AppContext
+) => {
+  return new Promise<void>((reslove) => {
+    const hook = getValueFromAppContext<TransitionAmimatorHook>(context, type);
+    if (hook) {
+      hook?.apply(null, [{ from, to }, reslove]);
+    } else {
+      reslove();
+    }
+  });
 };
 
 /**
@@ -291,50 +307,29 @@ const mounted = (compoent: Component, replace: boolean) => {
             onEnter={async (el, done) => {
               await nextTick();
 
-              const _done = () => {
-                done();
-                replaceDone();
-                resolve();
-              };
-
-              const hook = getValueFromAppContext<TransitionAmimatorHook>(
-                target?.appContext,
-                ExtensionHooks.onEnter
+              /// 执行 进入动画
+              const from = getChildren(
+                routerStack[routerStack.length - 2]?._container
               );
-              if (hook)
-                hook?.apply(null, [
-                  {
-                    from: getChildren(
-                      routerStack[routerStack.length - 2]?._container
-                    ),
-                    to: el,
-                  },
-                  _done,
-                ]);
-              else _done();
+              const type = ExtensionHooks.onEnter;
+              await execAnimator(type, from, el, target?.appContext);
+
+              done();
+              replaceDone();
+              resolve();
             }}
-            onLeave={(el, done) => {
-              const _done = async () => {
-                done();
-                await nextTick();
-                closeDone?.();
-              };
-              const hook = getValueFromAppContext<TransitionAmimatorHook>(
-                target?.appContext,
-                ExtensionHooks.onLeave
+            onLeave={async (el, done) => {
+              const type = ExtensionHooks.onLeave;
+              const to = getChildren(
+                routerStack[routerStack.length - 1]?._container
               );
 
-              if (hook)
-                hook?.apply(null, [
-                  {
-                    from: el,
-                    to: getChildren(
-                      routerStack[routerStack.length - 1]?._container
-                    ),
-                  },
-                  _done,
-                ]);
-              else _done();
+              /// 执行 退出动画
+              await execAnimator(type, el, to, target?.appContext);
+
+              done();
+              await nextTick();
+              closeDone?.();
             }}
           >
             {isShow.value ? compoent : null}
