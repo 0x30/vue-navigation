@@ -3,12 +3,12 @@ import { push, replace } from "./core";
 
 export const toDetail = (id: number) => {
   const Component = defineAsyncComponent(() => import("./views/detail"));
-  push(<Component id={id} />);
+  push(<Component id={id} />, { name: "detail" });
 };
 
 export const replaceDetail = (id: number) => {
   const Component = defineAsyncComponent(() => import("./views/detail"));
-  replace(<Component id={id} />);
+  replace(<Component id={id} />, { name: "detail" });
 };
 
 export const useConfirm = () => {
