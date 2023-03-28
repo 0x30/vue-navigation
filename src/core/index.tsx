@@ -12,7 +12,28 @@ import {
   onUnmounted,
   onDeactivated,
   onActivated,
+  PropType,
 } from "vue";
+
+interface CustomEventMap {
+  "navigation-page-enter": CustomEvent<Record<string, any> | undefined>;
+  "navigation-page-leave": CustomEvent<Record<string, any> | undefined>;
+}
+
+declare global {
+  interface Window {
+    //adds definition to Document, but you can do the same with HTMLElement
+    addEventListener<K extends keyof CustomEventMap>(
+      type: K,
+      listener: (this: Document, ev: CustomEventMap[K]) => void
+    ): void;
+    removeEventListener<K extends keyof CustomEventMap>(
+      type: K,
+      listener: (this: Document, ev: CustomEventMap[K]) => void
+    ): void;
+    dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K]): void;
+  }
+}
 
 const randomId = () => `_${Math.random().toString(32).slice(2)}`;
 
@@ -33,7 +54,20 @@ enum ExtensionHooks {
   onActivated = "_vn_oa",
   onDeactivated = "_vn_oda",
   cancelBatchId = "_vn_cbi",
+  pageData = "_vn_pd",
 }
+
+const sendEnterEvent = (target?: AppContext) => {
+  const detail = getValueFromAppContext(target, ExtensionHooks.pageData);
+  const event = new CustomEvent("navigation-page-enter", { detail });
+  window.dispatchEvent(event);
+};
+
+const sendLeaveEvent = (target?: AppContext) => {
+  const detail = getValueFromAppContext(target, ExtensionHooks.pageData);
+  const event = new CustomEvent("navigation-page-leave", { detail });
+  window.dispatchEvent(event);
+};
 
 const setValueToAppContext = (
   target: AppContext | undefined,
@@ -234,6 +268,9 @@ const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
     if (app._container instanceof Element) {
       app._container.parentElement?.removeChild(app._container);
     }
+
+    /// 离开事件触发
+    sendLeaveEvent(app._context);
   };
 
   /// 只有 最顶层的 一个需要执行动画
@@ -268,7 +305,11 @@ const getChildren = (ele?: HTMLElement) => {
   return ele;
 };
 
-const mounted = (compoent: Component, replace: boolean) => {
+const mounted = (
+  compoent: Component,
+  replace: boolean,
+  params?: Record<string, any>
+) => {
   return new Promise<void>((resolve) => {
     // 创建 container
     const container = document.createElement("div");
@@ -317,6 +358,9 @@ const mounted = (compoent: Component, replace: boolean) => {
               done();
               replaceDone();
               resolve();
+
+              // 进入事件
+              sendEnterEvent(target?.appContext);
             }}
             onLeave={async (el, done) => {
               const type = ExtensionHooks.onLeave;
@@ -344,6 +388,9 @@ const mounted = (compoent: Component, replace: boolean) => {
       currentState = { index: routerStack.length, session: currentSessionId };
       window.history.pushState(currentState, "");
     }
+
+    /// 将数据保存到 context
+    setValueToAppContext(app._context, ExtensionHooks.pageData, params);
 
     /// tigger activated hooks
     getValueFromAppContext<Function[]>(
@@ -377,9 +424,10 @@ const mounted = (compoent: Component, replace: boolean) => {
  * 组件可以通过设置 `useTransitionEnter` 设置页面动画,如果设置动画则会在动画执行完成后, `promise.reslove`
  *
  * @param component 组件
+ * @param params 页面的参数, 在页面发上变化的时候 这些参数会被携带
  */
-export const push = (component: Component) => {
-  return mounted(component, false);
+export const push = (component: Component, params?: Record<string, any>) => {
+  return mounted(component, false, params);
 };
 
 /**
@@ -404,8 +452,8 @@ export const push = (component: Component) => {
  *
  * @param component 组件
  */
-export const replace = (component: Component) => {
-  return mounted(component, true);
+export const replace = (component: Component, params?: Record<string, any>) => {
+  return mounted(component, true, params);
 };
 
 let backHooks: Record<string, Function> = {};
@@ -434,10 +482,14 @@ export const back = (delta: number = 1) => {
   });
 };
 
-const listenPopState = (app: App) => {
+const listenPopState = (app: App, pageData?: Record<string, any>) => {
   routerStack.push(app);
   currentState = { index: 0, session: currentSessionId };
   window.history.pushState(currentState, "");
+
+  /// 将数据保存到 context
+  setValueToAppContext(app._context, ExtensionHooks.pageData, pageData);
+  sendEnterEvent(app._context);
 
   const handler = async (event: PopStateEvent) => {
     if (!currentState) return;
@@ -487,9 +539,13 @@ const listenPopState = (app: App) => {
 
 export const Navigator = defineComponent({
   name: "NavigatorController",
+  props: {
+    pageData: Object as PropType<Record<string, any>>,
+  },
   setup: (props, { slots }) => {
     const { add, remove } = listenPopState(
-      getCurrentInstance()!.appContext.app
+      getCurrentInstance()!.appContext.app,
+      props.pageData
     );
     onMounted(add);
     onUnmounted(remove);
@@ -511,11 +567,65 @@ app.use(navigation())
 
 在 app,创建后 use 开始启用 该插件
  */
-export const navigation = () => {
+export const navigation = (pageData?: Record<string, any>) => {
   return {
     install(app: App) {
-      const { add } = listenPopState(app);
+      const { add } = listenPopState(app, pageData);
       add();
     },
+  };
+};
+
+export const listenerPageChange = (
+  type: "navigation-page-enter" | "navigation-page-leave",
+  block: (params: Record<string, any> | undefined) => void
+) => {
+  const handler = (event: CustomEvent<Record<string, any> | undefined>) => {
+    block(event.detail ?? undefined);
+  };
+  window.addEventListener(type, handler);
+  return () => window.removeEventListener(type, handler);
+};
+
+/**
+ * 监听到页面返回
+ * @param block
+ * @returns 取消监听
+ */
+export const didPageEnter = (
+  block: (params: Record<string, any> | undefined) => void
+) => listenerPageChange("navigation-page-enter", block);
+
+/**
+ * 监听到页面进入
+ * @param block
+ * @returns 取消监听
+ */
+export const didPageLeave = (
+  block: (params: Record<string, any> | undefined) => void
+) => listenerPageChange("navigation-page-leave", block);
+
+/**
+ * 将 didPageEnter  didPageLeave 合并到一个
+ * @param block
+ * @returns 取消
+ */
+export const didPageChange = (
+  block: (
+    type: "enter" | "leave",
+    params: Record<string, any> | undefined
+  ) => void
+) => {
+  const disposalLeave = didPageLeave((params) => {
+    block("leave", params);
+  });
+
+  const disposalEnter = didPageEnter((params) => {
+    block("enter", params);
+  });
+
+  return () => {
+    disposalEnter();
+    disposalLeave();
   };
 };
