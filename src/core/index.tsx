@@ -245,20 +245,27 @@ const getLastApp = () => routerStack[routerStack.length - 1];
  * @param deltaCount 页面返回个数
  * @returns
  */
-const backCheck = (deltaCount: number) => {
+const backCheck = (deltaCount: number, backHid?: string) => {
   const app = getLastApp();
   const instance = app?._context;
 
-  // local id 保存
   const batchId = randomId();
+  // local id 保存
   setValueToAppContext(instance, ExtensionHooks.cancelBatchId, batchId);
+
+  const isSampleBatchId = () => {
+    return (
+      getValueFromAppContext<string>(instance, ExtensionHooks.cancelBatchId) ===
+      batchId
+    );
+  };
 
   const hook = getValueFromAppContext<Function>(
     instance,
     ExtensionHooks.onLeaveBefore
   );
 
-  if (hook === undefined) return undefined;
+  if (hook === undefined) return Promise.resolve();
 
   /// 为了防止多次返回 提前返回
   const { index, session } = currentState;
@@ -269,31 +276,23 @@ const backCheck = (deltaCount: number) => {
   }
 
   return new Promise<void>(async (resolve) => {
-    const _resolve = () => {
+    const reBack = () => {
       setValueToAppContext(instance, ExtensionHooks.onLeaveBefore, undefined);
       window.history.go(-deltaCount);
-      resolve();
     };
 
     const result = hook();
     if (result instanceof Promise || typeof result["then"] === "function") {
-      if (
-        (await result) === true &&
-        getValueFromAppContext<string>(
-          instance,
-          ExtensionHooks.cancelBatchId
-        ) === batchId
-      )
-        _resolve();
+      if ((await result) === true && isSampleBatchId()) {
+        /// 再次返回的时候 设置 重新设置 back id
+        lastBackHookId = backHid;
+        reBack();
+      }
     } else {
-      if (
-        result &&
-        getValueFromAppContext<string>(
-          instance,
-          ExtensionHooks.cancelBatchId
-        ) === batchId
-      )
-        _resolve();
+      if (result && isSampleBatchId()) {
+        reBack();
+        resolve();
+      }
     }
   });
 };
@@ -514,12 +513,11 @@ export const back = (delta: number = 1) => {
   return new Promise<void>((resolve) => {
     lastBackHookId = randomId();
 
-    backHooks = {
-      [lastBackHookId]: () => {
-        lastBackHookId = undefined;
-        resolve();
-      },
+    backHooks[lastBackHookId] = () => {
+      lastBackHookId = undefined;
+      resolve();
     };
+
     window.history.go(-Math.abs(delta));
   });
 };
@@ -560,14 +558,14 @@ const listenPopState = (app: App, pageData?: Record<string, any>) => {
     }
 
     /// 检查 是否可以返回
-    await backCheck(-diffValue);
+    await backCheck(-diffValue, localLastBackHookId);
 
     /// 销毁 组件
-    routerStack
-      .splice(currentState.index + diffValue + 1)
-      .forEach((app, index, array) =>
-        unmounted(index === array.length - 1, app, localLastBackHookId)
-      );
+    const apps = routerStack.splice(routerStack.length - Math.abs(diffValue));
+
+    apps.forEach((app, index, array) => {
+      unmounted(index === array.length - 1, app, localLastBackHookId);
+    });
 
     if (routerStack.length === 0) currentState = undefined;
     else currentState = window.history.state;
