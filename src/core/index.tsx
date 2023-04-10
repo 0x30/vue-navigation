@@ -543,12 +543,11 @@ export const Navigator = defineComponent({
     pageData: Object as PropType<Record<string, any>>,
   },
   setup: (props, { slots }) => {
-    const { add, remove } = listenPopState(
+    const { add } = listenPopState(
       getCurrentInstance()!.appContext.app,
       props.pageData
     );
     onMounted(add);
-    onUnmounted(remove);
     return () => slots.default?.();
   },
 });
