@@ -47,7 +47,7 @@ const currentSessionId = randomId();
  * close 存储 close 关闭方法
  */
 enum ExtensionHooks {
-  onEnter = "_vn_vn_oe",
+  onEnter = "_vn_oe",
   onLeave = "_vn_ol",
   close = "_vn_c",
   onLeaveBefore = "_vn_olb",
@@ -55,6 +55,8 @@ enum ExtensionHooks {
   onDeactivated = "_vn_oda",
   cancelBatchId = "_vn_cbi",
   pageData = "_vn_pd",
+  onEnterFinish = "_vn_oef",
+  onLeaveFinish = "_vn_olf",
 }
 
 const sendEnterEvent = (target?: AppContext) => {
@@ -133,6 +135,24 @@ export const useTransitionEnter = (hook: TransitionAmimatorHook) => {
 };
 
 /**
+ * 页面动画执行完毕
+ */
+export const useTransitionEnterFinish = (hook: () => void) => {
+  addValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.onEnterFinish,
+    hook
+  );
+};
+
+const tiggleTransitionEnterFinish = (target?: AppContext) => {
+  getValueFromAppContext<Function[]>(
+    target,
+    ExtensionHooks.onEnterFinish
+  )?.forEach((func) => func.apply?.(null));
+};
+
+/**
  * 在页面离开时设置 动画执行方法
  * 请保证该方法只被注册一次,多次注册将覆盖
  */
@@ -142,6 +162,24 @@ export const useTransitionLeave = (hook: TransitionAmimatorHook) => {
     ExtensionHooks.onLeave,
     hook
   );
+};
+
+/**
+ * 页面动画执行完毕
+ */
+export const useTransitionLeaveFinish = (hook: () => void) => {
+  addValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.onLeaveFinish,
+    hook
+  );
+};
+
+const tiggleTransitionLeaveFinish = (target?: AppContext) => {
+  getValueFromAppContext<Function[]>(
+    target,
+    ExtensionHooks.onLeaveFinish
+  )?.forEach((func) => func.apply?.(null));
 };
 
 /**
@@ -271,6 +309,7 @@ const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
 
     /// 离开事件触发
     sendLeaveEvent(app._context);
+    tiggleTransitionLeaveFinish(app._context);
   };
 
   /// 只有 最顶层的 一个需要执行动画
@@ -361,6 +400,9 @@ const mounted = (
 
               // 进入事件
               sendEnterEvent(target?.appContext);
+
+              /// 动画执行完 事件
+              tiggleTransitionEnterFinish(target?.appContext);
             }}
             onLeave={async (el, done) => {
               const type = ExtensionHooks.onLeave;

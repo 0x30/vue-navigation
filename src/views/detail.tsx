@@ -4,7 +4,9 @@ import {
   back,
   useLeaveBefore,
   useTransitionEnter,
+  useTransitionEnterFinish,
   useTransitionLeave,
+  useTransitionLeaveFinish,
 } from "../core";
 import { replaceDetail, toDetail, useConfirm } from "../routers";
 
@@ -17,6 +19,14 @@ const Page = defineComponent({
     const cancel = () => {
       back();
     };
+
+    useTransitionEnterFinish(() => {
+      console.log("页面执行完毕");
+    });
+
+    useTransitionLeaveFinish(() => {
+      console.log("页面离开完毕");
+    });
 
     useLeaveBefore(() => {
       return useConfirm();
