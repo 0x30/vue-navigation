@@ -9,7 +9,6 @@ import {
   Transition,
   type AppContext,
   defineComponent,
-  onUnmounted,
   onDeactivated,
   onActivated,
   PropType,
@@ -106,7 +105,7 @@ const getValueFromAppContext = <T extends any>(
  * 在页面在返回,提供一个方法,向用户询问
  * 请保证该方法只被注册一次,多次注册将覆盖
  */
-export const useLeaveBefore = (hook: () => boolean | Promise<boolean>) => {
+const useLeaveBefore = (hook: () => boolean | Promise<boolean>) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onLeaveBefore,
@@ -126,7 +125,7 @@ export type TransitionAmimatorHook = (
  * 在页面进入时设置 动画执行方法
  * 请保证该方法只被注册一次,多次注册将覆盖
  */
-export const useTransitionEnter = (hook: TransitionAmimatorHook) => {
+const useTransitionEnter = (hook: TransitionAmimatorHook) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onEnter,
@@ -136,8 +135,9 @@ export const useTransitionEnter = (hook: TransitionAmimatorHook) => {
 
 /**
  * 页面动画执行完毕
+ * 该方法 是 hook 方法,用户 组件内部 监听 当前页面是否动画执行完毕 进入页面
  */
-export const useTransitionEnterFinish = (hook: () => void) => {
+const useTransitionEnterFinish = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onEnterFinish,
@@ -156,7 +156,7 @@ const tiggleTransitionEnterFinish = (target?: AppContext) => {
  * 在页面离开时设置 动画执行方法
  * 请保证该方法只被注册一次,多次注册将覆盖
  */
-export const useTransitionLeave = (hook: TransitionAmimatorHook) => {
+const useTransitionLeave = (hook: TransitionAmimatorHook) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onLeave,
@@ -166,8 +166,9 @@ export const useTransitionLeave = (hook: TransitionAmimatorHook) => {
 
 /**
  * 页面动画执行完毕
+ * 该方法 是 hook 方法,用户 组件内部 监听 当前页面是否动画执行完毕 进入页面
  */
-export const useTransitionLeaveFinish = (hook: () => void) => {
+const useTransitionLeaveFinish = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onLeaveFinish,
@@ -185,7 +186,7 @@ const tiggleTransitionLeaveFinish = (target?: AppContext) => {
 /**
  * use activeated 活跃的时候 hook
  */
-export const useActivated = (hook: () => void) => {
+const useActivated = (hook: () => void) => {
   onActivated(hook);
   addValueToAppContext(
     getCurrentInstance()?.appContext,
@@ -197,7 +198,7 @@ export const useActivated = (hook: () => void) => {
 /**
  * use activeated 非活跃的时候 hook
  */
-export const useDeactivated = (hook: () => void) => {
+const useDeactivated = (hook: () => void) => {
   onDeactivated(hook);
   addValueToAppContext(
     getCurrentInstance()?.appContext,
@@ -467,7 +468,7 @@ const mounted = (
  * @param component 组件
  * @param params 页面的参数, 在页面发上变化的时候 这些参数会被携带
  */
-export const push = (component: Component, params?: Record<string, any>) => {
+const push = (component: Component, params?: Record<string, any>) => {
   return mounted(component, false, params);
 };
 
@@ -493,7 +494,7 @@ export const push = (component: Component, params?: Record<string, any>) => {
  *
  * @param component 组件
  */
-export const replace = (component: Component, params?: Record<string, any>) => {
+const replace = (component: Component, params?: Record<string, any>) => {
   return mounted(component, true, params);
 };
 
@@ -509,7 +510,7 @@ let lastBackHookId: string | undefined = undefined;
  *
  * @param delta 返回次数 uint
  */
-export const back = (delta: number = 1) => {
+const back = (delta: number = 1) => {
   return new Promise<void>((resolve) => {
     lastBackHookId = randomId();
 
@@ -577,7 +578,7 @@ const listenPopState = (app: App, pageData?: Record<string, any>) => {
   };
 };
 
-export const Navigator = defineComponent({
+const Navigator = defineComponent({
   name: "NavigatorController",
   props: {
     pageData: Object as PropType<Record<string, any>>,
@@ -606,7 +607,7 @@ app.use(navigation())
 
 在 app,创建后 use 开始启用 该插件
  */
-export const navigation = (pageData?: Record<string, any>) => {
+const navigation = (pageData?: Record<string, any>) => {
   return {
     install(app: App) {
       const { add } = listenPopState(app, pageData);
@@ -615,7 +616,7 @@ export const navigation = (pageData?: Record<string, any>) => {
   };
 };
 
-export const listenerPageChange = (
+const listenerPageChange = (
   type: "navigation-page-enter" | "navigation-page-leave",
   block: (params: Record<string, any> | undefined) => void
 ) => {
@@ -631,7 +632,7 @@ export const listenerPageChange = (
  * @param block
  * @returns 取消监听
  */
-export const didPageEnter = (
+const didPageEnter = (
   block: (params: Record<string, any> | undefined) => void
 ) => listenerPageChange("navigation-page-enter", block);
 
@@ -640,7 +641,7 @@ export const didPageEnter = (
  * @param block
  * @returns 取消监听
  */
-export const didPageLeave = (
+const didPageLeave = (
   block: (params: Record<string, any> | undefined) => void
 ) => listenerPageChange("navigation-page-leave", block);
 
@@ -649,7 +650,7 @@ export const didPageLeave = (
  * @param block
  * @returns 取消
  */
-export const didPageChange = (
+const didPageChange = (
   block: (
     type: "enter" | "leave",
     params: Record<string, any> | undefined
@@ -667,4 +668,22 @@ export const didPageChange = (
     disposalEnter();
     disposalLeave();
   };
+};
+
+export {
+  useLeaveBefore,
+  useTransitionEnter,
+  useTransitionEnterFinish as onEnterFinish,
+  useTransitionLeave,
+  useTransitionLeaveFinish as onLeaveFinish,
+  useActivated as onAppear,
+  useDeactivated as onDisAppear,
+  push,
+  replace,
+  back,
+  Navigator,
+  navigation,
+  didPageEnter as onPageEnter,
+  didPageLeave as onPageLeave,
+  didPageChange as onPageChange,
 };

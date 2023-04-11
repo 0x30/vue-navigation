@@ -4,9 +4,9 @@ import {
   back,
   useLeaveBefore,
   useTransitionEnter,
-  useTransitionEnterFinish,
+  onEnterFinish,
   useTransitionLeave,
-  useTransitionLeaveFinish,
+  onLeaveFinish,
 } from "../core";
 import { replaceDetail, toDetail, useConfirm } from "../routers";
 
@@ -20,11 +20,11 @@ const Page = defineComponent({
       back();
     };
 
-    useTransitionEnterFinish(() => {
+    onEnterFinish(() => {
       console.log("页面执行完毕");
     });
 
-    useTransitionLeaveFinish(() => {
+    onLeaveFinish(() => {
       console.log("页面离开完毕");
     });
 

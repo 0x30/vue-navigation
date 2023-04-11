@@ -1,9 +1,9 @@
 import { createApp } from "vue";
 import "./style.css";
 import App from "./App";
-import { didPageChange, navigation } from "./core";
+import { navigation, onPageChange } from "./core";
 
-didPageChange((type, params) => {
+onPageChange((type, params) => {
   console.log(type, params);
 });
 
