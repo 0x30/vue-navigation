@@ -382,6 +382,7 @@ const mounted = (
           <Transition
             appear
             onEnter={async (el, done) => {
+              document.body.style.pointerEvents = "none";
               await nextTick();
 
               /// 执行 进入动画
@@ -400,8 +401,10 @@ const mounted = (
 
               /// 动画执行完 事件
               tiggleTransitionEnterFinish(target?.appContext);
+              document.body.style.pointerEvents = "auto";
             }}
             onLeave={async (el, done) => {
+              document.body.style.pointerEvents = "none";
               const type = ExtensionHooks.onLeave;
               const to = getChildren(
                 routerStack[routerStack.length - 1]?._container
@@ -413,6 +416,7 @@ const mounted = (
               done();
               await nextTick();
               closeDone?.();
+              document.body.style.pointerEvents = "auto";
             }}
           >
             {isShow.value ? compoent : null}
