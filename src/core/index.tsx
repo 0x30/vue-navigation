@@ -290,10 +290,7 @@ const backCheck = (deltaCount: number, backHid?: string) => {
         reBack();
       }
     } else {
-      if (result && isSampleBatchId()) {
-        reBack();
-        resolve();
-      }
+      if (result && isSampleBatchId()) reBack();
     }
   });
 };
