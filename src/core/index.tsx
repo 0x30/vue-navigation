@@ -382,7 +382,6 @@ const mounted = (
           <Transition
             appear
             onEnter={async (el, done) => {
-              document.body.style.pointerEvents = "none";
               await nextTick();
 
               /// 执行 进入动画
@@ -401,7 +400,6 @@ const mounted = (
 
               /// 动画执行完 事件
               tiggleTransitionEnterFinish(target?.appContext);
-              document.body.style.pointerEvents = "auto";
             }}
             onLeave={async (el, done) => {
               document.body.style.pointerEvents = "none";
@@ -469,8 +467,10 @@ const mounted = (
  * @param component 组件
  * @param params 页面的参数, 在页面发上变化的时候 这些参数会被携带
  */
-const push = (component: Component, params?: Record<string, any>) => {
-  return mounted(component, false, params);
+const push = async (component: Component, params?: Record<string, any>) => {
+  document.body.style.pointerEvents = "none";
+  await mounted(component, false, params);
+  document.body.style.pointerEvents = "auto";
 };
 
 /**
@@ -595,19 +595,19 @@ const Navigator = defineComponent({
 });
 
 /**
- * 示例
-````ts
-import { createApp } from 'vue'
-
-const app = createApp({
-  // ...
-})
-
-app.use(navigation())
-````
-
-在 app,创建后 use 开始启用 该插件
- */
+   * 示例
+  ````ts
+  import { createApp } from 'vue'
+  
+  const app = createApp({
+    // ...
+  })
+  
+  app.use(navigation())
+  ````
+  
+  在 app,创建后 use 开始启用 该插件
+   */
 const navigation = (pageData?: Record<string, any>) => {
   return {
     install(app: App) {
