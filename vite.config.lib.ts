@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [jsx(), dts()],
   build: {
     lib: {
-      entry: "./src/core/index.tsx",
+      entry: "./src/core/index.ts",
       name: "vueNavigation",
       fileName: "vue-navigation",
       formats: ["es", "umd"],
