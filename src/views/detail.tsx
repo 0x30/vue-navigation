@@ -9,6 +9,7 @@ import {
   onLeaveFinish,
 } from "../core";
 import { replaceDetail, toDetail, useConfirm } from "../routers";
+import { usePageMate } from "../core/hooks";
 
 const Page = defineComponent({
   name: "PageDetail",
@@ -16,6 +17,11 @@ const Page = defineComponent({
     id: Number,
   },
   setup: (props) => {
+    usePageMate({
+      id: "detail",
+      name: "详情页面",
+    });
+
     const cancel = () => {
       back();
     };

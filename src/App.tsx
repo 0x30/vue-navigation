@@ -1,5 +1,6 @@
 import { defineComponent, ref } from "vue";
 import { toDetail } from "./routers";
+import { usePageMate } from "./core/hooks";
 
 const Page = defineComponent({
   name: "PageDetail",
@@ -8,6 +9,11 @@ const Page = defineComponent({
   },
   setup: () => {
     const count = ref(0);
+
+    usePageMate({
+      id: "home",
+      name: "首页列表",
+    });
 
     return () => (
       <div class="page">

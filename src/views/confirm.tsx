@@ -1,13 +1,19 @@
 import anime from "animejs";
 import { defineComponent, PropType } from "vue";
 import { back, useTransitionEnter, useTransitionLeave } from "../core";
+import { usePageMate } from "../core/hooks";
 
 const Page = defineComponent({
-  name: "PageDetail",
+  name: "PageConfirm",
   props: {
     onResult: Function as PropType<(res: boolean) => void>,
   },
   setup: (props) => {
+    usePageMate({
+      id: "confirm",
+      name: "返回确定弹出框",
+    });
+
     useTransitionEnter((el, done) => {
       anime({
         targets: el.to,
