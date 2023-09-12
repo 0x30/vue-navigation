@@ -5,6 +5,7 @@ import {
   onDeactivated,
 } from 'vue'
 import { applyFuns } from './util'
+import { routerStack } from './state'
 
 /// 页面 新增的 App 扩展属性
 enum ExtensionHooks {
@@ -17,11 +18,16 @@ enum ExtensionHooks {
   // 当页面 离开前调用 询问组件 是否想要返回
   onLeaveBefore = '_vn_olb',
   onActivated = '_vn_oa',
+  onWillActivated = '_vn_owa',
   onDeactivated = '_vn_oda',
+  onWillDeactivated = '_vn_owda',
   cancelBatchId = '_vn_cbi',
   onEnterFinish = '_vn_oef',
   onLeaveFinish = '_vn_olf',
   ExtData = '_vn_ed',
+
+  /// 进度退出动画
+  ProgressExitAnimated = '_vn_p_e_a',
 }
 
 const setValueToAppContext = (
@@ -74,7 +80,7 @@ const getExtData = <T>(target: AppContext | undefined) => {
  * 在页面即将返回的时候，会调用hook方法，返回是否可以返回
  * 该方法，如果在某个页面多次注册，会覆盖请注意
  */
-const useLeaveBefore = (hook: () => boolean | Promise<boolean>) => {
+const useLeaveBefore = (hook: () => boolean | (() => Promise<boolean>)) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onLeaveBefore,
@@ -114,7 +120,7 @@ const useTransitionEnterFinish = (hook: () => void) => {
   )
 }
 
-const tiggleTransitionEnterFinish = (context?: AppContext) => {
+const triggleTransitionEnterFinish = (context?: AppContext) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     context,
     ExtensionHooks.onEnterFinish
@@ -122,7 +128,7 @@ const tiggleTransitionEnterFinish = (context?: AppContext) => {
   applyFuns(hooks)
 }
 
-const tiggleOnActivated = (context?: AppContext) => {
+const triggleOnActivated = (context?: AppContext) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     context,
     ExtensionHooks.onActivated
@@ -130,12 +136,12 @@ const tiggleOnActivated = (context?: AppContext) => {
   applyFuns(hooks)
 }
 
-const tiggleOnLeaveFinish = (target?: AppContext) => {
+const triggleOnLeaveFinish = (isBack: boolean, target?: AppContext) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     target,
     ExtensionHooks.onLeaveFinish
   )
-  applyFuns(hooks)
+  applyFuns(hooks, [isBack])
 }
 
 /**
@@ -143,7 +149,7 @@ const tiggleOnLeaveFinish = (target?: AppContext) => {
  * @param context App Context
  * @returns hooks 方法
  */
-const tiggleOnDeactivated = (context: AppContext | undefined) => {
+const triggleOnDeactivated = (context: AppContext | undefined) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     context,
     ExtensionHooks.onDeactivated
@@ -169,7 +175,7 @@ const useTransitionLeave = (hook: TransitionAmimatorHook) => {
  * 页面动画执行完毕
  * 该方法 是 hook 方法,用户 组件内部 监听 当前页面是否动画执行完毕 进入页面
  */
-const useTransitionLeaveFinish = (hook: () => void) => {
+const useTransitionLeaveFinish = (hook: (isBack: boolean) => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onLeaveFinish,
@@ -225,7 +231,7 @@ const getCancelBatchId = (context: AppContext | undefined) => {
 }
 
 const getLeaveBefore = (context: AppContext | undefined) =>
-  getValueFromAppContext<() => boolean | Promise<boolean>>(
+  getValueFromAppContext<() => boolean | (() => Promise<boolean>)>(
     context,
     ExtensionHooks.onLeaveBefore
   )
@@ -332,7 +338,7 @@ const onPageChange = (
   return () => pageChangeSet.delete(val)
 }
 
-const tigglePageChange = (from?: AppContext, to?: AppContext) => {
+const trigglePageChange = (from?: AppContext, to?: AppContext) => {
   pageChangeSet.forEach(([hook, config]) => {
     const fM = getPageMate(from)
     const tM = getPageMate(to)
@@ -346,10 +352,79 @@ const tigglePageChange = (from?: AppContext, to?: AppContext) => {
   })
 }
 
+const onWillAppear = (hook: () => void) => {
+  addValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.onWillActivated,
+    hook
+  )
+}
+
+const triggleOnWillAppear = (context?: AppContext) => {
+  const hooks = getValueFromAppContext<(() => void)[]>(
+    context,
+    ExtensionHooks.onWillActivated
+  )
+  applyFuns(hooks)
+}
+
+const onWillDisAppear = (hook: () => void) => {
+  addValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.onWillDeactivated,
+    hook
+  )
+}
+
+const triggleOnWillDisAppear = (context?: AppContext) => {
+  const hooks = getValueFromAppContext<(() => void)[]>(
+    context,
+    ExtensionHooks.onWillDeactivated
+  )
+  applyFuns(hooks)
+}
+
+type ProgressExitAnimatedHandle = (
+  elements: {
+    from?: Element
+    to?: Element
+  },
+  progress: number,
+  isFinish?: boolean
+) => void
+
+const useProgressExitAnimated = (hook: ProgressExitAnimatedHandle) => {
+  setValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.ProgressExitAnimated,
+    hook
+  )
+}
+
+const execProgressExitAnimated = (
+  elements: {
+    from?: Element
+    to?: Element
+  },
+  progress: number,
+  isFinish?: boolean
+) => {
+  const hook = getValueFromAppContext<ProgressExitAnimatedHandle>(
+    routerStack[routerStack.length - 1]?._context,
+    ExtensionHooks.ProgressExitAnimated
+  )
+
+  hook?.apply(null, [elements, progress, isFinish])
+}
+
 export {
+  onWillAppear,
+  triggleOnWillAppear,
+  onWillDisAppear,
+  triggleOnWillDisAppear,
   usePageMate,
   onPageChange,
-  tigglePageChange,
+  trigglePageChange,
   setExtData,
   getExtData,
   useQuietPage,
@@ -368,13 +443,15 @@ export {
   onReAppear,
   useDeactivated,
   useActivated,
-  tiggleOnLeaveFinish,
-  tiggleOnDeactivated,
-  tiggleOnActivated,
-  tiggleTransitionEnterFinish,
+  triggleOnLeaveFinish,
+  triggleOnDeactivated,
+  triggleOnActivated,
+  triggleTransitionEnterFinish,
   useLeaveBefore,
   useTransitionEnter,
   useTransitionEnterFinish,
   useTransitionLeave,
   useTransitionLeaveFinish,
+  useProgressExitAnimated,
+  execProgressExitAnimated,
 }

@@ -1,12 +1,12 @@
 import {
   type App,
-  type Component,
   Transition,
   createApp,
   getCurrentInstance,
-  nextTick,
   onMounted,
   ref,
+  cloneVNode,
+  type VNode,
 } from 'vue'
 import {
   applyBackHook,
@@ -21,15 +21,31 @@ import {
   getClose,
   getIsQuietPage,
   setClose,
-  tiggleOnActivated,
-  tiggleOnDeactivated,
-  tiggleOnLeaveFinish,
-  tigglePageChange,
-  tiggleTransitionEnterFinish,
+  triggleOnActivated,
+  triggleOnDeactivated,
+  triggleOnLeaveFinish,
+  triggleOnWillAppear,
+  triggleOnWillDisAppear,
+  trigglePageChange,
+  triggleTransitionEnterFinish,
 } from './hooks'
 import { disableBodyPointerEvents, enableBodyPointerEvents } from './util'
 
-const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
+/**
+ * 销毁 app
+ * @param needAnimated 是否本次销毁需要执行 动画
+ * @param needApplyBackHook 是否需要 调用 backHook 方法
+ * @param isBack 当前销毁 是否是由于 返回导致的
+ * @param app 要销毁的 app
+ * @param backHookId 调用的 backHook
+ */
+const unmounted = (
+  needAnimated: boolean,
+  needApplyBackHook: boolean,
+  isBack: boolean,
+  app?: App,
+  backHookId?: string
+) => {
   if (app === undefined) return
 
   const _unmounted = () => {
@@ -37,7 +53,11 @@ const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
     if (app._container instanceof Element) {
       app._container.parentElement?.removeChild(app._container)
     }
-    tiggleOnLeaveFinish(app._context)
+    triggleOnLeaveFinish(isBack, app._context)
+
+    if (!needApplyBackHook) return
+    enableBodyPointerEvents()
+    applyBackHook(backHookId)
   }
 
   const isQuietPage = getIsQuietPage(app._context)
@@ -45,10 +65,8 @@ const unmounted = (needAnimated: boolean, app?: App, backHookId?: string) => {
 
   getClose(app._context)?.(() => {
     _unmounted()
-    if (!isQuietPage) tiggleOnActivated(getLastApp()._context)
-    applyBackHook(backHookId)
-    /// 触发页面变动
-    tigglePageChange(app._context, getLastApp()._context)
+    if (!isQuietPage) triggleOnActivated(getLastApp()._context)
+    trigglePageChange(app._context, getLastApp()._context)
   })
 }
 
@@ -60,7 +78,7 @@ const getChildren = (ele?: HTMLElement) => {
   return ele
 }
 
-const mounted = (compoent: Component, replace: boolean) => {
+const mounted = (compoent: VNode, replace: boolean) => {
   return new Promise<void>((resolve) => {
     // 创建 container
     const container = document.createElement('div')
@@ -69,12 +87,20 @@ const mounted = (compoent: Component, replace: boolean) => {
     /// 在页面 replace 动画执行完成后 unmounted 倒数第二个 app
     const replaceDone = () => {
       if (replace === false) return
-      unmounted(false, routerStack.splice(routerStack.length - 2, 1)[0])
+      unmounted(
+        false,
+        false,
+        false,
+        routerStack.splice(routerStack.length - 2, 1)[0]
+      )
     }
 
     /// 出发页面的 deactived
     const lastAppContext = getLastApp()?._context
-    const lastAppDeactived = () => tiggleOnDeactivated(lastAppContext)
+    const lastAppDeactived = () => triggleOnDeactivated(lastAppContext)
+
+    /// clone component
+    const nComponent = cloneVNode(compoent)
 
     // 创建 app
     const app = createApp({
@@ -93,47 +119,50 @@ const mounted = (compoent: Component, replace: boolean) => {
           })
         })
 
-        return () => (
-          <Transition
-            appear
-            onEnter={async (el, done) => {
-              /// 执行 进入动画
-              const from = getChildren(
-                routerStack[routerStack.length - 2]?._container
-              )
-              await execEnterAnimator(target?.appContext, from, el)
+        return () => {
+          return (
+            <Transition
+              appear
+              onEnter={async (el, done) => {
+                /// 执行 进入动画
+                const from = getChildren(lastAppContext.app._container)
+                /// 触发之前的页面即将进入 非活跃
+                triggleOnWillDisAppear(lastAppContext)
+                await execEnterAnimator(target?.appContext, from, el)
 
-              done()
-              replaceDone()
-              resolve()
+                done()
+                replaceDone()
+                resolve()
 
-              if (!getIsQuietPage(target?.appContext)) {
-                /// 上一个页面处理
-                lastAppDeactived()
-              }
-              /// 动画执行完 事件
-              tiggleTransitionEnterFinish(target?.appContext)
-              /// 触发页面 变动
-              tigglePageChange(lastAppContext, target?.appContext)
-            }}
-            onLeave={async (el, done) => {
-              disableBodyPointerEvents()
-              const to = getChildren(
-                routerStack[routerStack.length - 1]?._container
-              )
+                if (!getIsQuietPage(target?.appContext)) {
+                  /// 上一个页面处理
+                  lastAppDeactived()
+                }
+                /// 动画执行完 事件
+                triggleTransitionEnterFinish(target?.appContext)
+                /// 触发页面 变动
+                trigglePageChange(lastAppContext, target?.appContext)
+              }}
+              onLeave={async (el, done) => {
+                disableBodyPointerEvents()
+                const to = getChildren(getLastApp()._container)
+                /// 触发 即将前往的 页面，即将活跃
+                triggleOnWillAppear(getLastApp()._context)
+                /// 执行 退出动画
+                await execLeaveAnimator(target?.appContext, el, to)
+                /// 没有动画
 
-              /// 执行 退出动画
-              await execLeaveAnimator(target?.appContext, el, to)
+                done()
 
-              done()
-              await nextTick()
-              closeDone?.()
-              enableBodyPointerEvents()
-            }}
-          >
-            {isShow.value ? compoent : null}
-          </Transition>
-        )
+                /// 如果 不能 close Done 手动 enable body 可操作
+                if (closeDone) closeDone()
+                else enableBodyPointerEvents()
+              }}
+            >
+              {isShow.value ? nComponent : null}
+            </Transition>
+          )
+        }
       },
     })
     app.mount(container)

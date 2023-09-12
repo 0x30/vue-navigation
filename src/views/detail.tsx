@@ -1,5 +1,5 @@
-import anime from "animejs";
-import { defineComponent, ref } from "vue";
+import anime from 'animejs'
+import { defineComponent, ref } from 'vue'
 import {
   back,
   useLeaveBefore,
@@ -7,66 +7,66 @@ import {
   onEnterFinish,
   useTransitionLeave,
   onLeaveFinish,
-} from "../core";
-import { replaceDetail, toDetail, useConfirm } from "../routers";
-import { usePageMate } from "../core/hooks";
+} from '../core'
+import { replaceDetail, toDetail, useConfirm } from '../routers'
+import { usePageMate } from '../core/hooks'
 
 const Page = defineComponent({
-  name: "PageDetail",
+  name: 'PageDetail',
   props: {
     id: Number,
   },
   setup: (props) => {
     usePageMate({
-      id: "detail",
-      name: "详情页面",
-    });
+      id: 'detail',
+      name: '详情页面',
+    })
 
     const cancel = () => {
-      back();
-    };
+      back()
+    }
 
     onEnterFinish(() => {
-      console.log("页面执行完毕");
-    });
+      console.log('页面执行完毕')
+    })
 
     onLeaveFinish(() => {
-      console.log("页面离开完毕");
-    });
+      console.log('页面离开完毕')
+    })
 
     useLeaveBefore(() => {
-      return useConfirm();
-    });
+      return () => useConfirm()
+    })
 
     useTransitionEnter((el, done) => {
       anime({
         targets: el.from,
-        translateX: ["0", "-50%"],
+        translateX: ['0', '-50%'],
         duration: 1000,
-      });
+      })
       anime({
         targets: el.to,
-        translateX: ["100%", "0"],
+        translateX: ['100%', '0'],
         duration: 1000,
         complete: done,
-      });
-    });
+      })
+    })
 
     useTransitionLeave((el, done) => {
       anime({
         targets: el.to,
-        translateX: ["-50%", "0%"],
+        translateX: ['-50%', '0%'],
         duration: 1000,
-      });
+      })
       anime({
         targets: el.from,
-        translateX: ["0", "100%"],
+        translateX: ['0', '100%'],
         duration: 1000,
         complete: done,
-      });
-    });
+      })
+    })
 
-    const count = ref(0);
+    const count = ref(0)
 
     return () => (
       <div class="page">
@@ -84,8 +84,8 @@ const Page = defineComponent({
           </div>
         ))}
       </div>
-    );
+    )
   },
-});
+})
 
-export default Page;
+export default Page

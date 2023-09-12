@@ -1,10 +1,10 @@
 /* eslint-disable  */
 import {
   type App,
-  type Component,
   getCurrentInstance,
   onMounted,
   defineComponent,
+  type VNode,
 } from 'vue'
 import {
   disableBodyPointerEvents,
@@ -12,8 +12,9 @@ import {
   randomId,
 } from './util'
 import { mounted } from './manage'
-import { setBackHook } from './state'
-import { listenPopState } from './back'
+import { routerStack, setBackHook } from './state'
+import { listenPopState, startBlackBack } from './back'
+import { startScreenEdgePanGestureRecognizer } from './event'
 
 /**
  * 前进方法
@@ -38,7 +39,7 @@ import { listenPopState } from './back'
  * @param component 组件
  * @param params 页面的参数, 在页面发上变化的时候 这些参数会被携带
  */
-const push = async (component: Component) => {
+const push = async (component: VNode) => {
   disableBodyPointerEvents()
   await mounted(component, false)
   enableBodyPointerEvents()
@@ -66,7 +67,7 @@ const push = async (component: Component) => {
  *
  * @param component 组件
  */
-const replace = async (component: Component) => {
+const replace = async (component: VNode) => {
   disableBodyPointerEvents()
   await mounted(component, true)
   enableBodyPointerEvents()
@@ -99,11 +100,30 @@ const back = () => goBack(1)
  */
 const to = (isReplace: boolean) => (isReplace ? replace : push)
 
+/**
+ * 黑箱返回
+ * 比如 a -> b -> c -> d
+ * 调用 该 函数 2
+ * 那么 页面 堆栈 会修改为  a -> d
+ */
+const blackBoxBack = async (delta: number) => {
+  startBlackBack()
+  await goBack(delta)
+}
+
+/**
+ * 返回到 最首页
+ */
+const backToHome = async () => {
+  await goBack(routerStack.length - 1)
+}
+
 const Navigator = defineComponent({
   name: 'NavigatorController',
   setup: (_, { slots }) => {
     const { add } = listenPopState(getCurrentInstance()!.appContext.app, true)
     onMounted(add)
+    onMounted(startScreenEdgePanGestureRecognizer)
     return () => slots.default?.()
   },
 })
@@ -127,11 +147,23 @@ const navigation = () => {
     install(app: App) {
       const { add } = listenPopState(app, true)
       add()
+
+      startScreenEdgePanGestureRecognizer()
     },
   }
 }
 
-export { to, push, replace, back, goBack, Navigator, navigation }
+export {
+  to,
+  push,
+  replace,
+  back,
+  goBack,
+  backToHome,
+  blackBoxBack,
+  Navigator,
+  navigation,
+}
 export {
   useQuietPage,
   useLeaveBefore,
@@ -142,4 +174,6 @@ export {
   onReAppear,
   useActivated as onAppear,
   useDeactivated as onDisAppear,
+  onWillAppear,
+  onWillDisAppear,
 } from './hooks'

@@ -59,12 +59,17 @@ const backCheck = (deltaCount: number, backHid?: string) => {
     }
 
     const result = hook()
-    if (result instanceof Promise) {
-      if ((await result) === true && isSampleBatchId()) reBack()
+    if (typeof result === 'function') {
+      if ((await result()) === true && isSampleBatchId()) reBack()
     } else {
       if (result && isSampleBatchId()) reBack()
     }
   })
+}
+
+let currentBackIsBlackBack = false
+const startBlackBack = () => {
+  currentBackIsBlackBack = true
 }
 
 const listenPopState = (app: App, isReplace = false) => {
@@ -81,7 +86,6 @@ const listenPopState = (app: App, isReplace = false) => {
     // 如果 session 和 当前 state session 不一样了,则说明 是在页面 刷新了
     if (event.state.session !== currentState.session) return
     const diffValue = event.state.index - currentState.index
-
     /// 如果相等 无需处理
     if (diffValue === 0) return
     /// 如果发现页面前进 重新返回
@@ -89,15 +93,34 @@ const listenPopState = (app: App, isReplace = false) => {
 
     /// 获取最后一个 backHookId
     const localLastBackHookId = getLastBackHookId()
-    /// 检查 是否可以返回
-    await backCheck(-diffValue, localLastBackHookId)
+
+    if (currentBackIsBlackBack) {
+      currentBackIsBlackBack = false
+      /// [1,2,3,4] -> 2 -> [1,4]
+      const deleteCount = Math.abs(diffValue)
+      const startIdx = routerStack.length - deleteCount - 1
+      const apps = routerStack.splice(startIdx, deleteCount)
+
+      apps.forEach((app, index, array) => {
+        unmounted(
+          false,
+          index === array.length - 1,
+          false,
+          app,
+          localLastBackHookId
+        )
+      })
+    } else {
+      /// 检查 是否可以返回
+      await backCheck(-diffValue, localLastBackHookId)
+      const apps = routerStack.splice(routerStack.length - Math.abs(diffValue))
+      apps.forEach((app, index, array) => {
+        const isLast = index === array.length - 1
+        unmounted(isLast, isLast, true, app, localLastBackHookId)
+      })
+    }
 
     /// 销毁 组件
-    const apps = routerStack.splice(routerStack.length - Math.abs(diffValue))
-
-    apps.forEach((app, index, array) => {
-      unmounted(index === array.length - 1, app, localLastBackHookId)
-    })
 
     if (routerStack.length === 0) setCurrentState()
     else setCurrentState(window.history.state)
@@ -109,4 +132,4 @@ const listenPopState = (app: App, isReplace = false) => {
   }
 }
 
-export { listenPopState }
+export { listenPopState, startBlackBack }
