@@ -21,13 +21,13 @@ import {
   getClose,
   getIsQuietPage,
   setClose,
-  triggleOnActivated,
-  triggleOnDeactivated,
-  triggleOnLeaveFinish,
-  triggleOnWillAppear,
-  triggleOnWillDisAppear,
   trigglePageChange,
-  triggleTransitionEnterFinish,
+  triggerWillDisAppear,
+  triggerWillAppear,
+  triggerDidAppear,
+  triggerDisappear,
+  triggerTransitionEnterFinish,
+  triggerTransitionLeaveFinish,
 } from './hooks'
 import { disableBodyPointerEvents, enableBodyPointerEvents } from './util'
 
@@ -53,20 +53,23 @@ const unmounted = (
     if (app._container instanceof Element) {
       app._container.parentElement?.removeChild(app._container)
     }
-    triggleOnLeaveFinish(isBack, app._context)
+
+    triggerTransitionLeaveFinish(isBack, app?._context)
 
     if (!needApplyBackHook) return
     enableBodyPointerEvents()
     applyBackHook(backHookId)
   }
 
-  const isQuietPage = getIsQuietPage(app._context)
   if (!needAnimated) return _unmounted()
 
   getClose(app._context)?.(() => {
     _unmounted()
-    if (!isQuietPage) triggleOnActivated(getLastApp()._context)
-    trigglePageChange(app._context, getLastApp()._context)
+    if (!getIsQuietPage(app._context)) {
+      triggerDidAppear(getLastApp()?._context)
+      triggerDisappear(app._context)
+      trigglePageChange(app._context, getLastApp()._context)
+    }
   })
 }
 
@@ -97,7 +100,6 @@ const mounted = (compoent: VNode, replace: boolean) => {
 
     /// 出发页面的 deactived
     const lastAppContext = getLastApp()?._context
-    const lastAppDeactived = () => triggleOnDeactivated(lastAppContext)
 
     /// clone component
     const nComponent = cloneVNode(compoent)
@@ -124,30 +126,43 @@ const mounted = (compoent: VNode, replace: boolean) => {
             <Transition
               appear
               onEnter={async (el, done) => {
+                const isNeedTriggle = !getIsQuietPage(target?.appContext)
+
                 /// 执行 进入动画
                 const from = getChildren(lastAppContext.app._container)
-                /// 触发之前的页面即将进入 非活跃
-                triggleOnWillDisAppear(lastAppContext)
+
+                if (isNeedTriggle) {
+                  triggerWillDisAppear(lastAppContext)
+                  triggerWillAppear(target?.appContext)
+                }
+
                 await execEnterAnimator(target?.appContext, from, el)
 
                 done()
                 replaceDone()
                 resolve()
 
-                if (!getIsQuietPage(target?.appContext)) {
-                  /// 上一个页面处理
-                  lastAppDeactived()
+                if (isNeedTriggle) {
+                  triggerDidAppear(target?.appContext)
+                  triggerDisappear(lastAppContext)
+
+                  /// 触发页面 变动
+                  trigglePageChange(lastAppContext, target?.appContext)
                 }
                 /// 动画执行完 事件
-                triggleTransitionEnterFinish(target?.appContext)
-                /// 触发页面 变动
-                trigglePageChange(lastAppContext, target?.appContext)
+                triggerTransitionEnterFinish(target?.appContext)
               }}
               onLeave={async (el, done) => {
                 disableBodyPointerEvents()
                 const to = getChildren(getLastApp()._container)
-                /// 触发 即将前往的 页面，即将活跃
-                triggleOnWillAppear(getLastApp()._context)
+
+                const isNeedTriggle = !getIsQuietPage(target?.appContext)
+
+                if (isNeedTriggle) {
+                  triggerWillDisAppear(target?.appContext)
+                  triggerWillAppear(getLastApp()?._context)
+                }
+
                 /// 执行 退出动画
                 await execLeaveAnimator(target?.appContext, el, to)
                 /// 没有动画

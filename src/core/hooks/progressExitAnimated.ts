@@ -1,6 +1,17 @@
-import { execProgressExitAnimated, getLeaveBefore } from './hooks'
-import { routerStack } from './state'
-import { disableBodyPointerEvents, enableBodyPointerEvents } from './util'
+/**
+ * 手势右滑执行
+ * 需要客户端 介入
+ */
+
+import { getCurrentInstance } from 'vue'
+import {
+  ExtensionHooks,
+  getValueFromAppContext,
+  setValueToAppContext,
+} from './core'
+import { disableBodyPointerEvents, enableBodyPointerEvents } from '../util'
+import { routerStack } from '../state'
+import { getLeaveBefore } from './leaveBefore'
 
 declare global {
   interface Window {
@@ -99,4 +110,52 @@ function startScreenEdgePanGestureRecognizer() {
   })
 }
 
+type ProgressExitAnimatedHandle = (
+  elements: {
+    from?: Element
+    to?: Element
+  },
+  progress: number,
+  isFinish?: boolean
+) => void
+
+/**
+ * 当接收到 滑动手势渐进式返回 执行动画时
+ * @param hook 执行动画的错做
+ */
+const useProgressExitAnimated = (hook: ProgressExitAnimatedHandle) => {
+  setValueToAppContext(
+    getCurrentInstance()?.appContext,
+    ExtensionHooks.ProgressExitAnimated,
+    hook
+  )
+}
+
+/**
+ * 管理方法: 执行 渐进式动画
+ * @param elements
+ * @param progress
+ * @param isFinish
+ */
+const execProgressExitAnimated = (
+  elements: {
+    from?: Element
+    to?: Element
+  },
+  progress: number,
+  isFinish?: boolean
+) => {
+  const hook = getValueFromAppContext<ProgressExitAnimatedHandle>(
+    routerStack[routerStack.length - 1]?._context,
+    ExtensionHooks.ProgressExitAnimated
+  )
+
+  hook?.apply(null, [elements, progress, isFinish])
+}
+
+export {
+  type ProgressExitAnimatedHandle,
+  useProgressExitAnimated,
+  execProgressExitAnimated,
+}
 export { startScreenEdgePanGestureRecognizer }

@@ -14,7 +14,7 @@ import {
 import { mounted } from './manage'
 import { routerStack, setBackHook } from './state'
 import { listenPopState, startBlackBack } from './back'
-import { startScreenEdgePanGestureRecognizer } from './event'
+import { startScreenEdgePanGestureRecognizer } from './hooks/progressExitAnimated'
 
 /**
  * 前进方法
@@ -102,8 +102,13 @@ const to = (isReplace: boolean) => (isReplace ? replace : push)
 
 /**
  * 黑箱返回
- * 比如 a -> b -> c -> d
- * 调用 该 函数 2
+ *
+ * 场景如下:
+ * 比如 当前的页面堆栈为: `a -> b -> c -> d`
+ * ```js
+ * /// 此时调用该方法
+ * blackBoxBack(2)
+ * ```
  * 那么 页面 堆栈 会修改为  a -> d
  */
 const blackBoxBack = async (delta: number) => {
@@ -171,9 +176,12 @@ export {
   useTransitionLeave,
   useTransitionEnterFinish as onEnterFinish,
   useTransitionLeaveFinish as onLeaveFinish,
-  onReAppear,
-  useActivated as onAppear,
-  useDeactivated as onDisAppear,
+  onDidAppear,
+  onDisappear,
   onWillAppear,
   onWillDisAppear,
+  usePageMate,
+  getCurrentPageMate,
 } from './hooks'
+
+export { useProgressExitAnimated } from './hooks'
