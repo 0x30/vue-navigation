@@ -22,10 +22,8 @@ const backHooks: Record<string, () => void> = {}
 const setBackHook = (id: string, resolve: () => void) => {
   setLastBackHookId(id)
   backHooks[id] = () => {
-    if (lastBackHookId) {
-      delete backHooks[lastBackHookId]
-      lastBackHookId = undefined
-    }
+    delete backHooks[id]
+    lastBackHookId = undefined
     resolve()
   }
 }
