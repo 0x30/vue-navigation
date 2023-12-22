@@ -8,7 +8,9 @@
     "build-core": "pnpm --dir ./packages/core build",
     "build-layout": "pnpm --dir ./packages/layout build",
     "build": "npm run build-core && npm run build-layout",
-    "pub": "npm run build-lib && npm publish --registry https://registry.npmjs.org"
+    "pub-core": "pnpm --dir ./packages/core build",
+    "pub-layout": "pnpm --dir ./packages/layout build",
+    "pub": "npm run pub-core && npm run pub-layout"
   },
   "devDependencies": {
     "@vitejs/plugin-vue-jsx": "^3.1.0",
