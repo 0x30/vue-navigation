@@ -1,4 +1,5 @@
 export { default as NavPage } from './NavPage'
+export { default as Page } from './Page'
 export {
   SafeBottomSpace,
   SafeLeftSpace,
