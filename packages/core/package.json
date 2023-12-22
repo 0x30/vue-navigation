@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "build": "vue-tsc && vite build",
-    "pub": "npm run build && npm publish --registry https://registry.npmjs.org"
+    "pub": "npm run build && npm publish --access public --registry https://registry.npmjs.org"
   },
   "peerDependencies": {
     "vue": "^3"

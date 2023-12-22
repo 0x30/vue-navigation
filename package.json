@@ -8,8 +8,8 @@
     "build-core": "pnpm --dir ./packages/core build",
     "build-layout": "pnpm --dir ./packages/layout build",
     "build": "npm run build-core && npm run build-layout",
-    "pub-core": "pnpm --dir ./packages/core build",
-    "pub-layout": "pnpm --dir ./packages/layout build",
+    "pub-core": "pnpm --dir ./packages/core pub",
+    "pub-layout": "pnpm --dir ./packages/layout pub",
     "pub": "npm run pub-core && npm run pub-layout"
   },
   "devDependencies": {
