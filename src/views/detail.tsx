@@ -7,9 +7,9 @@ import {
   onEnterFinish,
   useTransitionLeave,
   onLeaveFinish,
-} from '../core'
+  usePageMate,
+} from '@0x30/vue-navigation'
 import { replaceDetail, toDetail, useConfirm } from '../routers'
-import { usePageMate } from '../core/hooks'
 
 const Page = defineComponent({
   name: 'PageDetail',

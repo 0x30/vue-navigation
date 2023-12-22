@@ -5,6 +5,7 @@ import {
   onMounted,
   defineComponent,
   type VNode,
+  Plugin,
 } from 'vue'
 import {
   disableBodyPointerEvents,
@@ -142,20 +143,17 @@ const Navigator = defineComponent({
     // ...
   })
   
-  app.use(navigation())
+  app.use(navigation)
   ````
   
   在 app,创建后 use 开始启用 该插件
    */
-const navigation = () => {
-  return {
-    install(app: App) {
-      const { add } = listenPopState(app, true)
-      add()
-
-      startScreenEdgePanGestureRecognizer()
-    },
-  }
+const navigation: Plugin = {
+  install(app: App) {
+    const { add } = listenPopState(app, true)
+    add()
+    startScreenEdgePanGestureRecognizer()
+  },
 }
 
 export {
@@ -182,6 +180,7 @@ export {
   onWillDisAppear,
   usePageMate,
   getCurrentPageMate,
+  onPageChange,
 } from './hooks'
 
 export { useProgressExitAnimated } from './hooks'

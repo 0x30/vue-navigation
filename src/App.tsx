@@ -1,6 +1,6 @@
 import { defineComponent, ref } from "vue";
 import { toDetail } from "./routers";
-import { usePageMate } from "./core/hooks";
+import { usePageMate } from "@0x30/vue-navigation";
 
 const Page = defineComponent({
   name: "PageDetail",
