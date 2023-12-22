@@ -161,6 +161,10 @@ const Component = defineComponent({
      */
     overrideClassName: String,
     /**
+     * 覆盖的 back class name
+     */
+    overrideBackName: String,
+    /**
      * 重写 出现动画方法
      */
     overrideEnterAnime: Function as PropType<AnimeType>,
@@ -200,7 +204,10 @@ const Component = defineComponent({
 
     return () => (
       <div class={props.overrideClassName ?? styles[`${props.position}Body`]}>
-        <div class={styles.back} onClick={props.onClickBack} />
+        <div
+          class={props.overrideBackName ?? styles.back}
+          onClick={props.onClickBack}
+        />
         {cloneSlot(slots.default, { class: styles.main })}
       </div>
     )

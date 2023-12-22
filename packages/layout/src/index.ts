@@ -6,3 +6,5 @@ export {
   SafeTopSpace,
 } from './Safearea'
 export { default as SidePage } from './SidePage'
+export * from './Loading'
+export * from './Popup'
