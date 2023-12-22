@@ -1,6 +1,6 @@
 {
   "name": "@0x30/vue-navigation-layout",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "build": "vue-tsc && vite build",
     "pub": "npm run build && npm publish --access public --registry https://registry.npmjs.org"
@@ -24,9 +24,19 @@
     "vue-tsc": "^1.8.26"
   },
   "type": "module",
-  "main": "dist/vue-navigation-layout.umd.cjs",
-  "module": "dist/vue-navigation-layout.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/vue-navigation-layout.umd.cjs",
+  "module": "./dist/vue-navigation-layout.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/vue-navigation-layout.js",
+      "require": "./dist/vue-navigation-layout.umd.cjs"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/0x30/vue-navigation.git"
@@ -36,9 +46,5 @@
     "url": "https://github.com/0x30/vue-navigation/issues"
   },
   "homepage": "https://github.com/0x30/vue-navigation#readme",
-  "description": "",
-  "files": [
-    "dist/*.js",
-    "dist/index.d.ts"
-  ]
+  "description": ""
 }
