@@ -6,7 +6,7 @@ import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 // https://vitejs.dev/config/
 export default defineConfig({
   publicDir: false,
-  plugins: [jsx(), dts(), cssInjectedByJsPlugin()],
+  plugins: [jsx(), dts({ rollupTypes: true }), cssInjectedByJsPlugin()],
   build: {
     lib: {
       entry: 'src/index.ts',
@@ -23,6 +23,11 @@ export default defineConfig({
           '@0x30/vue-navigation': 'vueNavigation',
         },
       },
+    },
+  },
+  css: {
+    modules: {
+      localsConvention: 'camelCaseOnly',
     },
   },
 })

@@ -7,7 +7,7 @@ const Component = defineComponent({
   name: 'AlertPage',
   setup: (props, { slots }) => {
     return () => (
-      <SidePage>
+      <SidePage position='center'>
         <div class={styles.body}>detail</div>
       </SidePage>
     )

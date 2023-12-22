@@ -1,4 +1,3 @@
-export { default as ModalPage } from './ModalPage'
 export { default as NavPage } from './NavPage'
 export {
   SafeBottomSpace,

@@ -12,7 +12,7 @@ const PageBodyClassName = 'vue-navigation-layout-body'
 
 const NavPage = defineComponent({
   name: 'NavPage',
-  setup: (props, { slots }) => {
+  setup: (_, { slots }) => {
     const animeProps = { duration: 500, easing: 'easeOutExpo' }
 
     useTransitionEnter(({ to, from }, complete) => {
