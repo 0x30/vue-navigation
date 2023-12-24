@@ -27,22 +27,30 @@ const cloneSlot = (
 type AnimeType = Parameters<typeof useTransitionEnter>[0]
 
 type CustomAnimeType = (
-  ...params: [
-    ...Parameters<AnimeType>,
+  /**
+   * 组件
+   */
+  elements: {
+    from?: Element
+    to?: Element
+  },
+  /**
+   * 动画执行完毕
+   */
+  done: () => void,
+  /**
+   * 目标组件
+   */
+  target: {
     /**
-     * 目标组件
+     * 背景 element
      */
-    target: {
-      /**
-       * 背景 element
-       */
-      backElement?: ReturnType<typeof document.querySelector>
-      /**
-       * 主视图 element
-       */
-      mainElement?: ReturnType<typeof document.querySelector>
-    }
-  ]
+    backElement?: ReturnType<typeof document.querySelector>
+    /**
+     * 主视图 element
+     */
+    mainElement?: ReturnType<typeof document.querySelector>
+  }
 ) => void
 
 /**
