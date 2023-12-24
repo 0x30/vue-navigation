@@ -26,6 +26,25 @@ const cloneSlot = (
 
 type AnimeType = Parameters<typeof useTransitionEnter>[0]
 
+type CustomAnimeType = (
+  ...params: [
+    ...Parameters<AnimeType>,
+    /**
+     * 目标组件
+     */
+    target: {
+      /**
+       * 背景 element
+       */
+      backElement?: ReturnType<typeof document.querySelector>
+      /**
+       * 主视图 element
+       */
+      mainElement?: ReturnType<typeof document.querySelector>
+    }
+  ]
+) => void
+
 /**
  * 底部出现的动画
  */
@@ -135,6 +154,28 @@ const SideCenterLeaveAnime: AnimeType = ({ from }, complete) => {
   an.add({ targets: [back, main], opacity: 0 })
 }
 
+/**
+ * 自定义 动画出现方法 额外放一个 back 和 main 的element
+ */
+const SideCustomEnterAnimer = (custom?: CustomAnimeType): AnimeType => {
+  return (...params) => {
+    const back = params[0].to?.querySelector(backClassName)
+    const main = params[0].to?.querySelector(mainClassName)
+    custom?.(...params, { backElement: back, mainElement: main })
+  }
+}
+
+/**
+ * 自定义 动画出现方法 额外放一个 back 和 main 的element
+ */
+const SideCustomLeaveAnimer = (custom: CustomAnimeType): AnimeType => {
+  return (...params) => {
+    const back = params[0].from?.querySelector(backClassName)
+    const main = params[0].from?.querySelector(mainClassName)
+    custom(...params, { backElement: back, mainElement: main })
+  }
+}
+
 const Component = defineComponent({
   name: 'SidePage',
   props: {
@@ -159,19 +200,19 @@ const Component = defineComponent({
     }
       ```
      */
-    overrideClassName: String,
+    overrideBodyClassName: String,
     /**
      * 覆盖的 back class name
      */
-    overrideBackName: String,
+    overrideBackClassName: String,
     /**
      * 重写 出现动画方法
      */
-    overrideEnterAnime: Function as PropType<AnimeType>,
+    overrideEnterAnime: Function as PropType<CustomAnimeType>,
     /**
      * 重写 推出动画方法
      */
-    overrideLeaveAnime: Function as PropType<AnimeType>,
+    overrideLeaveAnime: Function as PropType<CustomAnimeType>,
     /**
      * 目前只有 底部
      */
@@ -182,7 +223,8 @@ const Component = defineComponent({
   },
   setup: (props, { slots }) => {
     const getEnterAnime = () => {
-      if (props.overrideEnterAnime) return props.overrideEnterAnime
+      if (props.overrideEnterAnime)
+        return SideCustomEnterAnimer(props.overrideEnterAnime)
       if (props.position === 'bottom') return SideBottomEnterAnime
       if (props.position === 'center') return SideCenterEnterAnime
       if (props.position === 'left') return SideLeftEnterAnime
@@ -191,7 +233,8 @@ const Component = defineComponent({
     }
 
     const getLeaveAnime = () => {
-      if (props.overrideEnterAnime) return props.overrideEnterAnime
+      if (props.overrideLeaveAnime)
+        return SideCustomLeaveAnimer(props.overrideLeaveAnime)
       if (props.position === 'bottom') return SideBottomLeaveAnime
       if (props.position === 'center') return SideCenterLeaveAnime
       if (props.position === 'left') return SideLeftLeaveAnime
@@ -203,9 +246,11 @@ const Component = defineComponent({
     useTransitionLeave(getLeaveAnime())
 
     return () => (
-      <div class={props.overrideClassName ?? styles[`${props.position}Body`]}>
+      <div
+        class={props.overrideBodyClassName ?? styles[`${props.position}Body`]}
+      >
         <div
-          class={props.overrideBackName ?? styles.back}
+          class={props.overrideBackClassName ?? styles.back}
           onClick={props.onClickBack}
         />
         {cloneSlot(slots.default, { class: styles.main })}
@@ -214,5 +259,4 @@ const Component = defineComponent({
   },
 })
 
-export { backClassName, mainClassName }
 export default Component
