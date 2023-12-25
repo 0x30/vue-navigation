@@ -12,7 +12,7 @@ import {
   enableBodyPointerEvents,
   randomId,
 } from './util'
-import { mounted } from './manage'
+import { type LifeCycleHooks, mounted } from './manage'
 import { routerStack, setBackHook } from './state'
 import { listenPopState, startBlackBack } from './back'
 import { startScreenEdgePanGestureRecognizer } from './hooks/progressExitAnimated'
@@ -40,10 +40,11 @@ import { startScreenEdgePanGestureRecognizer } from './hooks/progressExitAnimate
  * @param component 组件
  * @param params 页面的参数, 在页面发上变化的时候 这些参数会被携带
  */
-const push = async (component: VNode) => {
+const push = async (component: VNode, hooks?: LifeCycleHooks) => {
   disableBodyPointerEvents()
-  await mounted(component, false)
+  const app = await mounted(component, false, hooks)
   enableBodyPointerEvents()
+  return app
 }
 
 /**
@@ -68,10 +69,11 @@ const push = async (component: VNode) => {
  *
  * @param component 组件
  */
-const replace = async (component: VNode) => {
+const replace = async (component: VNode, hooks?: LifeCycleHooks) => {
   disableBodyPointerEvents()
-  await mounted(component, true)
+  const app = await mounted(component, true, hooks)
   enableBodyPointerEvents()
+  return app
 }
 
 /**

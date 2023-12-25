@@ -7,6 +7,7 @@ import {
   ref,
   cloneVNode,
   type VNode,
+  type BaseTransitionProps,
 } from 'vue'
 import {
   applyBackHook,
@@ -30,6 +31,19 @@ import {
   triggerTransitionLeaveFinish,
 } from './hooks'
 import { disableBodyPointerEvents, enableBodyPointerEvents } from './util'
+
+export type LifeCycleHooks = Pick<
+  BaseTransitionProps,
+  | 'onBeforeEnter'
+  | 'onAfterEnter'
+  | 'onEnterCancelled'
+  | 'onBeforeLeave'
+  | 'onAfterLeave'
+  | 'onLeaveCancelled'
+  | 'onBeforeAppear'
+  | 'onAfterAppear'
+  | 'onAppearCancelled'
+>
 
 /**
  * 销毁 app
@@ -81,8 +95,8 @@ const getChildren = (ele?: HTMLElement) => {
   return ele
 }
 
-const mounted = (compoent: VNode, replace: boolean) => {
-  return new Promise<void>((resolve) => {
+const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
+  return new Promise<App<Element>>((resolve) => {
     // 创建 container
     const container = document.createElement('div')
     document.body.appendChild(container)
@@ -140,7 +154,7 @@ const mounted = (compoent: VNode, replace: boolean) => {
 
                 done()
                 replaceDone()
-                resolve()
+                resolve(app)
 
                 if (isNeedTriggle) {
                   triggerDidAppear(target?.appContext)
@@ -173,6 +187,7 @@ const mounted = (compoent: VNode, replace: boolean) => {
                 if (closeDone) closeDone()
                 else enableBodyPointerEvents()
               }}
+              {...hooks}
             >
               {isShow.value ? nComponent : null}
             </Transition>
