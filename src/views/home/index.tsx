@@ -1,76 +1,83 @@
+import { defineComponent } from 'vue'
 import {
-  type PropType,
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  getCurrentInstance,
-} from 'vue'
-import { NavPage, showLoading } from '@0x30/vue-navigation-layout'
-import {
-  onDidAppear,
-  onDidDisappear,
-  onWillAppear,
-  onWillDisappear,
-  push,
-} from '@0x30/vue-navigation'
+  NavPage,
+  Popup,
+  SidePage,
+  showLoading,
+} from '@0x30/vue-navigation-layout'
+import { back, push } from '@0x30/vue-navigation'
 
 import DetailPage from '../detail'
 
-const wait = () =>
-  new Promise<void>((res) => {
-    window.setTimeout(res, 1000)
-  })
+import styles from './index.module.scss'
+import { useHooks, wait } from '../../util'
 
 const Component = defineComponent({
   name: 'HomePage',
-  setup: (props, { slots }) => {
-    onWillAppear(() => {
-      console.log('home', '即将展示')
-    })
+  setup: () => {
+    useHooks('首页')
 
-    onWillDisappear(() => {
-      console.log('home', '即将消失')
-    })
-
-    onDidAppear(() => {
-      console.log('home', '展示')
-    })
-
-    onDidDisappear(() => {
-      console.log('home', '消失')
-    })
+    const showSidePage = (
+      postion: 'left' | 'right' | 'bottom' | 'top' | 'center',
+    ) => {
+      return () =>
+        push(
+          <SidePage position={postion} onClickBack={back}>
+            <div class={styles.content}>xxxx</div>
+          </SidePage>,
+        )
+    }
 
     return () => (
-      <NavPage>
-        home
-        <button
-          onClick={async () => {
-            const app = await push(<DetailPage />, {
-              onAfterLeave(el) {
-                console.log('组件外 动画 组件销毁')
-              },
-            })
-          }}
-        >
-          push
-        </button>
-        <button
-          onClick={async () => {
-            showLoading(0)
-            await wait()
-            showLoading(3)
-            console.log('隐藏')
+      <NavPage class={styles.body}>
+        <br />
+        <span>Control</span>
+        <div>
+          <button onClick={() => push(<DetailPage />)}>push</button>
+        </div>
+        <br />
+        <span>loading&popup</span>
+        <div>
+          <button
+            onClick={async () => {
+              showLoading(0)
+              await wait()
+              showLoading(3)
+              console.log('隐藏')
 
-            await showLoading(0, 'xxxx')
+              await showLoading(0, 'xxxx')
 
-            console.log('展示')
-            await wait()
+              console.log('展示')
+              await wait()
 
-            showLoading(1, '你好')
-          }}
-        >
-          loading
-        </button>
+              showLoading(1, '你好')
+            }}
+          >
+            loading
+          </button>
+          <button
+            onClick={async () => {
+              const [show, close] = Popup()
+              show(
+                <div class={styles.content}>
+                  <span>xxxxxx</span>
+                  <button onClick={close}>close</button>
+                </div>,
+              )
+            }}
+          >
+            popup
+          </button>
+        </div>
+        <br />
+        <span>SidePage</span>
+        <div>
+          <button onClick={showSidePage('top')}>上</button>
+          <button onClick={showSidePage('bottom')}>下</button>
+          <button onClick={showSidePage('left')}>左</button>
+          <button onClick={showSidePage('right')}>右</button>
+          <button onClick={showSidePage('center')}>中</button>
+        </div>
       </NavPage>
     )
   },
