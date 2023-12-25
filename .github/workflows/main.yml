@@ -23,8 +23,9 @@ jobs:
         with:
           version: 8
 
-      - run: pnpm install
       - run: pnpm build
+      - run: pnpm install
+      - run: pnpm build-example
 
       - name: GitHub Pages
         uses: crazy-max/ghaction-github-pages@v2.2.0
