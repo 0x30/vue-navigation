@@ -23,8 +23,8 @@ jobs:
         with:
           version: 8
 
-      - run: pnpm build
       - run: pnpm install
+      - run: pnpm build
       - run: pnpm build-example
 
       - name: GitHub Pages
