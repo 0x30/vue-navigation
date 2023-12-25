@@ -9,7 +9,7 @@ import {
  * 在页面即将返回的时候，会调用hook方法，返回是否可以返回
  * 该方法，如果在某个页面多次注册，会覆盖请注意
  */
-const useLeaveBefore = (hook: () => boolean | (() => Promise<boolean>)) => {
+const useLeaveBefore = (hook: (() => boolean) | (() => Promise<boolean>)) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onLeaveBefore,
@@ -18,7 +18,7 @@ const useLeaveBefore = (hook: () => boolean | (() => Promise<boolean>)) => {
 }
 
 const getLeaveBefore = (context: AppContext | undefined) =>
-  getValueFromAppContext<() => boolean | (() => Promise<boolean>)>(
+  getValueFromAppContext<(() => boolean) | (() => Promise<boolean>)>(
     context,
     ExtensionHooks.onLeaveBefore,
   )

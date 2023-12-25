@@ -54,15 +54,15 @@ const backCheck = (deltaCount: number, backHid?: string) => {
     const reBack = () => {
       /// 再次返回的时候 设置 重新设置 back id
       setLastBackHookId(backHid)
-      setLeaveBefore(instance)
+      setLeaveBefore(instance, undefined)
       window.history.go(-deltaCount)
     }
 
     const result = hook()
-    if (typeof result === 'function') {
-      if ((await result()) === true && isSampleBatchId()) reBack()
-    } else {
+    if (typeof result === 'boolean') {
       if (result && isSampleBatchId()) reBack()
+    } else {
+      if ((await result) === true && isSampleBatchId()) reBack()
     }
   })
 }
