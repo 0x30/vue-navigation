@@ -5,11 +5,9 @@
 import { getCurrentInstance, type AppContext } from 'vue'
 import {
   ExtensionHooks,
-  addValueToAppContext,
   getValueFromAppContext,
   setValueToAppContext,
 } from './core'
-import { applyFuns } from '../util'
 
 type TransitionAmimatorHook = (
   elements: {
@@ -47,26 +45,6 @@ const useTransitionEnter = (hook: TransitionAmimatorHook) => {
 }
 
 /**
- * 页面动画执行完毕
- * 该方法 是 hook 方法,用户 组件内部 监听 当前页面是否动画执行完毕 进入页面
- */
-const useTransitionEnterFinish = (hook: () => void) => {
-  addValueToAppContext(
-    getCurrentInstance()?.appContext,
-    ExtensionHooks.onEnterFinish,
-    hook
-  )
-}
-
-const triggerTransitionEnterFinish = (context: AppContext | undefined) => {
-  const hooks = getValueFromAppContext<(() => void)[]>(
-    context,
-    ExtensionHooks.onEnterFinish
-  )
-  applyFuns(hooks)
-}
-
-/**
  * 在页面离开时设置 动画执行方法
  * 请保证该方法只被注册一次,多次注册将覆盖
  */
@@ -76,29 +54,6 @@ const useTransitionLeave = (hook: TransitionAmimatorHook) => {
     ExtensionHooks.onLeave,
     hook
   )
-}
-
-/**
- * 页面动画执行完毕
- * 该方法 是 hook 方法,用户 组件内部 监听 当前页面是否动画执行完毕 进入页面
- */
-const useTransitionLeaveFinish = (hook: (isBack: boolean) => void) => {
-  addValueToAppContext(
-    getCurrentInstance()?.appContext,
-    ExtensionHooks.onLeaveFinish,
-    hook
-  )
-}
-
-const triggerTransitionLeaveFinish = (
-  isBack: boolean,
-  target: AppContext | undefined
-) => {
-  const hooks = getValueFromAppContext<(() => void)[]>(
-    target,
-    ExtensionHooks.onLeaveFinish
-  )
-  applyFuns(hooks, [isBack])
 }
 
 const setClose = (
@@ -152,9 +107,5 @@ export {
   execEnterAnimator,
   execLeaveAnimator,
   useTransitionEnter,
-  useTransitionEnterFinish,
-  triggerTransitionEnterFinish,
   useTransitionLeave,
-  useTransitionLeaveFinish,
-  triggerTransitionLeaveFinish,
 }

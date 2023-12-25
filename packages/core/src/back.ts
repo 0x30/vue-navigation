@@ -102,13 +102,7 @@ const listenPopState = (app: App, isReplace = false) => {
       const apps = routerStack.splice(startIdx, deleteCount)
 
       apps.forEach((app, index, array) => {
-        unmounted(
-          false,
-          index === array.length - 1,
-          false,
-          app,
-          localLastBackHookId
-        )
+        unmounted(false, index === array.length - 1, app, localLastBackHookId)
       })
     } else {
       /// 检查 是否可以返回
@@ -116,7 +110,7 @@ const listenPopState = (app: App, isReplace = false) => {
       const apps = routerStack.splice(routerStack.length - Math.abs(diffValue))
       apps.forEach((app, index, array) => {
         const isLast = index === array.length - 1
-        unmounted(isLast, isLast, true, app, localLastBackHookId)
+        unmounted(isLast, isLast, app, localLastBackHookId)
       })
     }
 

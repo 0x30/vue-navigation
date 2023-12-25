@@ -28,6 +28,11 @@ const getIsQuietPage = (context: AppContext | undefined) => {
   )
 }
 
+/**
+ * 页面即将展示hook
+ * 执行动画前
+ * @param hook
+ */
 const onWillAppear = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
@@ -44,7 +49,12 @@ const triggerWillAppear = (context: AppContext | undefined) => {
   applyFuns(hooks)
 }
 
-const onWillDisAppear = (hook: () => void) => {
+/**
+ * 页面即将消失hook
+ * 执行动画前
+ * @param hook
+ */
+const onWillDisappear = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onWillDeactivated,
@@ -52,7 +62,7 @@ const onWillDisAppear = (hook: () => void) => {
   )
 }
 
-const triggerWillDisAppear = (context: AppContext | undefined) => {
+const triggerWillDisappear = (context: AppContext | undefined) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     context,
     ExtensionHooks.onWillDeactivated
@@ -61,7 +71,8 @@ const triggerWillDisAppear = (context: AppContext | undefined) => {
 }
 
 /**
- * use activeated 活跃的时候 hook
+ * 页面即将展示hook
+ * 执行动画后
  */
 const onDidAppear = (hook: () => void) => {
   addValueToAppContext(
@@ -80,9 +91,10 @@ const triggerDidAppear = (context: AppContext | undefined) => {
 }
 
 /**
- * use activeated 非活跃的时候 hook
+ * 页面即将消失hook
+ * 执行动画后
  */
-const onDisappear = (hook: () => void) => {
+const onDidDisappear = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onDeactivated,
@@ -95,7 +107,7 @@ const onDisappear = (hook: () => void) => {
  * @param context App Context
  * @returns hooks 方法
  */
-const triggerDisappear = (context: AppContext | undefined) => {
+const triggerDidDisappear = (context: AppContext | undefined) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     context,
     ExtensionHooks.onDeactivated
@@ -108,10 +120,10 @@ export {
   getIsQuietPage,
   onWillAppear,
   triggerWillAppear,
-  onWillDisAppear,
-  triggerWillDisAppear,
+  onWillDisappear,
+  triggerWillDisappear,
   onDidAppear,
   triggerDidAppear,
-  onDisappear,
-  triggerDisappear,
+  onDidDisappear,
+  triggerDidDisappear,
 }

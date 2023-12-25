@@ -7,7 +7,7 @@ import {
   ref,
   cloneVNode,
   type VNode,
-  type BaseTransitionProps,
+  RendererElement,
 } from 'vue'
 import {
   applyBackHook,
@@ -20,30 +20,27 @@ import {
   execEnterAnimator,
   execLeaveAnimator,
   getClose,
-  getIsQuietPage,
   setClose,
   trigglePageChange,
-  triggerWillDisAppear,
+  triggerWillDisappear,
   triggerWillAppear,
   triggerDidAppear,
-  triggerDisappear,
-  triggerTransitionEnterFinish,
-  triggerTransitionLeaveFinish,
+  triggerDidDisappear,
+  getIsQuietPage,
 } from './hooks'
 import { disableBodyPointerEvents, enableBodyPointerEvents } from './util'
 
-export type LifeCycleHooks = Pick<
-  BaseTransitionProps,
-  | 'onBeforeEnter'
-  | 'onAfterEnter'
-  | 'onEnterCancelled'
-  | 'onBeforeLeave'
-  | 'onAfterLeave'
-  | 'onLeaveCancelled'
-  | 'onBeforeAppear'
-  | 'onAfterAppear'
-  | 'onAppearCancelled'
->
+export type LifeCycleHooks = {
+  onBeforeEnter?: (el: RendererElement) => void
+  onAfterEnter?: (el: RendererElement) => void
+  onEnterCancelled?: (el: RendererElement) => void
+  onBeforeLeave?: (el: RendererElement) => void
+  onAfterLeave?: (el: RendererElement) => void
+  onLeaveCancelled?: (el: RendererElement) => void
+  onBeforeAppear?: (el: RendererElement) => void
+  onAfterAppear?: (el: RendererElement) => void
+  onAppearCancelled?: (el: RendererElement) => void
+}
 
 /**
  * 销毁 app
@@ -56,7 +53,6 @@ export type LifeCycleHooks = Pick<
 const unmounted = (
   needAnimated: boolean,
   needApplyBackHook: boolean,
-  isBack: boolean,
   app?: App,
   backHookId?: string
 ) => {
@@ -68,23 +64,16 @@ const unmounted = (
       app._container.parentElement?.removeChild(app._container)
     }
 
-    triggerTransitionLeaveFinish(isBack, app?._context)
-
     if (!needApplyBackHook) return
     enableBodyPointerEvents()
     applyBackHook(backHookId)
   }
 
-  if (!needAnimated) return _unmounted()
-
-  getClose(app._context)?.(() => {
+  if (needAnimated) {
+    getClose(app._context)?.(() => _unmounted())
+  } else {
     _unmounted()
-    if (!getIsQuietPage(app._context)) {
-      triggerDidAppear(getLastApp()?._context)
-      triggerDisappear(app._context)
-      trigglePageChange(app._context, getLastApp()._context)
-    }
-  })
+  }
 }
 
 /**
@@ -104,19 +93,16 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
     /// 在页面 replace 动画执行完成后 unmounted 倒数第二个 app
     const replaceDone = () => {
       if (replace === false) return
-      unmounted(
-        false,
-        false,
-        false,
-        routerStack.splice(routerStack.length - 2, 1)[0]
-      )
+      unmounted(false, false, routerStack.splice(routerStack.length - 2, 1)[0])
     }
 
-    /// 出发页面的 deactived
-    const lastAppContext = getLastApp()?._context
-
-    /// clone component
-    const nComponent = cloneVNode(compoent)
+    const {
+      onAfterEnter,
+      onAfterLeave,
+      onBeforeEnter,
+      onBeforeLeave,
+      ...OtherHooks
+    } = hooks ?? {}
 
     // 创建 app
     const app = createApp({
@@ -124,6 +110,9 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
         const isShow = ref(true)
         /// 关闭方法,在动画执行完成后 调用 销毁 app
         let closeDone: (() => void) | undefined = undefined
+
+        /// 出发页面的 deactived
+        const lastAppContext = getLastApp()?._context
 
         /// 暂存 target , 由于 transtion onEnter 和 onLeave 获取不到 instance
         let target = getCurrentInstance()
@@ -140,56 +129,57 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
             <Transition
               appear
               onEnter={async (el, done) => {
-                const isNeedTriggle = !getIsQuietPage(target?.appContext)
-
                 /// 执行 进入动画
                 const from = getChildren(lastAppContext.app._container)
-
-                if (isNeedTriggle) {
-                  triggerWillDisAppear(lastAppContext)
-                  triggerWillAppear(target?.appContext)
-                }
-
                 await execEnterAnimator(target?.appContext, from, el)
-
                 done()
                 replaceDone()
                 resolve(app)
-
-                if (isNeedTriggle) {
-                  triggerDidAppear(target?.appContext)
-                  triggerDisappear(lastAppContext)
-
-                  /// 触发页面 变动
-                  trigglePageChange(lastAppContext, target?.appContext)
-                }
-                /// 动画执行完 事件
-                triggerTransitionEnterFinish(target?.appContext)
               }}
               onLeave={async (el, done) => {
                 disableBodyPointerEvents()
                 const to = getChildren(getLastApp()._container)
-
-                const isNeedTriggle = !getIsQuietPage(target?.appContext)
-
-                if (isNeedTriggle) {
-                  triggerWillDisAppear(target?.appContext)
-                  triggerWillAppear(getLastApp()?._context)
-                }
-
                 /// 执行 退出动画
                 await execLeaveAnimator(target?.appContext, el, to)
-                /// 没有动画
-
                 done()
-
-                /// 如果 不能 close Done 手动 enable body 可操作
                 if (closeDone) closeDone()
                 else enableBodyPointerEvents()
               }}
-              {...hooks}
+              onBeforeEnter={(el) => {
+                onBeforeEnter?.(el)
+
+                if (getIsQuietPage(target?.appContext)) return
+                triggerWillDisappear(lastAppContext)
+                triggerWillAppear(target?.appContext)
+              }}
+              onAfterEnter={(el) => {
+                onAfterEnter?.(el)
+
+                if (getIsQuietPage(target?.appContext)) return
+                triggerDidDisappear(lastAppContext)
+                triggerDidAppear(target?.appContext)
+
+                trigglePageChange(target?.appContext, lastAppContext)
+              }}
+              onBeforeLeave={(el) => {
+                onBeforeLeave?.(el)
+
+                if (getIsQuietPage(target?.appContext)) return
+                triggerWillDisappear(target?.appContext)
+                triggerWillAppear(getLastApp()._context)
+              }}
+              onAfterLeave={(el) => {
+                onAfterLeave?.(el)
+
+                if (getIsQuietPage(target?.appContext)) return
+                triggerDidDisappear(target?.appContext)
+                triggerDidAppear(getLastApp()._context)
+
+                trigglePageChange(target?.appContext, getLastApp()._context)
+              }}
+              {...OtherHooks}
             >
-              {isShow.value ? nComponent : null}
+              {isShow.value ? compoent : null}
             </Transition>
           )
         }
