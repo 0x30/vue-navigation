@@ -6,7 +6,13 @@ import {
   getCurrentInstance,
 } from 'vue'
 import { NavPage, showLoading } from '@0x30/vue-navigation-layout'
-import { push } from '@0x30/vue-navigation'
+import {
+  onDidAppear,
+  onDidDisappear,
+  onWillAppear,
+  onWillDisappear,
+  push,
+} from '@0x30/vue-navigation'
 
 import DetailPage from '../detail'
 
@@ -18,29 +24,32 @@ const wait = () =>
 const Component = defineComponent({
   name: 'HomePage',
   setup: (props, { slots }) => {
+    onWillAppear(() => {
+      console.log('home', '即将展示')
+    })
+
+    onWillDisappear(() => {
+      console.log('home', '即将消失')
+    })
+
+    onDidAppear(() => {
+      console.log('home', '展示')
+    })
+
+    onDidDisappear(() => {
+      console.log('home', '消失')
+    })
+
     return () => (
       <NavPage>
         home
         <button
           onClick={async () => {
-            const app = await push(
-              <DetailPage
-                onVnodeUnmounted={() => {
-                  console.log('组件外 销毁')
-                }}
-              />,
-              {
-                onAfterLeave(el) {
-                  console.log('组件外 动画 组件销毁')
-                },
-              }
-            )
-
-            onUnmounted(() => {
-              console.log('组件外!!!!!销毁')
-            }, app._instance)
-
-            console.log(app._instance)
+            const app = await push(<DetailPage />, {
+              onAfterLeave(el) {
+                console.log('组件外 动画 组件销毁')
+              },
+            })
           }}
         >
           push
