@@ -1,11 +1,17 @@
 {
   "name": "@0x30/vue-navigation-layout",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "scripts": {
     "build": "vue-tsc && vite build",
     "pub": "npm run build && npm publish --access public --registry https://registry.npmjs.org"
   },
-  "keywords": [],
+  "keywords": [
+    "vue3",
+    "@0x30/vue-navigation",
+    "layout",
+    "router",
+    "anime"
+  ],
   "license": "ISC",
   "peerDependencies": {
     "@0x30/vue-navigation": "workspace:*",
