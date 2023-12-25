@@ -13,14 +13,14 @@ const useLeaveBefore = (hook: () => boolean | (() => Promise<boolean>)) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onLeaveBefore,
-    hook
+    hook,
   )
 }
 
 const getLeaveBefore = (context: AppContext | undefined) =>
   getValueFromAppContext<() => boolean | (() => Promise<boolean>)>(
     context,
-    ExtensionHooks.onLeaveBefore
+    ExtensionHooks.onLeaveBefore,
   )
 
 const setLeaveBefore = (context: AppContext | undefined, func?: () => void) =>

@@ -16,7 +16,7 @@ const mainClassName = `.${styles.main}`
 const cloneSlot = (
   slot?: Slot,
   extraProps?: (Record<string, unknown> & VNodeProps) | null,
-  mergeRef?: boolean
+  mergeRef?: boolean,
 ) => {
   const elements = slot?.()
   if (elements === undefined || elements.length > 1) return undefined
@@ -50,7 +50,7 @@ type CustomAnimeType = (
      * 主视图 element
      */
     mainElement?: ReturnType<typeof document.querySelector>
-  }
+  },
 ) => void
 
 /**

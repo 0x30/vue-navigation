@@ -1,4 +1,10 @@
-import { Component, Transition, TransitionProps, createApp, ref } from 'vue'
+import {
+  type Component,
+  Transition,
+  type TransitionProps,
+  createApp,
+  ref,
+} from 'vue'
 
 /**
    * 动态弹出视图方法

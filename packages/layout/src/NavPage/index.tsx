@@ -25,7 +25,7 @@ const NavPage = defineComponent({
             translateX: ['0%', '-50%'],
             complete: (anim) => anim.seek(0),
           },
-          0
+          0,
         )
       }
     })

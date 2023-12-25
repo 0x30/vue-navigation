@@ -1,0 +1,4 @@
+src/test/**
+*.cjs
+.eslintrc.cjs
+vite.config.ts

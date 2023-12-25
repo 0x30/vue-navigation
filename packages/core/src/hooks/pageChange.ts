@@ -41,7 +41,7 @@ const pageChangeSet = new Set<
 /// 当页面 出现变化的时候
 const onPageChange = (
   func: PageChangeHook,
-  config?: Partial<PageChangeConfig>
+  config?: Partial<PageChangeConfig>,
 ) => {
   const val = [func, config] as const
   pageChangeSet.add(val)
@@ -50,7 +50,7 @@ const onPageChange = (
 
 const trigglePageChange = (
   from: AppContext | undefined,
-  to: AppContext | undefined
+  to: AppContext | undefined,
 ) => {
   pageChangeSet.forEach(([hook, config]) => {
     const fM = getPageMate(from)

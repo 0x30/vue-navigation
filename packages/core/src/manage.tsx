@@ -5,9 +5,8 @@ import {
   getCurrentInstance,
   onMounted,
   ref,
-  cloneVNode,
   type VNode,
-  RendererElement,
+  type RendererElement,
 } from 'vue'
 import {
   applyBackHook,
@@ -54,7 +53,7 @@ const unmounted = (
   needAnimated: boolean,
   needApplyBackHook: boolean,
   app?: App,
-  backHookId?: string
+  backHookId?: string,
 ) => {
   if (app === undefined) return
 
@@ -194,7 +193,7 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
           index: routerStack.length,
           session: currentSessionId,
         }),
-        ''
+        '',
       )
     }
 

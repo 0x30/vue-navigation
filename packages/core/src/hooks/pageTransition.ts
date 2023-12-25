@@ -14,7 +14,7 @@ type TransitionAmimatorHook = (
     from?: Element
     to?: Element
   },
-  done: () => void
+  done: () => void,
 ) => void
 
 /**
@@ -40,7 +40,7 @@ const useTransitionEnter = (hook: TransitionAmimatorHook) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onEnter,
-    hook
+    hook,
   )
 }
 
@@ -52,13 +52,13 @@ const useTransitionLeave = (hook: TransitionAmimatorHook) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onLeave,
-    hook
+    hook,
   )
 }
 
 const setClose = (
   context: AppContext | undefined,
-  hook: (done: () => void) => void
+  hook: (done: () => void) => void,
 ) => {
   setValueToAppContext(context, ExtensionHooks.close, hook)
 }
@@ -66,7 +66,7 @@ const setClose = (
 const getClose = (context: AppContext | undefined) => {
   return getValueFromAppContext<(done: () => void) => void>(
     context,
-    ExtensionHooks.close
+    ExtensionHooks.close,
   )
 }
 
@@ -74,7 +74,7 @@ const execAnimator = (
   type: ExtensionHooks,
   context: AppContext | undefined,
   from?: Element,
-  to?: Element
+  to?: Element,
 ) => {
   return new Promise<void>((reslove) => {
     const hook = getValueFromAppContext<TransitionAmimatorHook>(context, type)
@@ -89,13 +89,13 @@ const execAnimator = (
 const execEnterAnimator = (
   context: AppContext | undefined,
   from?: Element,
-  to?: Element
+  to?: Element,
 ) => execAnimator(ExtensionHooks.onEnter, context, from, to)
 
 const execLeaveAnimator = (
   context: AppContext | undefined,
   from?: Element,
-  to?: Element
+  to?: Element,
 ) => execAnimator(ExtensionHooks.onLeave, context, from, to)
 
 export {

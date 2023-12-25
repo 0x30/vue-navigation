@@ -23,7 +23,7 @@ let autoCloseTimeout = 1500
 
 /**
  * 配置loading的配置
- * @param param0 
+ * @param param0
  */
 const setLoadingConfig = ({
   successImg,

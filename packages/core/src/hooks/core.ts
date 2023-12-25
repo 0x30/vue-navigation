@@ -26,7 +26,7 @@ enum ExtensionHooks {
 const setValueToAppContext = (
   target: AppContext | undefined,
   type: ExtensionHooks,
-  hook: any
+  hook: any,
 ) => {
   if (target) {
     ;(target as any)[type] = hook
@@ -36,7 +36,7 @@ const setValueToAppContext = (
 const addValueToAppContext = (
   target: AppContext | undefined,
   type: ExtensionHooks,
-  hook: any | undefined
+  hook: any | undefined,
 ) => {
   if (target) {
     const hooks = (target as any)[type] ?? []
@@ -46,7 +46,7 @@ const addValueToAppContext = (
 
 const getValueFromAppContext = <T>(
   target: AppContext | undefined,
-  type: ExtensionHooks
+  type: ExtensionHooks,
 ) => {
   if (target) {
     return (target as any)[type] as T
@@ -56,7 +56,7 @@ const getValueFromAppContext = <T>(
 
 const setExtData = (
   target: AppContext | undefined,
-  params: Record<string, any>
+  params: Record<string, any>,
 ) => {
   const oldParams = getExtData(target) ?? {}
   setValueToAppContext(target, ExtensionHooks.ExtData, {

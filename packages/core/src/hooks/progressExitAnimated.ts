@@ -17,7 +17,7 @@ declare global {
   interface Window {
     addEventListener<K extends keyof CustomEventMap>(
       type: K,
-      listener: (this: Window, ev: CustomEventMap[K]) => void
+      listener: (this: Window, ev: CustomEventMap[K]) => void,
     ): void
     dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K]): void
 
@@ -55,8 +55,8 @@ const dispatchEvent = (detail: StartData | ChangeData | EndData) => {
   window.dispatchEvent(
     new CustomEvent<StartData | ChangeData | EndData>(
       'onNativateIosScreenEdgePanEvent',
-      { detail }
-    )
+      { detail },
+    ),
   )
 }
 
@@ -116,7 +116,7 @@ type ProgressExitAnimatedHandle = (
     to?: Element
   },
   progress: number,
-  isFinish?: boolean
+  isFinish?: boolean,
 ) => void
 
 /**
@@ -127,7 +127,7 @@ const useProgressExitAnimated = (hook: ProgressExitAnimatedHandle) => {
   setValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.ProgressExitAnimated,
-    hook
+    hook,
   )
 }
 
@@ -143,11 +143,11 @@ const execProgressExitAnimated = (
     to?: Element
   },
   progress: number,
-  isFinish?: boolean
+  isFinish?: boolean,
 ) => {
   const hook = getValueFromAppContext<ProgressExitAnimatedHandle>(
     routerStack[routerStack.length - 1]?._context,
-    ExtensionHooks.ProgressExitAnimated
+    ExtensionHooks.ProgressExitAnimated,
   )
 
   hook?.apply(null, [elements, progress, isFinish])

@@ -37,14 +37,14 @@ const onWillAppear = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onWillActivated,
-    hook
+    hook,
   )
 }
 
 const triggerWillAppear = (context: AppContext | undefined) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     context,
-    ExtensionHooks.onWillActivated
+    ExtensionHooks.onWillActivated,
   )
   applyFuns(hooks)
 }
@@ -58,14 +58,14 @@ const onWillDisappear = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onWillDeactivated,
-    hook
+    hook,
   )
 }
 
 const triggerWillDisappear = (context: AppContext | undefined) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     context,
-    ExtensionHooks.onWillDeactivated
+    ExtensionHooks.onWillDeactivated,
   )
   applyFuns(hooks)
 }
@@ -78,14 +78,14 @@ const onDidAppear = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onActivated,
-    hook
+    hook,
   )
 }
 
 const triggerDidAppear = (context: AppContext | undefined) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     context,
-    ExtensionHooks.onActivated
+    ExtensionHooks.onActivated,
   )
   applyFuns(hooks)
 }
@@ -98,7 +98,7 @@ const onDidDisappear = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
     ExtensionHooks.onDeactivated,
-    hook
+    hook,
   )
 }
 
@@ -110,7 +110,7 @@ const onDidDisappear = (hook: () => void) => {
 const triggerDidDisappear = (context: AppContext | undefined) => {
   const hooks = getValueFromAppContext<(() => void)[]>(
     context,
-    ExtensionHooks.onDeactivated
+    ExtensionHooks.onDeactivated,
   )
   applyFuns(hooks)
 }
