@@ -16,10 +16,15 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.2
         with:
-          node-version: 16.17.1
+          node-version: 18.14.2
 
-      - run: npm install
-      - run: npm run build
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - run: pnpm install
+      - run: pnpm build
 
       - name: GitHub Pages
         uses: crazy-max/ghaction-github-pages@v2.2.0
