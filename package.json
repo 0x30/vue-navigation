@@ -4,7 +4,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build-core": "pnpm --dir ./packages/core build",
     "build-layout": "pnpm --dir ./packages/layout build",
     "build": "npm run build-core && npm run build-layout",
