@@ -7,25 +7,25 @@ import {
 } from 'vue'
 
 /**
-   * 动态弹出视图方法
-   * 
-   * ```ts
-   * const { show, close } = Popup();
-  
-    show(
-      <button
-        onClick={async () => {
-          await close();
-          console.log("leaved.");
-        }}
-      >
-        close
-      </button>
-    );
-   * ```
-   * 
-   * @param options 配置对象，同 Transition，属性
-   */
+     * 动态弹出视图方法
+     * 
+     * ```ts
+     * const { show, close } = Popup();
+    
+      show(
+        <button
+          onClick={async () => {
+            await close();
+            console.log("leaved.");
+          }}
+        >
+          close
+        </button>
+      );
+     * ```
+     * 
+     * @param options 配置对象，同 Transition，属性
+     */
 const Popup = (options?: TransitionProps & { root?: Element }) => {
   /// create document
   const container = document.createElement('div')
