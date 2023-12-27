@@ -9,3 +9,4 @@ export {
 export { default as SidePage } from './SidePage'
 export * from './Loading'
 export * from './Popup'
+export { default as PullRefresh } from './PullRefresh'
