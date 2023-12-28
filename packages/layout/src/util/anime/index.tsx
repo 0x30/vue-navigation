@@ -29,7 +29,7 @@ import {
   easeInBounce,
   easeOutBounce,
   easeInOutBounce,
-} from "./easing";
+} from './easing'
 
 const easing = {
   easeInQuad,
@@ -62,7 +62,7 @@ const easing = {
   easeInBounce,
   easeOutBounce,
   easeInOutBounce,
-};
+}
 
 /**
  * 动画执行方法
@@ -78,27 +78,25 @@ function animate(
   end: number,
   duration: number,
   method: keyof typeof easing,
-  callback: (value: number) => void
+  callback: (value: number) => void,
 ) {
   return new Promise<void>((resolve) => {
-    const startTime = Date.now();
-    const delta = end - start;
+    const startTime = Date.now()
+    const delta = end - start
 
-    let rafId: number | undefined;
     const tick = () => {
-      const elapsed = Date.now() - startTime;
-      const value = easing[method](elapsed, start, delta, duration);
+      const elapsed = Date.now() - startTime
+      const value = easing[method](elapsed, start, delta, duration)
 
-      callback(value);
+      callback(value)
       if (elapsed < duration) {
-        rafId = window.requestAnimationFrame(tick);
+        window.requestAnimationFrame(tick)
       } else {
-        rafId = undefined;
-        resolve();
+        resolve()
       }
-    };
-    tick();
-  });
+    }
+    tick()
+  })
 }
 
-export { animate };
+export { animate }
