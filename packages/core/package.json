@@ -5,7 +5,7 @@
     "pub": "npm run build && npm publish --access public --registry https://registry.npmjs.org"
   },
   "peerDependencies": {
-    "vue": "^3"
+    "vue": "^3.3.0"
   },
   "devDependencies": {
     "typescript": "^4.9.5",
@@ -27,7 +27,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/vue-navigation.js",
       "require": "./dist/vue-navigation.umd.cjs"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "repository": {
     "type": "git",
