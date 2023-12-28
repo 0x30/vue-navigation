@@ -35,13 +35,6 @@ export * from './Popup'
 ### 滑动返回 iOS
 
 ```swift
-//
-//  PanGestureRecongnizerBackProcessor.swift
-//  AiHoney
-//
-//  Created by 荆文征 on 2023/12/27.
-//
-
 import UIKit
 import WebKit
 
