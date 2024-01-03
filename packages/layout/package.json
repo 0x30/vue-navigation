@@ -1,6 +1,6 @@
 {
   "name": "@0x30/vue-navigation-layout",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "scripts": {
     "build": "vue-tsc && vite build",
     "pub": "npm run build && npm publish --access public --registry https://registry.npmjs.org"
