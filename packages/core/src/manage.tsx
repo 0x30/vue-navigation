@@ -26,8 +26,10 @@ import {
   triggerDidAppear,
   triggerDidDisappear,
   getIsQuietPage,
+  ExtensionHooks as EXH,
 } from './hooks'
 import { disableBodyPointerEvents, enableBodyPointerEvents } from './util'
+import { triggerTransitionHooks } from './hooks/transitionHooks'
 
 export type LifeCycleHooks = {
   onBeforeEnter?: (el: RendererElement) => void
@@ -146,6 +148,7 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
               }}
               onBeforeEnter={(el) => {
                 onBeforeEnter?.(el)
+                triggerTransitionHooks(target?.appContext, EXH.onBeforeEnter)
 
                 if (getIsQuietPage(target?.appContext)) return
                 triggerWillDisappear(lastAppContext)
@@ -153,6 +156,7 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
               }}
               onAfterEnter={(el) => {
                 onAfterEnter?.(el)
+                triggerTransitionHooks(target?.appContext, EXH.onAfterEnter)
 
                 if (getIsQuietPage(target?.appContext)) return
                 triggerDidDisappear(lastAppContext)
@@ -162,6 +166,7 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
               }}
               onBeforeLeave={(el) => {
                 onBeforeLeave?.(el)
+                triggerTransitionHooks(target?.appContext, EXH.onBeforeLeave)
 
                 if (getIsQuietPage(target?.appContext)) return
                 triggerWillDisappear(target?.appContext)
@@ -169,6 +174,7 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
               }}
               onAfterLeave={(el) => {
                 onAfterLeave?.(el)
+                triggerTransitionHooks(target?.appContext, EXH.onAfterLeave)
 
                 if (getIsQuietPage(target?.appContext)) return
                 triggerDidDisappear(target?.appContext)

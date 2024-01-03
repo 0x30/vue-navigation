@@ -19,6 +19,12 @@ enum ExtensionHooks {
   onLeaveFinish = '_vn_olf',
   ExtData = '_vn_ed',
 
+  /// 动画 执行 hooks
+  onAfterEnter = '_vn_oae',
+  onAfterLeave = '_vn_oal',
+  onBeforeEnter = '_vn_obe',
+  onBeforeLeave = '_vn_obl',
+
   /// 进度退出动画
   ProgressExitAnimated = '_vn_p_e_a',
 }
