@@ -36,36 +36,32 @@ const PullRefresh = defineComponent({
      * 当存在 onHeaderRender 时，该方法失效
      */
     refreshingRender: Function as PropType<
-      (progress: number, distance: number) => JSX.Element
+      (progress: number, distance: number) => Element
     >,
     /**
      * 当header正在下拉但 还没有到达位置的时候
      */
     pullingRender: Function as PropType<
-      (progress: number, distance: number) => JSX.Element
+      (progress: number, distance: number) => Element
     >,
     /**
      * 当header松开就可以进行刷新的时候
      */
     waitReleaseRender: Function as PropType<
-      (progress: number, distance: number) => JSX.Element
+      (progress: number, distance: number) => Element
     >,
     /**
      * 当header完成刷新后的
      */
     finishRender: Function as PropType<
-      (progress: number, distance: number) => JSX.Element
+      (progress: number, distance: number) => Element
     >,
     /**
      * 绘制方法
      * 优先级最高
      */
     headerRender: Function as PropType<
-      (
-        progress: number,
-        distance: number,
-        state?: PullRefreshState,
-      ) => JSX.Element
+      (progress: number, distance: number, state?: PullRefreshState) => Element
     >,
   },
   setup: (props, { slots }) => {
