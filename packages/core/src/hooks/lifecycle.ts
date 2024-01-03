@@ -33,20 +33,12 @@ const getIsQuietPage = (context: AppContext | undefined) => {
  * 执行动画前
  * @param hook
  */
-const onWillAppear = (hook: () => void) => {
+const onWillAppear = (hook: (isFirst: boolean) => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
-    ExtensionHooks.onWillActivated,
+    ExtensionHooks.onWillAppear,
     hook,
   )
-}
-
-const triggerWillAppear = (context: AppContext | undefined) => {
-  const hooks = getValueFromAppContext<(() => void)[]>(
-    context,
-    ExtensionHooks.onWillActivated,
-  )
-  applyFuns(hooks)
 }
 
 /**
@@ -57,39 +49,22 @@ const triggerWillAppear = (context: AppContext | undefined) => {
 const onWillDisappear = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
-    ExtensionHooks.onWillDeactivated,
+    ExtensionHooks.onWillDisappear,
     hook,
   )
-}
-
-const triggerWillDisappear = (context: AppContext | undefined) => {
-  const hooks = getValueFromAppContext<(() => void)[]>(
-    context,
-    ExtensionHooks.onWillDeactivated,
-  )
-  applyFuns(hooks)
 }
 
 /**
  * 页面即将展示hook
  * 执行动画后
  */
-const onDidAppear = (hook: () => void) => {
+const onDidAppear = (hook: (isFirst: boolean) => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
-    ExtensionHooks.onActivated,
+    ExtensionHooks.onDidAppear,
     hook,
   )
 }
-
-const triggerDidAppear = (context: AppContext | undefined) => {
-  const hooks = getValueFromAppContext<(() => void)[]>(
-    context,
-    ExtensionHooks.onActivated,
-  )
-  applyFuns(hooks)
-}
-
 /**
  * 页面即将消失hook
  * 执行动画后
@@ -97,33 +72,33 @@ const triggerDidAppear = (context: AppContext | undefined) => {
 const onDidDisappear = (hook: () => void) => {
   addValueToAppContext(
     getCurrentInstance()?.appContext,
-    ExtensionHooks.onDeactivated,
+    ExtensionHooks.onDidDisappear,
     hook,
   )
 }
 
-/**
- * 根据 提供的 appContext 获取吗，该上下文中所有的应用进入非活跃的hook方法
- * @param context App Context
- * @returns hooks 方法
- */
-const triggerDidDisappear = (context: AppContext | undefined) => {
-  const hooks = getValueFromAppContext<(() => void)[]>(
+const triggerPageAppearHooks = (
+  context: AppContext | undefined,
+  type:
+    | ExtensionHooks.onWillAppear
+    | ExtensionHooks.onWillDisappear
+    | ExtensionHooks.onDidAppear
+    | ExtensionHooks.onDidDisappear,
+  isFirst?: boolean,
+) => {
+  const hooks = getValueFromAppContext<((isFirst: boolean) => void)[]>(
     context,
-    ExtensionHooks.onDeactivated,
+    type,
   )
-  applyFuns(hooks)
+  applyFuns(hooks, [isFirst])
 }
 
 export {
   useQuietPage,
   getIsQuietPage,
   onWillAppear,
-  triggerWillAppear,
   onWillDisappear,
-  triggerWillDisappear,
   onDidAppear,
-  triggerDidAppear,
   onDidDisappear,
-  triggerDidDisappear,
+  triggerPageAppearHooks,
 }

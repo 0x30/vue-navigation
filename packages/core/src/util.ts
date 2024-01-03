@@ -8,7 +8,7 @@ const enableBodyPointerEvents = () => {
   document.body.style.pointerEvents = 'auto'
 }
 
-const applyFuns = (funcs?: (() => void)[], params?: any[]) => {
+const applyFuns = (funcs?: ((...arg: any) => any)[], params?: any[]) => {
   funcs?.forEach((func) => (func as any)?.(...(params ?? [])))
 }
 

@@ -10,13 +10,15 @@ enum ExtensionHooks {
   close = '_vn_c',
   // 当页面 离开前调用 询问组件 是否想要返回
   onLeaveBefore = '_vn_olb',
-  onActivated = '_vn_oa',
-  onWillActivated = '_vn_owa',
-  onDeactivated = '_vn_oda',
-  onWillDeactivated = '_vn_owda',
+
+  /// 页面 执行逻辑
+  onWillAppear = '_vn_owa',
+  onWillDisappear = '_vn_owd',
+  onDidAppear = '_vn_oda',
+  onDidDisappear = '_vn_odd',
+
   cancelBatchId = '_vn_cbi',
-  onEnterFinish = '_vn_oef',
-  onLeaveFinish = '_vn_olf',
+
   ExtData = '_vn_ed',
 
   /// 动画 执行 hooks

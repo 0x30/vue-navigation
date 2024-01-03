@@ -21,10 +21,7 @@ import {
   getClose,
   setClose,
   trigglePageChange,
-  triggerWillDisappear,
-  triggerWillAppear,
-  triggerDidAppear,
-  triggerDidDisappear,
+  triggerPageAppearHooks as tpah,
   getIsQuietPage,
   ExtensionHooks as EXH,
 } from './hooks'
@@ -151,16 +148,16 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
                 triggerTransitionHooks(target?.appContext, EXH.onBeforeEnter)
 
                 if (getIsQuietPage(target?.appContext)) return
-                triggerWillDisappear(lastAppContext)
-                triggerWillAppear(target?.appContext)
+                tpah(lastAppContext, EXH.onWillDisappear)
+                tpah(target?.appContext, EXH.onWillAppear, true)
               }}
               onAfterEnter={(el) => {
                 onAfterEnter?.(el)
                 triggerTransitionHooks(target?.appContext, EXH.onAfterEnter)
 
                 if (getIsQuietPage(target?.appContext)) return
-                triggerDidDisappear(lastAppContext)
-                triggerDidAppear(target?.appContext)
+                tpah(lastAppContext, EXH.onDidDisappear)
+                tpah(target?.appContext, EXH.onDidAppear, true)
 
                 trigglePageChange(target?.appContext, lastAppContext)
               }}
@@ -169,16 +166,18 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
                 triggerTransitionHooks(target?.appContext, EXH.onBeforeLeave)
 
                 if (getIsQuietPage(target?.appContext)) return
-                triggerWillDisappear(target?.appContext)
-                triggerWillAppear(getLastApp()._context)
+
+                tpah(target?.appContext, EXH.onWillDisappear)
+                tpah(getLastApp()._context, EXH.onWillAppear, false)
               }}
               onAfterLeave={(el) => {
                 onAfterLeave?.(el)
                 triggerTransitionHooks(target?.appContext, EXH.onAfterLeave)
 
                 if (getIsQuietPage(target?.appContext)) return
-                triggerDidDisappear(target?.appContext)
-                triggerDidAppear(getLastApp()._context)
+
+                tpah(target?.appContext, EXH.onDidDisappear)
+                tpah(getLastApp()._context, EXH.onDidAppear, false)
 
                 trigglePageChange(target?.appContext, getLastApp()._context)
               }}
