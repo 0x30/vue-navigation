@@ -11,6 +11,8 @@
   justify-content: center;
   pointer-events: none;
 
+  z-index: 1000;
+
   .main {
     padding: 20px;
     border-radius: 8px;
@@ -23,10 +25,11 @@
     justify-content: center;
 
     min-width: 88px;
-    height: 88px;
+    min-height: 88px;
 
     margin: 0 30px;
 
+    transition: all 0.2s;
     box-shadow: -5px 0px 20px 0px rgba(100, 100, 100, 0.15);
 
     *:nth-child(2) {

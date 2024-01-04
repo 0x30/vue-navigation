@@ -7,14 +7,13 @@ import {
 } from '@0x30/vue-navigation'
 import { defineComponent, ref } from 'vue'
 
-import { computed } from 'vue'
-
 import styles from './index.module.scss'
 import { Popup } from '../Popup'
 
 import loadingImg from './imgs/loading.svg'
 import errorImg from './imgs/error.svg'
 import successImg from './imgs/success.svg'
+import anime from 'animejs'
 
 let customLoadingImg: string | undefined = undefined
 let customErrorImg: string | undefined = undefined
@@ -66,20 +65,23 @@ const statusRef = ref<Status>()
 const messageRef = ref<string>()
 const closeRef = ref<() => Promise<void>>()
 
+const imageRef = ref<string>()
+
+const setStatus = (status: Status) => {
+  statusRef.value = status
+
+  if (status === 0) imageRef.value = customLoadingImg ?? loadingImg
+  if (status === 1) imageRef.value = customSuccessImg ?? successImg
+  if (status === 2) imageRef.value = customErrorImg ?? errorImg
+}
+
 const Component = defineComponent({
   name: 'LoadingView',
   setup: () => {
-    const imageComputed = computed(() => {
-      if (statusRef.value === 0) return customLoadingImg ?? loadingImg
-      if (statusRef.value === 1) return customSuccessImg ?? successImg
-      if (statusRef.value === 2) return customErrorImg ?? errorImg
-      return undefined
-    })
-
     return () => (
       <div class={styles.body}>
         <div class={styles.main}>
-          {imageComputed.value ? <img src={imageComputed.value} /> : null}
+          {imageRef.value ? <img src={imageRef.value} /> : null}
           {messageRef.value ? <span>{messageRef.value}</span> : null}
         </div>
       </div>
@@ -125,20 +127,30 @@ let isShowLoading = false
 const showLoading = async (status: Status, message?: string) => {
   if (status === 0) {
     window.clearTimeout(closeLoadingTimer)
-    isShowLoading = true
     await push(<Loading />)
   }
 
   /// 状态 ref
-  statusRef.value = status
+  setStatus(status)
   messageRef.value = message
 
   if (closeRef.value === undefined) {
-    const [show, close] = Popup()
+    const [show, close] = Popup({
+      onLeave(el, complete) {
+        anime({
+          duration: 200,
+          targets: el.querySelector(`.${styles.main}`),
+          opacity: [1, 0],
+          easing: 'easeOutExpo',
+          complete,
+        })
+      },
+    })
     closeRef.value = async () => {
       closeRef.value = undefined
       await close()
     }
+    isShowLoading = true
     show(<Component />)
   }
 
