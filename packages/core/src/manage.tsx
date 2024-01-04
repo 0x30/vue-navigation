@@ -130,18 +130,24 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
                 /// 执行 进入动画
                 const from = getChildren(lastAppContext.app._container)
                 await execEnterAnimator(target?.appContext, from, el)
-                done()
+
                 replaceDone()
                 resolve(app)
+
+                /// 在处理完 替换done事件后，再处理动画完成
+                done()
               }}
               onLeave={async (el, done) => {
                 disableBodyPointerEvents()
                 const to = getChildren(getLastApp()._container)
                 /// 执行 退出动画
                 await execLeaveAnimator(target?.appContext, el, to)
-                done()
+
                 if (closeDone) closeDone()
                 else enableBodyPointerEvents()
+
+                /// 在处理完成 close done 事件后，再处理动画完成
+                done()
               }}
               onBeforeEnter={(el) => {
                 onBeforeEnter?.(el)
