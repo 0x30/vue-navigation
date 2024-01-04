@@ -159,6 +159,7 @@ const showLoading = async (status: Status, message?: string) => {
   if (isShowLoading === false) return
   isShowLoading = false
   window.clearTimeout(closeLoadingTimer)
+  await back()
 
   if (status === 3) {
     closeLoadingTimer = window.setTimeout(() => {
