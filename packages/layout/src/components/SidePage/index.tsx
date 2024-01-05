@@ -190,30 +190,6 @@ const Component = defineComponent({
     /** 点击背景视图 */
     onClickBack: Function as PropType<() => void>,
     /**
-     * 重写 body class ，例如 bottom css 为
-     * 
-     * ```css
-    .body{
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-    }
-      ```
-     */
-    overrideBodyClassName: String,
-    /**
-     * 覆盖的 back class name
-     */
-    overrideBackClassName: String,
-    /**
      * 重写 出现动画方法
      */
     overrideEnterAnime: Function as PropType<CustomAnimeType>,
@@ -254,13 +230,8 @@ const Component = defineComponent({
     useTransitionLeave(getLeaveAnime())
 
     return () => (
-      <div
-        class={props.overrideBodyClassName ?? styles[`${props.position}Body`]}
-      >
-        <div
-          class={props.overrideBackClassName ?? styles.back}
-          onClick={props.onClickBack}
-        />
+      <div class={styles[`${props.position}Body`]}>
+        <div class={styles.back} onClick={props.onClickBack} />
         {cloneSlot(slots.default, { class: styles.main })}
       </div>
     )
