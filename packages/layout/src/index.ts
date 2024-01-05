@@ -1,12 +1,6 @@
-export { default as NavPage } from './NavPage'
-export { default as Page } from './Page'
-export {
-  SafeBottomSpace,
-  SafeLeftSpace,
-  SafeRightSpace,
-  SafeTopSpace,
-} from './Safearea'
-export { default as SidePage } from './SidePage'
-export * from './Loading'
-export * from './Popup'
-export { default as PullRefresh } from './PullRefresh'
+export { default as NavPage } from './components/NavPage'
+export { default as Page } from './components/Page'
+export * from './components/Safearea'
+export { default as SidePage } from './components/SidePage'
+export * from './components/Loading'
+export * from './util/Popup'

@@ -14,9 +14,9 @@ export const SafeTopSpace: FunctionalComponent<{
 export const SafeLeftSpace: FunctionalComponent<{
   class?: HtmlHTMLAttributes['class']
   style?: HtmlHTMLAttributes['style']
-}> = () => <div class={styles.safeHeightBottom} />
+}> = () => <div class={styles.safeHeightLeft} />
 
 export const SafeRightSpace: FunctionalComponent<{
   class?: HtmlHTMLAttributes['class']
   style?: HtmlHTMLAttributes['style']
-}> = () => <div class={styles.safeHeightTop} />
+}> = () => <div class={styles.safeHeightRight} />

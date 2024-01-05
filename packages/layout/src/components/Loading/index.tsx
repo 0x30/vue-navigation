@@ -8,7 +8,7 @@ import {
 import { defineComponent, ref } from 'vue'
 
 import styles from './index.module.scss'
-import { Popup } from '../Popup'
+import { Popup } from '../../util/Popup'
 
 import loadingImg from './imgs/loading.svg'
 import errorImg from './imgs/error.svg'
