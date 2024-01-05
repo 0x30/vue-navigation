@@ -89,28 +89,36 @@ const Component = defineComponent({
   },
 })
 
-// export { type Status, closeRef, setLoadingConfig, rawShowLoading }
-
 const Loading = defineComponent(() => {
   useLeaveBefore(() => isShowLoading === false)
   useTransitionLeave((_, comp) => {
-    window.setTimeout(comp, 300)
+    window.setTimeout(comp, 100)
   })
   useQuietPage()
   return () => <div />
 })
 
-/**
- * 在非0type时,需要关闭现有的 loading 视图
- */
-const closeLoadingToast = async () => {
-  if (isShowLoading === false) return
-  isShowLoading = false
-  window.clearTimeout(closeLoadingTimer)
-  closeLoadingTimer = window.setTimeout(() => {
-    closeRef.value?.()
-  }, 350)
-  await back()
+const showLoadingComponent = async () => {
+  /// 如果当前为展示 loading 组件 popup
+  if (closeRef.value !== undefined) return
+
+  const [show, close] = Popup({
+    onLeave(el, complete) {
+      anime({
+        duration: 200,
+        targets: el.querySelector(`.${styles.main}`),
+        opacity: [1, 0],
+        easing: 'easeOutExpo',
+        complete,
+      })
+    },
+  })
+  closeRef.value = async () => {
+    closeRef.value = undefined
+    await close()
+  }
+
+  await show(<Component />)
 }
 
 let closeLoadingTimer: number | undefined = undefined
@@ -125,46 +133,29 @@ let isShowLoading = false
  * @param message
  */
 const showLoading = async (status: Status, message?: string) => {
+  window.clearTimeout(closeLoadingTimer)
+
   if (status === 0) {
-    window.clearTimeout(closeLoadingTimer)
+    isShowLoading = true
     await push(<Loading />)
+  } else {
+    if (isShowLoading) {
+      isShowLoading = false
+      await back()
+    }
   }
 
   /// 状态 ref
   setStatus(status)
   messageRef.value = message
-
-  if (closeRef.value === undefined) {
-    const [show, close] = Popup({
-      onLeave(el, complete) {
-        anime({
-          duration: 200,
-          targets: el.querySelector(`.${styles.main}`),
-          opacity: [1, 0],
-          easing: 'easeOutExpo',
-          complete,
-        })
-      },
-    })
-    closeRef.value = async () => {
-      closeRef.value = undefined
-      await close()
-    }
-    isShowLoading = true
-    show(<Component />)
-  }
+  await showLoadingComponent()
 
   if (status === 0) return
-
-  if (isShowLoading === false) return
-  isShowLoading = false
-  window.clearTimeout(closeLoadingTimer)
-  await back()
 
   if (status === 3) {
     closeLoadingTimer = window.setTimeout(() => {
       closeRef.value?.()
-    }, 350)
+    }, 150)
   } else {
     closeLoadingTimer = window.setTimeout(() => {
       closeRef.value?.()
@@ -172,4 +163,4 @@ const showLoading = async (status: Status, message?: string) => {
   }
 }
 
-export { closeLoadingToast, showLoading, setLoadingConfig }
+export { showLoading, setLoadingConfig }
