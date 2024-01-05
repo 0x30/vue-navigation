@@ -51,6 +51,16 @@ const Popup = (options?: TransitionProps & { root?: Element }) => {
   const app = createApp(() => (
     <Transition
       {...options}
+      onAfterEnter={(el) => {
+        if (options?.onAfterEnter) {
+          if (typeof options.onAfterEnter === 'function') {
+            options.onAfterEnter(el)
+          } else {
+            options.onAfterEnter.forEach((f) => f(el))
+          }
+        }
+        __show_resolve?.()
+      }}
       // overwrite onAfterLeave
       onAfterLeave={(el) => {
         if (options?.onAfterLeave) {
@@ -70,10 +80,14 @@ const Popup = (options?: TransitionProps & { root?: Element }) => {
     </Transition>
   ))
 
+  let __show_resolve: () => void
   const show = (component: Component) => {
-    app.mount(container)
-    componentRef.value = component
-    isShowRef.value = true
+    return new Promise<void>((resolve) => {
+      __show_resolve = resolve
+      app.mount(container)
+      componentRef.value = component
+      isShowRef.value = true
+    })
   }
 
   return [show, close] as const
