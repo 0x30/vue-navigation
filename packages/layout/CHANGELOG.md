@@ -1,3 +1,7 @@
+## [v1.0.12](https://github.com/0x30/vue-navigation/compare/734e2da2a7db187d3184300bdb2cfb88f9dbfcf3...97eba3d3215e2b27fd170f9f214bcc963ebbd5e8)
+
+* 加载中 不可点击背后
+
 ## [v1.0.11](https://github.com/0x30/vue-navigation/compare/970f8008e7aee31dcf8cf348c86cc85ebdc37ade...4ff566d6efb21b2e036f204a54764bf79a79c014)
 
 * 加载中 不可点击背后
