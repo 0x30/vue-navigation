@@ -12,6 +12,7 @@
   pointer-events: none;
 
   z-index: 1000;
+  pointer-events: none;
 
   .main {
     padding: 20px;
@@ -45,5 +46,14 @@
       font-size: 14px;
       text-align: center;
     }
+  }
+}
+
+.vue-navigation-loading--unclickable {
+  overflow: hidden;
+  cursor: not-allowed;
+
+  * {
+    pointer-events: none !important;
   }
 }

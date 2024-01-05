@@ -70,6 +70,12 @@ const imageRef = ref<string>()
 const setStatus = (status: Status) => {
   statusRef.value = status
 
+  if (status === 0) {
+    document.body.classList.add(styles.vueNavigationLoadingUnclickable)
+  } else {
+    document.body.classList.remove(styles.vueNavigationLoadingUnclickable)
+  }
+
   if (status === 0) imageRef.value = customLoadingImg ?? loadingImg
   if (status === 1) imageRef.value = customSuccessImg ?? successImg
   if (status === 2) imageRef.value = customErrorImg ?? errorImg
