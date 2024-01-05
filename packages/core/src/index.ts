@@ -188,3 +188,4 @@ export {
 } from './hooks'
 
 export { useProgressExitAnimated } from './hooks'
+export { disableBodyPointerEvents, enableBodyPointerEvents }

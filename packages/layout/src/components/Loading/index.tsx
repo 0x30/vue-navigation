@@ -1,9 +1,10 @@
 import {
   useQuietPage,
-  useTransitionLeave,
   back,
   push,
   useLeaveBefore,
+  enableBodyPointerEvents,
+  disableBodyPointerEvents,
 } from '@0x30/vue-navigation'
 import { defineComponent, ref } from 'vue'
 
@@ -71,9 +72,9 @@ const setStatus = (status: Status) => {
   statusRef.value = status
 
   if (status === 0) {
-    document.body.classList.add(styles.vueNavigationLoadingUnclickable)
+    disableBodyPointerEvents()
   } else {
-    document.body.classList.remove(styles.vueNavigationLoadingUnclickable)
+    enableBodyPointerEvents()
   }
 
   if (status === 0) imageRef.value = customLoadingImg ?? loadingImg
@@ -97,9 +98,6 @@ const Component = defineComponent({
 
 const Loading = defineComponent(() => {
   useLeaveBefore(() => isShowLoading === false)
-  useTransitionLeave((_, comp) => {
-    window.setTimeout(comp, 100)
-  })
   useQuietPage()
   return () => <div />
 })
