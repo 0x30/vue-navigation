@@ -1,11 +1,37 @@
-import styles from './index.module.scss'
+const getDisableAllPointerEventsElement = () => {
+  const element = document.querySelector('#___disable_all_pointerevents')
+  return element as HTMLDivElement
+}
 
 const disableBodyPointerEvents = () => {
-  document.body.classList.add(styles.vueNavigationUnclickable)
+  const element = getDisableAllPointerEventsElement()
+  element.style.display = 'block'
 }
 
 const enableBodyPointerEvents = () => {
-  document.body.classList.remove(styles.vueNavigationUnclickable)
+  const element = getDisableAllPointerEventsElement()
+  element.style.display = 'none'
 }
 
-export { disableBodyPointerEvents, enableBodyPointerEvents }
+const initDisableAllPointerEvents = () => {
+  const div = document.createElement('div')
+
+  div.id = '___disable_all_pointerevents'
+
+  div.style.position = 'fixed'
+  div.style.top = '0'
+  div.style.right = '0'
+  div.style.bottom = '0'
+  div.style.left = '0'
+  div.style.opacity = '0'
+  div.style.display = 'none'
+  div.style.zIndex = '99999999'
+
+  document.body.appendChild(div)
+}
+
+export {
+  initDisableAllPointerEvents,
+  disableBodyPointerEvents,
+  enableBodyPointerEvents,
+}

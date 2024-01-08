@@ -14,7 +14,7 @@ import {
   setCurrentState,
   setLastBackHookId,
 } from './state'
-import { randomId } from './util'
+import { initDisableAllPointerEvents, randomId } from './util'
 import { unmounted } from './manage'
 
 /**
@@ -73,6 +73,8 @@ const startBlackBack = () => {
 }
 
 const listenPopState = (app: App, isReplace = false) => {
+  initDisableAllPointerEvents()
+
   routerStack.push(app)
   const currentState = setCurrentState({ index: 0, session: currentSessionId })
   if (isReplace) window.history.replaceState(currentState, '')
