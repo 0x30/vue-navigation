@@ -47,7 +47,7 @@ interface EndData {
   isFinish: boolean
 }
 
-interface CustomEventMap {
+export interface CustomEventMap {
   onNativateIosScreenEdgePanEvent: CustomEvent<StartData | ChangeData | EndData>
 }
 

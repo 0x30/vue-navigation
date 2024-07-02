@@ -184,8 +184,9 @@ export {
   onPageBeforeLeave,
   usePageMate,
   getCurrentPageMate,
-  onPageChange,
+  onPageChange
 } from './hooks'
+export type { CustomEventMap } from './hooks'
 
 export { useProgressExitAnimated } from './hooks'
 export { disableBodyPointerEvents, enableBodyPointerEvents }
