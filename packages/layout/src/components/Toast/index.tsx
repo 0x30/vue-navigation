@@ -1,5 +1,5 @@
 import { defineComponent } from 'vue'
-import { Popup } from '@0x30/vue-navigation-layout'
+import { Popup } from '../../util/Popup'
 import styles from './index.module.scss'
 import anime from 'animejs'
 
