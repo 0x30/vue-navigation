@@ -11,6 +11,7 @@ import DetailPage from '../detail'
 
 import styles from './index.module.scss'
 import { useHooks, wait } from '../../util'
+import { useToast } from '@0x30/vue-navigation-layout'
 
 const Component = defineComponent({
   name: 'HomePage',
@@ -67,6 +68,13 @@ const Component = defineComponent({
             }}
           >
             popup
+          </button>
+          <button
+            onClick={async () => {
+              useToast(`Hello world.`)
+            }}
+          >
+            toast
           </button>
         </div>
         <br />
