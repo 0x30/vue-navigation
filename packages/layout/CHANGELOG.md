@@ -1,3 +1,6 @@
+## [v1.0.14](https://github.com/0x30/vue-navigation/compare/48ed960c3e0e937888ee97764d9c595508cc19fa...aa2a0340f91d2a69ae388c5140c00ceafcb7e148)
+
+
 ## [v1.0.13](https://github.com/0x30/vue-navigation/compare/feba1520ac4db88ff0daf9412244d7d0bd7845c2...ef9c03e3011327108ad9586fa9b5103d71d73683)
 
 * 移除重写 class
