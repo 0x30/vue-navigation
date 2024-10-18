@@ -27,6 +27,7 @@ import {
 } from './hooks'
 import { disableBodyPointerEvents, enableBodyPointerEvents } from './util'
 import { triggerTransitionHooks } from './hooks/transitionHooks'
+import { configApp } from './hooks'
 
 export type LifeCycleHooks = {
   onBeforeEnter?: (el: RendererElement) => void
@@ -195,6 +196,7 @@ const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
         }
       },
     })
+    configApp?.(app)
     app.mount(container)
 
     if (replace === false) {

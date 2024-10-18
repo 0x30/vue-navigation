@@ -187,5 +187,5 @@ export {
   onPageChange,
 } from './hooks'
 
-export { useProgressExitAnimated } from './hooks'
+export { useProgressExitAnimated, useAppBeforeMount } from './hooks'
 export { disableBodyPointerEvents, enableBodyPointerEvents }
