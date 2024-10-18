@@ -1,3 +1,5 @@
+## [v1.3.14](https://github.com/0x30/vue-navigation/compare/b48bfa4c4c1e8675c2bf96624ff2919570eba341...425fab04e5ac686f18d3ca087d261abe2a73f226)
+
 ## [v1.3.13](https://github.com/0x30/vue-navigation/compare/7ed10bae653cfc6218a9176f349223805e980783...c5703a0cb6616454255f8f9ea63dd6aec72326c6)
 
 * diable all element 方式修改
