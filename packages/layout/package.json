@@ -1,6 +1,6 @@
 {
   "name": "@0x30/vue-navigation-layout",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "scripts": {
     "build": "vue-tsc && vite build",
     "pub": "npm run build && npm publish --access public --registry https://registry.npmjs.org"
@@ -15,10 +15,9 @@
   "license": "ISC",
   "peerDependencies": {
     "@0x30/vue-navigation": "workspace:*",
-    "animejs": "^3.2.2"
+    "animejs": "^4.0.2"
   },
   "devDependencies": {
-    "@types/animejs": "^3.1.12",
     "@vitejs/plugin-vue-jsx": "^4.0.0",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.39",

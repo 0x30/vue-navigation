@@ -4,7 +4,7 @@ import {
   useTransitionLeave,
   useProgressExitAnimated,
 } from '@0x30/vue-navigation'
-import anime from 'animejs'
+import { utils, createTimeline, type TimelineParams } from 'animejs'
 import { defineComponent } from 'vue'
 import Page from '../Page'
 
@@ -13,17 +13,21 @@ const PageBodyClassName = 'vue-navigation-layout-body'
 const NavPage = defineComponent({
   name: 'NavPage',
   setup: (_, { slots }) => {
-    const animeProps = { duration: 500, easing: 'easeOutExpo' }
+    const animeProps: TimelineParams = {
+      defaults: { duration: 500, ease: 'outExpo' },
+    }
 
-    useTransitionEnter(({ to, from }, complete) => {
-      const an = anime.timeline({ ...animeProps, complete })
-      an.add({ targets: to, translateX: ['100%', '0'] })
+    useTransitionEnter(({ to, from }, onComplete) => {
+      const an = createTimeline({ ...animeProps, onComplete })
+      an.add(to!, { translateX: ['100%', '0'] })
       if (from?.classList.contains(PageBodyClassName)) {
         an.add(
+          from,
           {
-            targets: from,
             translateX: ['0%', '-50%'],
-            complete: (anim) => anim.seek(0),
+            onComplete: (anim) => {
+              utils.set(anim.targets, { translateX: '0%' })
+            },
           },
           0,
         )
@@ -31,54 +35,54 @@ const NavPage = defineComponent({
     })
 
     let justBack = false
-    useTransitionLeave(({ from, to }, complete) => {
+    useTransitionLeave(({ from, to }, onComplete) => {
       /// 如果该值 设置为 true 表明，当前是通过 滑动返回的方式关闭的
       /// 那么不需要执行任何动画 直接完成即可
       if (justBack) {
-        complete()
+        onComplete()
         return
       }
 
-      const an = anime.timeline({ ...animeProps, complete })
+      const an = createTimeline({ ...animeProps, onComplete })
       if (to?.classList.contains(PageBodyClassName)) {
-        an.add({ targets: to, translateX: ['-50%', '0%'] })
+        an.add(to, { translateX: ['-50%', '0%'] })
       }
-      an.add({ targets: from, translateX: ['0', '100%'] }, 0)
+      an.add(from!, { translateX: ['0', '100%'] }, 0)
     })
 
     useProgressExitAnimated(({ from, to }, progress, isFinish) => {
       if (isFinish === undefined) {
         if (to?.classList.contains(PageBodyClassName)) {
-          anime.set(to, { translateX: -50 * (1 - progress) + '%' })
+          utils.set(to, { translateX: -50 * (1 - progress) + '%' })
         }
         if (from) {
-          anime.set(from, { translateX: 100 * progress + '%' })
+          utils.set(from, { translateX: 100 * progress + '%' })
         }
       } else {
         /// 如果 滑动返回成功结束
         if (isFinish) {
-          const animated = anime.timeline({
-            duration: 300,
-            easing: 'easeOutExpo',
+          const animated = createTimeline({
+            defaults: { duration: 300, ease: 'outExpo' },
           })
           if (to?.classList.contains(PageBodyClassName)) {
-            animated.add({ targets: to, translateX: '0' })
+            animated.add(to, { translateX: '0' })
           }
-          animated.add({ targets: from, translateX: '100%' }, 0)
-
-          animated.complete = () => {
+          animated.add(from!, { translateX: '100%' }, 0)
+          animated.onComplete = () => {
             justBack = true
             back()
           }
         } else {
-          const animated = anime.timeline({
-            duration: 300,
-            easing: 'easeOutExpo',
+          const animated = createTimeline({
+            defaults: {
+              duration: 300,
+              ease: 'outExpo',
+            },
           })
           if (to?.classList.contains(PageBodyClassName)) {
-            animated.add({ targets: to, translateX: '-50%' })
+            animated.add(to, { translateX: '-50%' })
           }
-          animated.add({ targets: from, translateX: '0%' }, 0)
+          animated.add(from!, { translateX: '0%' }, 0)
         }
       }
     })

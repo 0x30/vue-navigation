@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue'
 import { Popup } from '../../util/Popup'
 import styles from './index.module.scss'
-import anime from 'animejs'
+import { utils, animate } from 'animejs'
 
 const Toast = defineComponent({
   name: 'Toast',
@@ -21,25 +21,23 @@ type ToastOptoions = {
 
 export const useToast = (title: string, options?: ToastOptoions) => {
   const [show, close] = Popup({
-    onEnter(el, done) {
-      anime.set(el, { translateX: '-50%' })
-      anime({
-        targets: el,
+    onEnter(el, onComplete) {
+      utils.set(el, { translateX: '-50%' })
+      animate(el, {
         opacity: [0, 1],
         scale: [0.8, 1],
         translateX: '-50%',
-        duration: 300,
-        easing: 'easeOutExpo',
-        complete: done,
+        duration: 800,
+        ease: 'outElastic',
+        onComplete,
       })
     },
-    onLeave(el, done) {
-      anime({
-        targets: el,
+    onLeave(el, onComplete) {
+      animate(el, {
         opacity: [1, 0],
         duration: 300,
-        easing: 'easeInQuad',
-        complete: done,
+        ease: 'inQuad',
+        onComplete,
       })
     },
   })

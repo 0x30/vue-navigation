@@ -14,7 +14,7 @@ import { Popup } from '../../util/Popup'
 import loadingImg from './imgs/loading.svg'
 import errorImg from './imgs/error.svg'
 import successImg from './imgs/success.svg'
-import anime from 'animejs'
+import { animate } from 'animejs'
 
 let customLoadingImg: string | undefined = undefined
 let customErrorImg: string | undefined = undefined
@@ -107,13 +107,12 @@ const showLoadingComponent = async () => {
   if (closeRef.value !== undefined) return
 
   const [show, close] = Popup({
-    onLeave(el, complete) {
-      anime({
+    onLeave(el, onComplete) {
+      animate(el.querySelector(`.${styles.main}`)!, {
         duration: 200,
-        targets: el.querySelector(`.${styles.main}`),
         opacity: [1, 0],
-        easing: 'easeOutExpo',
-        complete,
+        ease: 'outExpo',
+        onComplete,
       })
     },
   })

@@ -8,7 +8,7 @@ import {
 
 import styles from './index.module.scss'
 import { useTransitionEnter, useTransitionLeave } from '@0x30/vue-navigation'
-import anime from 'animejs'
+import { createTimeline } from 'animejs'
 
 const backClassName = `.${styles.back}`
 const mainClassName = `.${styles.main}`
@@ -56,110 +56,140 @@ type CustomAnimeType = (
 /**
  * 底部出现的动画
  */
-const SideBottomEnterAnime: AnimeType = ({ to }, complete) => {
+const SideBottomEnterAnime: AnimeType = ({ to }, onComplete) => {
   const back = to?.querySelector(backClassName)
   const main = to?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 500, easing: 'easeOutExpo', complete })
-  an.add({ targets: back, opacity: [0, 1] })
-  an.add({ targets: main, translateY: ['100%', '0'] }, 0)
+  const an = createTimeline({
+    defaults: { duration: 500, ease: 'outExpo' },
+    onComplete,
+  })
+  an.add(back!, { opacity: [0, 1] })
+  an.add(main!, { translateY: ['100%', '0'] }, 0)
 }
 
 /**
  * 底部消失的动画
  */
-const SideBottomLeaveAnime: AnimeType = ({ from }, complete) => {
+const SideBottomLeaveAnime: AnimeType = ({ from }, onComplete) => {
   const back = from?.querySelector(backClassName)
   const main = from?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 500, complete, easing: 'easeOutExpo' })
-  an.add({ targets: back, opacity: 0 })
-  an.add({ targets: main, translateY: '100%' }, 0)
+  const an = createTimeline({
+    defaults: { duration: 500, ease: 'outExpo' },
+    onComplete,
+  })
+  an.add(back!, { opacity: 0 })
+  an.add(main!, { translateY: '100%' }, 0)
 }
 
 /**
  * 左侧出现的动画
  */
-const SideLeftEnterAnime: AnimeType = ({ to }, complete) => {
+const SideLeftEnterAnime: AnimeType = ({ to }, onComplete) => {
   const back = to?.querySelector(backClassName)
   const main = to?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 500, easing: 'easeOutExpo', complete })
-  an.add({ targets: back, opacity: [0, 1] })
-  an.add({ targets: main, translateX: ['-100%', '0'] }, 0)
+  const an = createTimeline({
+    defaults: { duration: 500, ease: 'outExpo' },
+    onComplete,
+  })
+  an.add(back!, { opacity: [0, 1] })
+  an.add(main!, { translateX: ['-100%', '0'] }, 0)
 }
 
 /**
  * 左侧消失的动画
  */
-const SideLeftLeaveAnime: AnimeType = ({ from }, complete) => {
+const SideLeftLeaveAnime: AnimeType = ({ from }, onComplete) => {
   const back = from?.querySelector(backClassName)
   const main = from?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 500, complete, easing: 'easeOutExpo' })
-  an.add({ targets: back, opacity: 0 })
-  an.add({ targets: main, translateX: '-100%' }, 0)
+  const an = createTimeline({
+    defaults: { duration: 500, ease: 'outExpo' },
+    onComplete,
+  })
+  an.add(back!, { opacity: 0 })
+  an.add(main!, { translateX: '-100%' }, 0)
 }
 
 /**
  * 右侧出现的动画
  */
-const SideRightEnterAnime: AnimeType = ({ to }, complete) => {
+const SideRightEnterAnime: AnimeType = ({ to }, onComplete) => {
   const back = to?.querySelector(backClassName)
   const main = to?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 500, easing: 'easeOutExpo', complete })
-  an.add({ targets: back, opacity: [0, 1] })
-  an.add({ targets: main, translateX: ['100%', '0'] }, 0)
+  const an = createTimeline({
+    defaults: { duration: 500, ease: 'outExpo' },
+    onComplete,
+  })
+  an.add(back!, { opacity: [0, 1] })
+  an.add(main!, { translateX: ['100%', '0'] }, 0)
 }
 
 /**
  * 右侧消失的动画
  */
-const SideRightLeaveAnime: AnimeType = ({ from }, complete) => {
+const SideRightLeaveAnime: AnimeType = ({ from }, onComplete) => {
   const back = from?.querySelector(backClassName)
   const main = from?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 500, complete, easing: 'easeOutExpo' })
-  an.add({ targets: back, opacity: 0 })
-  an.add({ targets: main, translateX: '100%' }, 0)
+  const an = createTimeline({
+    defaults: { duration: 500, ease: 'outExpo' },
+    onComplete,
+  })
+  an.add(back!, { opacity: 0 })
+  an.add(main!, { translateX: '100%' }, 0)
 }
 
 /**
  * 上侧出现的动画
  */
-const SideTopEnterAnime: AnimeType = ({ to }, complete) => {
+const SideTopEnterAnime: AnimeType = ({ to }, onComplete) => {
   const back = to?.querySelector(backClassName)
   const main = to?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 500, easing: 'easeOutExpo', complete })
-  an.add({ targets: back, opacity: [0, 1] })
-  an.add({ targets: main, translateY: ['-100%', '0'] }, 0)
+  const an = createTimeline({
+    defaults: { duration: 500, ease: 'outExpo' },
+    onComplete,
+  })
+  an.add(back!, { opacity: [0, 1] })
+  an.add(main!, { translateY: ['-100%', '0'] }, 0)
 }
 
 /**
  * 上侧消失的动画
  */
-const SideTopLeaveAnime: AnimeType = ({ from }, complete) => {
+const SideTopLeaveAnime: AnimeType = ({ from }, onComplete) => {
   const back = from?.querySelector(backClassName)
   const main = from?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 500, complete, easing: 'easeOutExpo' })
-  an.add({ targets: back, opacity: 0 })
-  an.add({ targets: main, translateY: '-100%' }, 0)
+  const an = createTimeline({
+    defaults: { duration: 500, ease: 'outExpo' },
+    onComplete,
+  })
+  an.add(back!, { opacity: 0 })
+  an.add(main!, { translateY: '-100%' }, 0)
 }
 
 /**
  * 中侧出现的动画
  */
-const SideCenterEnterAnime: AnimeType = ({ to }, complete) => {
+const SideCenterEnterAnime: AnimeType = ({ to }, onComplete) => {
   const back = to?.querySelector(backClassName)
   const main = to?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 450, complete })
-  an.add({ targets: back, opacity: [0.5, 1], easing: 'linear' })
-  an.add({ targets: main, scale: [0.1, 1], opacity: 1 }, 0)
+  const an = createTimeline({
+    defaults: { duration: 800 },
+    onComplete,
+  })
+  an.add(back!, { opacity: [0.5, 1], ease: 'linear' })
+  an.add(main!, { scale: [0.1, 1], opacity: 1, ease: 'outElastic' }, 0)
 }
 
 /**
  * 中侧消失的动画
  */
-const SideCenterLeaveAnime: AnimeType = ({ from }, complete) => {
+const SideCenterLeaveAnime: AnimeType = ({ from }, onComplete) => {
   const back = from?.querySelector(backClassName)
   const main = from?.querySelector(mainClassName)
-  const an = anime.timeline({ duration: 150, complete, easing: 'linear' })
-  an.add({ targets: [back, main], opacity: 0 })
+  const an = createTimeline({
+    defaults: { duration: 150, ease: 'linear' },
+    onComplete,
+  })
+  an.add([back, main], { opacity: 0 })
 }
 
 /**
