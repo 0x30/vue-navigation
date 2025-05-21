@@ -7,6 +7,7 @@ import {
   ref,
   type VNode,
   type RendererElement,
+  type Component,
 } from 'vue'
 import {
   applyBackHook,
@@ -83,7 +84,11 @@ const getChildren = (ele?: HTMLElement) => {
   return ele
 }
 
-const mounted = (compoent: VNode, replace: boolean, hooks?: LifeCycleHooks) => {
+const mounted = (
+  compoent: Component | VNode,
+  replace: boolean,
+  hooks?: LifeCycleHooks,
+) => {
   return new Promise<App<Element>>((resolve) => {
     // 创建 container
     const container = document.createElement('div')

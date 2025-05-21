@@ -6,6 +6,7 @@ import {
   defineComponent,
   type VNode,
   Plugin,
+  type Component,
 } from 'vue'
 import {
   disableBodyPointerEvents,
@@ -40,7 +41,7 @@ import { startScreenEdgePanGestureRecognizer } from './hooks/progressExitAnimate
  * @param component 组件
  * @param params 页面的参数, 在页面发上变化的时候 这些参数会被携带
  */
-const push = async (component: VNode, hooks?: LifeCycleHooks) => {
+const push = async (component: Component | VNode, hooks?: LifeCycleHooks) => {
   disableBodyPointerEvents()
   const app = await mounted(component, false, hooks)
   enableBodyPointerEvents()
@@ -69,7 +70,7 @@ const push = async (component: VNode, hooks?: LifeCycleHooks) => {
  *
  * @param component 组件
  */
-const replace = async (component: VNode, hooks?: LifeCycleHooks) => {
+const replace = async (component: Component | VNode, hooks?: LifeCycleHooks) => {
   disableBodyPointerEvents()
   const app = await mounted(component, true, hooks)
   enableBodyPointerEvents()
