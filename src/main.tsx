@@ -12,7 +12,7 @@ import { navigation, onPageChange } from '@0x30/vue-navigation'
 // ).mount('#app')
 
 createApp(<Home />)
-  .use(navigation)
+  .use(navigation as any)
   .mount('#app')
 
 onPageChange(
