@@ -1,4 +1,4 @@
-import { type AppContext, getCurrentInstance } from 'vue'
+import { type AppContext, getCurrentInstance, onUnmounted } from 'vue'
 import {
   ExtensionHooks,
   getValueFromAppContext,
@@ -10,11 +10,10 @@ import {
  * 该方法，如果在某个页面多次注册，会覆盖请注意
  */
 const useLeaveBefore = (hook: (() => boolean) | (() => Promise<boolean>)) => {
-  setValueToAppContext(
-    getCurrentInstance()?.appContext,
-    ExtensionHooks.onLeaveBefore,
-    hook,
-  )
+  setLeaveBefore(getCurrentInstance()?.appContext, hook)
+  onUnmounted(() => {
+    setLeaveBefore(getCurrentInstance()?.appContext, undefined)
+  })
 }
 
 const getLeaveBefore = (context: AppContext | undefined) =>
