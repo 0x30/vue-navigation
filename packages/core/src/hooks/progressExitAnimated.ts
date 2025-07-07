@@ -12,6 +12,7 @@ import {
 import { disableBodyPointerEvents, enableBodyPointerEvents } from '../util'
 import { routerStack } from '../state'
 import { getLeaveBefore } from './leaveBefore'
+import { back } from '..'
 
 declare global {
   interface Window {
@@ -86,12 +87,10 @@ function startScreenEdgePanGestureRecognizer() {
     const lastApp = routerStack[routerStack.length - 1]
     const hook = getLeaveBefore(lastApp._context)
 
-    /// 如果有拦截返回的数据
+    /// 如果有拦截返回的数据 有拦截 就不再处理返回手势逻辑 而是直接触发返回事件 然后 拦截
     if (hook !== undefined) {
-      const result = hook()
-      if (result === false || typeof result === 'function') {
-        return
-      }
+      back()
+      return
     }
 
     const from = getChildren(lastApp._container)
