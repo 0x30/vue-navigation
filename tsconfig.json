@@ -12,8 +12,20 @@
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "noEmit": true,
-    "jsxImportSource": "vue"
+    "jsxImportSource": "vue",
+    "baseUrl": ".",
+    "paths": {
+      "@0x30/vue-navigation": ["./packages/core/src/index.ts"],
+      "@0x30/vue-navigation-layout": ["./packages/layout/src/index.ts"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "packages/*/src/**/*.ts",
+    "packages/*/src/**/*.tsx"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
