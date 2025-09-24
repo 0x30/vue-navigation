@@ -1,5 +1,7 @@
 .back {
-  background-color: rgba($color: #000000, $alpha: 0.6);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   position: absolute;
   top: 0;
   left: 0;
@@ -21,7 +23,7 @@
   height: 100vh;
 }
 
-.bottom-body {
+.bottomBody {
   @extend .body;
 
   display: flex;
@@ -29,7 +31,7 @@
   justify-content: flex-end;
 }
 
-.top-body {
+.topBody {
   @extend .body;
 
   display: flex;
@@ -37,7 +39,7 @@
   justify-content: flex-start;
 }
 
-.left-body {
+.leftBody {
   @extend .body;
 
   display: flex;
@@ -45,7 +47,7 @@
   justify-content: flex-start;
 }
 
-.right-body {
+.rightBody {
   @extend .body;
 
   display: flex;
@@ -53,7 +55,7 @@
   justify-content: flex-end;
 }
 
-.center-body {
+.centerBody {
   @extend .body;
 
   display: flex;

@@ -7,7 +7,8 @@
     "dev": "vite --host",
     "build-packages": "pnpm --dir ./packages/core build && pnpm --dir ./packages/layout build",
     "build": "vue-tsc && vite build",
-    "publish-packages": "pnpm --dir ./packages/core pub && pnpm --dir ./packages/layout pub"
+    "publish-packages": "pnpm --dir ./packages/core pub && pnpm --dir ./packages/layout pub",
+    "preview": "vite preview"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",

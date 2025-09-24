@@ -1,6 +1,90 @@
-.body {
-  background-color: #fff;
+.alertSidePage {
+  // 让确认弹窗有半透明背景
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.alertOverlay {
   display: flex;
-  flex-direction: column;
-  padding: 20px;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--spacing-lg);
+}
+
+.alertContainer {
+  background: var(--background-white);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: alertSlideIn 0.3s ease-out;
+}
+
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.alertHeader {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.alertIcon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+  display: block;
+}
+
+.alertTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.alertBody {
+  margin-bottom: var(--spacing-xl);
+}
+
+.alertMessage {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+.alertActions {
+  display: flex;
+  gap: var(--spacing-md);
+
+  button {
+    flex: 1;
+  }
+}
+
+// 响应式设计
+@media (max-width: 480px) {
+  .alertContainer {
+    padding: var(--spacing-xl);
+    margin: var(--spacing-md);
+  }
+
+  .alertActions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
 }

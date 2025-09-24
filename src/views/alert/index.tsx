@@ -8,6 +8,14 @@ const Component = defineComponent({
   name: 'AlertPage',
   props: {
     onConfirm: Function as PropType<(res: boolean) => void>,
+    title: {
+      type: String,
+      default: '确认返回',
+    },
+    message: {
+      type: String,
+      default: '您确定要离开当前页面吗？未保存的更改将会丢失。',
+    },
   },
   setup: (props) => {
     /// 将此页面配置为 安静的页面
@@ -21,12 +29,28 @@ const Component = defineComponent({
     }
 
     return () => (
-      <SidePage position="center">
-        <div class={styles.body}>
-          <span>是否要返回</span>
-          <div>
-            <button onClick={onClick(true)}>确定</button>
-            <button onClick={onClick(false)}>取消</button>
+      <SidePage position="center" class={styles.alertSidePage}>
+        <div class={styles.alertOverlay}>
+          <div class={styles.alertContainer}>
+            <div class={styles.alertHeader}>
+              <div class={styles.alertIcon}>⚠️</div>
+              <h3 class={styles.alertTitle}>{props.title}</h3>
+            </div>
+
+            <div class={styles.alertBody}>
+              <p class={styles.alertMessage}>{props.message}</p>
+            </div>
+
+            <div class={styles.alertActions}>
+              <button class="btn btn-ghost" onClick={onClick(false)}>
+                <span>✖️</span>
+                取消
+              </button>
+              <button class="btn btn-danger" onClick={onClick(true)}>
+                <span>✅</span>
+                确认返回
+              </button>
+            </div>
           </div>
         </div>
       </SidePage>
@@ -34,8 +58,8 @@ const Component = defineComponent({
   },
 })
 
-export const useConfirm = () => {
+export const useConfirm = (title?: string, message?: string) => {
   return new Promise<boolean>((resolve) => {
-    push(<Component onConfirm={resolve} />)
+    push(<Component onConfirm={resolve} title={title} message={message} />)
   })
 }
