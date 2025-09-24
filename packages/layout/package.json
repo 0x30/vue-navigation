@@ -18,6 +18,7 @@
     "animejs": "^4.0.2"
   },
   "devDependencies": {
+    "@0x30/vue-navigation": "workspace:*",
     "@vitejs/plugin-vue-jsx": "^4.2.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
