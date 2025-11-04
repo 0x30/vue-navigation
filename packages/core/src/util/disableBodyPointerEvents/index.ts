@@ -1,16 +1,16 @@
 const getDisableAllPointerEventsElement = () => {
   const element = document.querySelector('#___disable_all_pointerevents')
-  return element as HTMLDivElement
+  return element as HTMLDivElement | null
 }
 
 const disableBodyPointerEvents = () => {
   const element = getDisableAllPointerEventsElement()
-  element.style.display = 'block'
+  element && (element.style.display = 'block')
 }
 
 const enableBodyPointerEvents = () => {
   const element = getDisableAllPointerEventsElement()
-  element.style.display = 'none'
+  element && (element.style.display = 'none')
 }
 
 const initDisableAllPointerEvents = () => {
