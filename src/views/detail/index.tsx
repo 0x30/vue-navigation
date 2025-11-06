@@ -1,6 +1,6 @@
 import { defineComponent, ref } from 'vue'
-import { NavPage } from '@0x30/vue-navigation-layout'
-import { back, useLeaveBefore } from '@0x30/vue-navigation'
+import { NavPage } from 'navigation-vue'
+import { back, useLeaveBefore } from 'navigation'
 
 import { useConfirm } from '../alert'
 import styles from './index.module.scss'
@@ -158,11 +158,11 @@ const Component = defineComponent({
             <div class={styles.codeBlock}>
               <pre class={styles.code}>
                 {`// 安装
-npm install @0x30/vue-navigation
+npm install github:0x30/vue-navigation
 
 // 使用
-import { navigation } from '@0x30/vue-navigation'
-import { NavPage } from '@0x30/vue-navigation-layout'
+import { navigation } from 'navigation'
+import { NavPage } from 'navigation-vue'
 
 createApp(App)
   .use(navigation)

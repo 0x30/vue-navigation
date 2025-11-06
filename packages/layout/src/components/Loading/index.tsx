@@ -5,7 +5,7 @@ import {
   useLeaveBefore,
   enableBodyPointerEvents,
   disableBodyPointerEvents,
-} from '@0x30/vue-navigation'
+} from 'navigation'
 import { defineComponent, ref } from 'vue'
 
 import styles from './index.module.scss'

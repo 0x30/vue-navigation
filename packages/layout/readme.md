@@ -1,6 +1,6 @@
-## @0x30/vue-navigation-layout
+## navigation-vue
 
-基于 `@0x30/vue-navigation` 进行开发的组件布局库，提供了一些预设的动画
+基于 `navigation` 进行开发的组件布局库，提供了一些预设的动画
 
 
 ### 组件
