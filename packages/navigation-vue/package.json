@@ -8,22 +8,19 @@
     "vue": "^3.3.0"
   },
   "dependencies": {
-    "@0x30/navigation-core": "workspace:*",
-    "@0x30/navigation-vue": "workspace:*"
+    "@0x30/navigation-core": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue-jsx": "^4.2.0",
-    "sass": "^1.89.0",
     "typescript": "^5.8.3",
     "vite": "^5.4.19",
-    "vite-plugin-css-injected-by-js": "^3.5.2",
     "vite-plugin-dts": "^4.5.4",
     "vue-tsc": "^2.2.10"
   },
-  "name": "@0x30/vue-navigation",
-  "version": "1.3.18",
-  "main": "./dist/vue-navigation.umd.cjs",
-  "module": "./dist/vue-navigation.js",
+  "name": "@0x30/navigation-vue",
+  "version": "1.0.0",
+  "main": "./dist/navigation-vue.umd.cjs",
+  "module": "./dist/navigation-vue.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -31,8 +28,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/vue-navigation.js",
-      "require": "./dist/vue-navigation.umd.cjs"
+      "import": "./dist/navigation-vue.js",
+      "require": "./dist/navigation-vue.umd.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -47,6 +44,7 @@
   "homepage": "https://github.com/0x30/vue-navigation#readme",
   "keywords": [
     "vue3",
+    "navigation",
     "router",
     "anime",
     "KeepAlive"

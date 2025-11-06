@@ -15,10 +15,12 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', '@0x30/navigation-core', '@0x30/navigation-vue'],
       output: {
         globals: {
           vue: 'Vue',
+          '@0x30/navigation-core': 'NavigationCore',
+          '@0x30/navigation-vue': 'NavigationVue',
         },
       },
     },

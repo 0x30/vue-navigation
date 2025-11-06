@@ -6,9 +6,9 @@
   ],
   "scripts": {
     "dev": "vite --host",
-    "build-packages": "pnpm --dir ./packages/core build && pnpm --dir ./packages/layout build",
+    "build-packages": "pnpm --dir ./packages/navigation-core build && pnpm --dir ./packages/navigation-vue build && pnpm --dir ./packages/core build && pnpm --dir ./packages/layout build",
     "build": "vue-tsc && vite build",
-    "publish-packages": "pnpm --dir ./packages/core pub && pnpm --dir ./packages/layout pub",
+    "publish-packages": "pnpm --dir ./packages/navigation-core pub && pnpm --dir ./packages/navigation-vue pub && pnpm --dir ./packages/core pub && pnpm --dir ./packages/layout pub",
     "preview": "vite preview"
   },
   "devDependencies": {
