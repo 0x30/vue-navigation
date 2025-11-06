@@ -17,8 +17,8 @@
   },
   "name": "navigation",
   "version": "1.3.18",
-  "main": "./dist/vue-navigation.umd.cjs",
-  "module": "./dist/vue-navigation.js",
+  "main": "./dist/navigation.umd.cjs",
+  "module": "./dist/navigation.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -26,8 +26,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/vue-navigation.js",
-      "require": "./dist/vue-navigation.umd.cjs"
+      "import": "./dist/navigation.js",
+      "require": "./dist/navigation.umd.cjs"
     },
     "./package.json": "./package.json"
   },

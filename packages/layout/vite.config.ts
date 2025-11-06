@@ -11,23 +11,23 @@ export default defineConfig({
   plugins: [jsx(), dts({ rollupTypes: true }), cssInjectedByJsPlugin()],
   resolve: {
     alias: {
-      '@0x30/vue-navigation': resolve(fileURLToPath(new URL('.', import.meta.url)), '../core/src/index.ts'),
+      'navigation': resolve(fileURLToPath(new URL('.', import.meta.url)), '../core/src/index.ts'),
     },
   },
   build: {
     lib: {
       entry: 'src/index.ts',
-      name: 'vueNavigationLayout',
-      fileName: 'vue-navigation-layout',
+      name: 'navigationVue',
+      fileName: 'navigation-vue',
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['vue', 'animejs', '@0x30/vue-navigation'],
+      external: ['vue', 'animejs', 'navigation'],
       output: {
         globals: {
           vue: 'Vue',
           animejs: 'animejs',
-          '@0x30/vue-navigation': 'vueNavigation',
+          'navigation': 'navigation',
         },
       },
     },

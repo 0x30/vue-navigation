@@ -10,8 +10,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: 'src/index.ts',
-      name: 'vueNavigation',
-      fileName: 'vue-navigation',
+      name: 'navigation',
+      fileName: 'navigation',
       formats: ['es', 'umd'],
     },
     rollupOptions: {

@@ -29,8 +29,8 @@
     "vue-tsc": "^2.2.10"
   },
   "type": "module",
-  "main": "./dist/vue-navigation-layout.umd.cjs",
-  "module": "./dist/vue-navigation-layout.js",
+  "main": "./dist/navigation-vue.umd.cjs",
+  "module": "./dist/navigation-vue.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -38,8 +38,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/vue-navigation-layout.js",
-      "require": "./dist/vue-navigation-layout.umd.cjs"
+      "import": "./dist/navigation-vue.js",
+      "require": "./dist/navigation-vue.umd.cjs"
     }
   },
   "repository": {
