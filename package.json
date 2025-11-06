@@ -1,4 +1,5 @@
 {
+  "name": "vue-navigation-workspace",
   "private": true,
   "workspaces": [
     "packages/*"
