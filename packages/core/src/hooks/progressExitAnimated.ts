@@ -103,7 +103,8 @@ function startScreenEdgePanGestureRecognizer() {
         execProgressExitAnimated({ from, to }, ev.detail.progress)
         break
       default:
-        execProgressExitAnimated({ from, to }, 0, ev.detail.isFinish)
+        // ev.detail is EndData in the default case
+        execProgressExitAnimated({ from, to }, 0, (ev.detail as EndData).isFinish)
         break
     }
   })
