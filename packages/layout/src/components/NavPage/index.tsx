@@ -3,7 +3,7 @@ import {
   useTransitionEnter,
   useTransitionLeave,
   useProgressExitAnimated,
-} from '@0x30/vue-navigation'
+} from 'navigation'
 import { utils, createTimeline, type TimelineParams } from 'animejs'
 import { defineComponent } from 'vue'
 import Page from '../Page'

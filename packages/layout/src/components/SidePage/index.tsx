@@ -7,7 +7,7 @@ import {
 } from 'vue'
 
 import styles from './index.module.scss'
-import { useTransitionEnter, useTransitionLeave } from '@0x30/vue-navigation'
+import { useTransitionEnter, useTransitionLeave } from 'navigation'
 import { createTimeline } from 'animejs'
 
 const backClassName = `.${styles.back}`

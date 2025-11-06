@@ -1,9 +1,16 @@
-## @0x30/vue-navigation
+## navigation
 
 ## 安装
 
 ```shell
-pnpm install @0x30/vue-navigation
+npm install github:0x30/vue-navigation
+```
+
+使用workspace方式安装后，可以通过 `navigation` 和 `navigation-vue` 两个包名导入。
+
+```js
+import { navigation } from 'navigation'
+import { NavPage } from 'navigation-vue'
 ```
 
 ## 使用
@@ -13,7 +20,7 @@ pnpm install @0x30/vue-navigation
 component 方式
 
 ```jsx
-import { Navigator } from '@0x30/vue-navigation'
+import { Navigator } from 'navigation'
 
 createApp(
   <Navigator>
@@ -25,7 +32,7 @@ createApp(
 plugin 方式
 
 ```jsx
-import { navigation } from '@0x30/vue-navigation'
+import { navigation } from 'navigation'
 
 createApp(<Home />)
   .use(navigation)
@@ -35,7 +42,7 @@ createApp(<Home />)
 ### 操作方法
 
 ```jsx
-import { push, replace, to } from '@0x30/vue-navigation'
+import { push, replace, to } from 'navigation'
 
 /**
  * 推出 一个 div 到当前之上
@@ -56,7 +63,7 @@ to(true)(<div />)
 返回
 
 ```js
-import { back, blackBoxBack, backToHome } from '@0x30/vue-navigation'
+import { back, blackBoxBack, backToHome } from 'navigation'
 
 /**
  * 返回方法
