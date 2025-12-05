@@ -1,8 +1,7 @@
 import { type PropType, defineComponent } from 'vue'
-import { SidePage } from '@0x30/vue-navigation-layout'
+import { SidePage, back, push, useQuietPage } from '@0x30/navigation-vue'
 
 import styles from './index.module.scss'
-import { back, push, useQuietPage } from '@0x30/vue-navigation'
 
 const Component = defineComponent({
   name: 'AlertPage',

@@ -1,0 +1,38 @@
+{
+  "name": "@0x30/navigation-core",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Framework-agnostic navigation/router core",
+  "main": "./dist/navigation-core.umd.cjs",
+  "module": "./dist/navigation-core.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/navigation-core.js",
+      "require": "./dist/navigation-core.umd.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc && vite build",
+    "pub": "pnpm run build && npm publish --access public --registry https://registry.npmjs.org"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^5.4.19",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0x30/vue-navigation.git"
+  },
+  "keywords": ["navigation", "router", "core"],
+  "author": "0x30",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/0x30/vue-navigation/issues"
+  },
+  "homepage": "https://github.com/0x30/vue-navigation#readme"
+}

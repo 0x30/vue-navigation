@@ -1,7 +1,5 @@
 import { defineComponent, ref } from 'vue'
-import { SidePage } from '@0x30/vue-navigation-layout'
-import { back } from '@0x30/vue-navigation'
-import { useToast } from '@0x30/vue-navigation-layout'
+import { SidePage, back, useToast } from '@0x30/navigation-vue'
 import styles from './index.module.scss'
 
 export const LoginPage = defineComponent({

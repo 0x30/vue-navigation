@@ -3,7 +3,7 @@ import {
   onDidDisappear,
   onWillAppear,
   onWillDisappear,
-} from '@0x30/vue-navigation'
+} from '@0x30/navigation-vue'
 
 const useHooks = (title: string) => {
   onWillAppear(() => {

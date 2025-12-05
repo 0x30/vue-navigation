@@ -5,8 +5,9 @@ import {
   SidePage,
   showLoading,
   useToast,
-} from '@0x30/vue-navigation-layout'
-import { back, push } from '@0x30/vue-navigation'
+  back,
+  push,
+} from '@0x30/navigation-vue'
 
 import DetailPage from '../detail'
 import { LoginPage } from '../login'

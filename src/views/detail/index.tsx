@@ -1,6 +1,5 @@
 import { defineComponent, ref } from 'vue'
-import { NavPage } from '@0x30/vue-navigation-layout'
-import { back, useLeaveBefore } from '@0x30/vue-navigation'
+import { NavPage, back, useLeaveBefore } from '@0x30/navigation-vue'
 
 import { useConfirm } from '../alert'
 import styles from './index.module.scss'
