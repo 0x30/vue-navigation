@@ -6,6 +6,9 @@ import type {
   PageMate,
 } from './state'
 
+// Re-export types
+export type { TransitionAnimatorHook }
+
 /**
  * 设置页面为安静页面
  * 安静页面不会触发其他页面的 appear/disappear 事件

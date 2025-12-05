@@ -10,6 +10,7 @@ import styles from './index.module.scss'
 import {
   useTransitionEnter,
   useTransitionLeave,
+  type TransitionAnimatorHook,
 } from '../../hooks'
 import { createTimeline } from 'animejs'
 
@@ -27,34 +28,7 @@ const cloneSlot = (
   return cloneVNode(element, extraProps, mergeRef)
 }
 
-type AnimeType = Parameters<typeof useTransitionEnter>[0]
-
-type CustomAnimeType = (
-  /**
-   * 组件
-   */
-  elements: {
-    from?: Element
-    to?: Element
-  },
-  /**
-   * 动画执行完毕
-   */
-  done: () => void,
-  /**
-   * 目标组件
-   */
-  target: {
-    /**
-     * 背景 element
-     */
-    backElement?: ReturnType<typeof document.querySelector>
-    /**
-     * 主视图 element
-     */
-    mainElement?: ReturnType<typeof document.querySelector>
-  },
-) => void
+type AnimeType = TransitionAnimatorHook
 
 /**
  * 底部出现的动画
@@ -195,28 +169,6 @@ const SideCenterLeaveAnime: AnimeType = ({ from }, onComplete) => {
   an.add([back, main], { opacity: 0 })
 }
 
-/**
- * 自定义 动画出现方法 额外放一个 back 和 main 的element
- */
-const SideCustomEnterAnimer = (custom?: CustomAnimeType): AnimeType => {
-  return (...params) => {
-    const back = params[0].to?.querySelector(backClassName)
-    const main = params[0].to?.querySelector(mainClassName)
-    custom?.(...params, { backElement: back, mainElement: main })
-  }
-}
-
-/**
- * 自定义 动画出现方法 额外放一个 back 和 main 的element
- */
-const SideCustomLeaveAnimer = (custom: CustomAnimeType): AnimeType => {
-  return (...params) => {
-    const back = params[0].from?.querySelector(backClassName)
-    const main = params[0].from?.querySelector(mainClassName)
-    custom(...params, { backElement: back, mainElement: main })
-  }
-}
-
 const Component = defineComponent({
   name: 'SidePage',
   props: {
@@ -225,11 +177,11 @@ const Component = defineComponent({
     /**
      * 重写 出现动画方法
      */
-    overrideEnterAnime: Function as PropType<CustomAnimeType>,
+    overrideEnterAnime: Function as PropType<TransitionAnimatorHook>,
     /**
      * 重写 推出动画方法
      */
-    overrideLeaveAnime: Function as PropType<CustomAnimeType>,
+    overrideLeaveAnime: Function as PropType<TransitionAnimatorHook>,
     /**
      * 目前只有 底部
      */
@@ -240,8 +192,7 @@ const Component = defineComponent({
   },
   setup: (props, { slots }) => {
     const getEnterAnime = () => {
-      if (props.overrideEnterAnime)
-        return SideCustomEnterAnimer(props.overrideEnterAnime)
+      if (props.overrideEnterAnime) return props.overrideEnterAnime
       if (props.position === 'bottom') return SideBottomEnterAnime
       if (props.position === 'center') return SideCenterEnterAnime
       if (props.position === 'left') return SideLeftEnterAnime
@@ -250,8 +201,7 @@ const Component = defineComponent({
     }
 
     const getLeaveAnime = () => {
-      if (props.overrideLeaveAnime)
-        return SideCustomLeaveAnimer(props.overrideLeaveAnime)
+      if (props.overrideLeaveAnime) return props.overrideLeaveAnime
       if (props.position === 'bottom') return SideBottomLeaveAnime
       if (props.position === 'center') return SideCenterLeaveAnime
       if (props.position === 'left') return SideLeftLeaveAnime

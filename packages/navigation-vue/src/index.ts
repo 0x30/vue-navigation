@@ -38,10 +38,16 @@ export {
   onPageChange,
   useProgressExitAnimated,
   useAppBeforeMount,
+  useHero,
   type PageMate,
   type TransitionAnimatorHook,
   type ProgressExitAnimatedHandler,
   type LeaveBeforeHook,
+  type HeroAnimationContext,
+  type HeroEnterHandler,
+  type HeroLeaveHandler,
+  type UseHeroOptions,
+  type UseHeroResult,
 } from './hooks'
 
 // Components

@@ -44,6 +44,16 @@ export {
   onDidDisappear,
 } from './hooks'
 
+// Hero Animation
+export {
+  useHero,
+  type HeroAnimationContext,
+  type HeroEnterHandler,
+  type HeroLeaveHandler,
+  type UseHeroOptions,
+  type UseHeroResult,
+} from './useHero'
+
 // Context
 export { usePageContext, usePageContextSafe, PageContext } from './context'
 
