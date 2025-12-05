@@ -51,7 +51,7 @@ jobs:
       - name: Build packages
         run: pnpm build-packages
 
-      - name: Build landing page
+      - name: Build docs (VitePress)
         run: pnpm --dir ./examples/landing build
 
       - name: Build Vue demo
@@ -63,7 +63,7 @@ jobs:
       - name: Prepare dist folder
         run: |
           mkdir -p dist
-          cp -r examples/landing/dist/* dist/
+          cp -r examples/landing/docs/.vitepress/dist/* dist/
           mkdir -p dist/vue
           cp -r examples/vue-demo/dist/* dist/vue/
           mkdir -p dist/react
