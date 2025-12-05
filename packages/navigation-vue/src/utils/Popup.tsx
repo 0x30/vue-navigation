@@ -50,6 +50,7 @@ export const Popup = (options?: TransitionProps & { root?: Element }) => {
 
   const app = createApp(() => (
     <Transition
+      css={false}
       {...options}
       onAfterEnter={(el) => {
         if (options?.onAfterEnter) {
@@ -72,7 +73,7 @@ export const Popup = (options?: TransitionProps & { root?: Element }) => {
         }
 
         app.unmount()
-        document.body.removeChild(container)
+        container.parentElement?.removeChild(container)
         __resolve?.()
       }}
     >

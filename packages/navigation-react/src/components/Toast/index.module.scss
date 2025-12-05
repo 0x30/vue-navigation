@@ -12,6 +12,10 @@
 }
 
 .toast {
+  position: fixed;
+  bottom: 20%;
+  left: 50%;
+
   background-color: rgba(0, 0, 0, 0.8);
   color: #fff;
 
@@ -22,4 +26,6 @@
   max-width: 60%;
   white-space: pre-line;
   text-align: center;
+  
+  z-index: 9999;
 }

@@ -13,6 +13,7 @@ export {
   blackBoxBack,
   backToHome,
   initNavigation,
+  Navigator,
 } from './navigation'
 
 // Components
@@ -53,6 +54,9 @@ export {
   type UseHeroOptions,
   type UseHeroResult,
 } from './useHero'
+
+// Utilities
+export { Popup } from './utils'
 
 // Context
 export { usePageContext, usePageContextSafe, PageContext } from './context'

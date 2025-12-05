@@ -1,89 +1,81 @@
-import { type FC, useState, useEffect, useCallback, useRef } from 'react'
-import { animate } from 'animejs'
+import { type FC } from 'react'
+import { animate, utils } from 'animejs'
+import { Popup } from '../../utils'
 import styles from './index.module.scss'
 
-interface ToastItem {
-  id: number
-  message: string
-  className?: string
-}
-
-let toastId = 0
-let globalToasts: ToastItem[] = []
-let listeners: Set<(toasts: ToastItem[]) => void> = new Set()
-
-const setToasts = (toasts: ToastItem[]) => {
-  globalToasts = toasts
-  listeners.forEach(listener => listener(toasts))
-}
-
-const addToast = (message: string, duration: number, className?: string) => {
-  const id = ++toastId
-  setToasts([...globalToasts, { id, message, className }])
-  
-  setTimeout(() => {
-    setToasts(globalToasts.filter(t => t.id !== id))
-  }, duration)
-}
-
 /**
- * Toast 容器组件 - 需要在应用根部渲染一次
+ * Toast 组件
  */
-export const ToastContainer: FC = () => {
-  const [toasts, setLocalToasts] = useState<ToastItem[]>(globalToasts)
-
-  useEffect(() => {
-    const listener = (newToasts: ToastItem[]) => setLocalToasts([...newToasts])
-    listeners.add(listener)
-    return () => {
-      listeners.delete(listener)
-    }
-  }, [])
-
+const Toast: FC<{ message: string; className?: string }> = ({ message, className }) => {
   return (
-    <div className={styles.container}>
-      {toasts.map(toast => (
-        <ToastItem key={toast.id} {...toast} />
-      ))}
-    </div>
-  )
-}
-
-const ToastItem: FC<ToastItem> = ({ message, className }) => {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (ref.current) {
-      animate(ref.current, {
-        opacity: [0, 1],
-        scale: [0.8, 1],
-        duration: 500,
-        ease: 'outElastic',
-      })
-    }
-  }, [])
-
-  return (
-    <div ref={ref} className={className ?? styles.toast}>
+    <div className={className ?? styles.toast}>
       {message}
     </div>
   )
 }
 
+interface ToastOptions {
+  duration?: number
+  className?: string
+}
+
 /**
- * 显示 Toast 消息
+ * 显示 Toast 消息 - 动态创建 DOM，无需预渲染容器
  */
-export const showToast = (message: string, duration = 2000, className?: string) => {
-  addToast(message, duration, className)
+export const showToast = (message: string, options?: ToastOptions | number) => {
+  const opts: ToastOptions = typeof options === 'number' ? { duration: options } : options ?? {}
+  const duration = opts.duration ?? 2000
+
+  const [show, close] = Popup({
+    onEnter(el, done) {
+      // 找到实际的 toast 元素
+      const toastEl = el.firstElementChild as HTMLElement
+      if (toastEl) {
+        utils.set(toastEl, { transform: 'translateX(-50%)' })
+        animate(toastEl, {
+          opacity: [0, 1],
+          scale: [0.8, 1],
+          translateX: '-50%',
+          duration: 500,
+          ease: 'outElastic',
+          onComplete: done,
+        })
+      } else {
+        done()
+      }
+    },
+    onLeave(el, done) {
+      const toastEl = el.firstElementChild as HTMLElement
+      if (toastEl) {
+        animate(toastEl, {
+          opacity: [1, 0],
+          duration: 300,
+          ease: 'inQuad',
+          onComplete: done,
+        })
+      } else {
+        done()
+      }
+    },
+  })
+
+  show(<Toast message={message} className={opts.className} />)
+  setTimeout(close, duration)
 }
 
 /**
  * 使用 Toast 的 Hook
  */
 export const useToast = () => {
-  const show = useCallback((message: string, duration = 2000, className?: string) => {
-    showToast(message, duration, className)
-  }, [])
+  return {
+    show: showToast,
+  }
+}
 
-  return { show }
+/**
+ * @deprecated 不再需要使用 ToastContainer，Toast 现在会自动创建 DOM
+ */
+export const ToastContainer: FC = () => {
+  console.warn('ToastContainer is deprecated and no longer needed. Toast now creates DOM dynamically.')
+  return null
 }

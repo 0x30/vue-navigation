@@ -3,7 +3,6 @@ import React, {
   useState,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
 } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -67,8 +66,8 @@ const PageWrapper: React.FC<PageWrapperProps> = ({
     [item]
   )
 
-  // 进入动画 - 使用 useLayoutEffect 确保在子组件渲染后、浏览器绑制前执行
-  useLayoutEffect(() => {
+  // 进入动画 - 使用 useEffect 确保在渲染完成后执行
+  useEffect(() => {
     if (hasEntered.current) return
     hasEntered.current = true
 
@@ -168,11 +167,14 @@ export const mounted = (
 
     const onMounted = () => {
       // 替换模式：移除倒数第二个页面
+      // 使用 setTimeout 延迟执行，避免在 React 渲染期间调用 unmount
       if (replace && routerStack.length > 1) {
-        const removedItems = spliceRouterItems(routerStack.length - 2, 1) as ReactRouterStackItem[]
-        removedItems.forEach((removedItem) => {
-          unmounted(false, false, removedItem)
-        })
+        setTimeout(() => {
+          const removedItems = spliceRouterItems(routerStack.length - 2, 1) as ReactRouterStackItem[]
+          removedItems.forEach((removedItem) => {
+            unmounted(false, false, removedItem)
+          })
+        }, 0)
       }
       resolve(item)
     }
@@ -231,11 +233,27 @@ export const unmounted = (
   backHookId?: string
 ) => {
   if (!item) return
+  
+  // 防止重复 unmount
+  if (!item.root) {
+    if (needApplyBackHook) {
+      enableBodyPointerEvents()
+      applyBackHook(backHookId)
+    }
+    return
+  }
 
   const doUnmount = () => {
     cleanupLifecycleCallbacks(item.id)
-    item.root.unmount()
-    item.container.parentElement?.removeChild(item.container)
+    // 使用 setTimeout 确保不在 React 渲染期间 unmount
+    setTimeout(() => {
+      if (item.root) {
+        item.root.unmount()
+        // 标记为已 unmount
+        ;(item as any).root = null
+      }
+      item.container?.parentElement?.removeChild(item.container)
+    }, 0)
 
     if (needApplyBackHook) {
       enableBodyPointerEvents()
