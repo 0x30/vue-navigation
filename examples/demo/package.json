@@ -1,0 +1,30 @@
+{
+  "name": "navigation-demo",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@0x30/navigation-core": "workspace:*",
+    "@0x30/navigation-vue": "workspace:*",
+    "@0x30/navigation-react": "workspace:*",
+    "animejs": "^4.0.2",
+    "vue": "^3.5.13",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "@vitejs/plugin-vue-jsx": "^4.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "sass": "^1.89.0",
+    "typescript": "^5.8.2",
+    "vite": "^5.4.19"
+  }
+}

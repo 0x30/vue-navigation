@@ -1,32 +1,23 @@
 {
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ],
   "scripts": {
     "dev": "vite --host",
-    "build-packages": "pnpm --dir ./packages/core build && pnpm --dir ./packages/layout build",
-    "build": "vue-tsc && vite build",
-    "publish-packages": "pnpm --dir ./packages/core pub && pnpm --dir ./packages/layout pub",
+    "dev:vue": "pnpm --dir ./examples/vue-demo dev",
+    "dev:react": "pnpm --dir ./examples/react-demo dev",
+    "dev:all": "concurrently \"pnpm dev\" \"pnpm dev:vue\" \"pnpm dev:react\"",
+    "build-packages": "pnpm --dir ./packages/navigation-core build && pnpm --dir ./packages/navigation-vue build && pnpm --dir ./packages/navigation-react build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
-    "@typescript-eslint/eslint-plugin": "^8.32.1",
-    "@typescript-eslint/parser": "^8.32.1",
-    "@vitejs/plugin-vue-jsx": "^4.2.0",
-    "eslint": "^9.27.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.4.0",
-    "eslint-plugin-vue": "^9.33.0",
-    "prettier": "^3.5.3",
+    "concurrently": "^8.2.2",
     "typescript": "^5.8.3",
-    "vite": "^5.4.19",
-    "vue-tsc": "^2.2.10"
+    "vite": "^5.4.19"
   },
-  "dependencies": {
-    "@0x30/navigation-vue": "workspace:*",
-    "animejs": "^4.0.2",
-    "vue": "^3.5.14"
-  }
+  "dependencies": {}
 }

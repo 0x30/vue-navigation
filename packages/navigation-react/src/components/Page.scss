@@ -1,0 +1,13 @@
+.react-navigation-layout-body {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  display: flex;
+  flex-direction: column;
+
+  box-shadow: -5px 0px 20px 0px rgba(100, 100, 100, 0.15);
+  background-color: #fff;
+}

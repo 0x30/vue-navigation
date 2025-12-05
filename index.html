@@ -1,26 +1,218 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Vue Navigation - 现代化的 Vue.js 路由导航解决方案" />
-    <meta name="keywords" content="Vue.js, Navigation, Router, Animation, SPA, 路由, 导航, 动画" />
-    <meta name="author" content="0x30" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Navigation - Vue & React 导航组件库</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Vue Navigation Demo" />
-    <meta property="og:description" content="体验流畅的页面转场动画和丰富的交互组件" />
-    <meta property="og:type" content="website" />
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
     
-    <title>🚀 Vue Navigation - 现代化路由导航解决方案</title>
+    .container {
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+    }
     
-    <!-- 预加载字体 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    .logo {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    h1 {
+      color: white;
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    
+    .subtitle {
+      color: rgba(255,255,255,0.9);
+      font-size: 20px;
+      margin-bottom: 48px;
+      line-height: 1.6;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+    
+    .feature {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 24px;
+      color: white;
+    }
+    
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    
+    .feature h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    
+    .feature p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .demos {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .demo-card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px 48px;
+      text-decoration: none;
+      color: #333;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      min-width: 200px;
+    }
+    
+    .demo-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .demo-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .demo-card h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    
+    .demo-card p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .vue-card {
+      border-bottom: 4px solid #42b883;
+    }
+    
+    .react-card {
+      border-bottom: 4px solid #61dafb;
+    }
+    
+    .footer {
+      margin-top: 48px;
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+    }
+    
+    .footer a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 32px;
+      }
+      
+      .subtitle {
+        font-size: 16px;
+      }
+      
+      .demo-card {
+        width: 100%;
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">🧭</div>
+    <h1>Navigation</h1>
+    <p class="subtitle">
+      轻量级的移动端导航组件库<br>
+      支持 Vue 和 React，提供流畅的页面切换动画和手势返回
+    </p>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🎭</div>
+        <h3>平滑动画</h3>
+        <p>原生级别的页面切换动画效果</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">👆</div>
+        <h3>手势返回</h3>
+        <p>支持滑动手势返回上一页</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔄</div>
+        <h3>生命周期</h3>
+        <p>完整的页面生命周期管理</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📦</div>
+        <h3>轻量设计</h3>
+        <p>核心代码仅几 KB，零依赖</p>
+      </div>
+    </div>
+    
+    <h2 style="color: white; margin-bottom: 24px; font-size: 24px;">选择演示版本</h2>
+    
+    <div class="demos">
+      <a href="/vue/" class="demo-card vue-card">
+        <div class="demo-icon">💚</div>
+        <h2>Vue 版本</h2>
+        <p>使用 @0x30/navigation-vue</p>
+      </a>
+      
+      <a href="/react/" class="demo-card react-card">
+        <div class="demo-icon">💙</div>
+        <h2>React 版本</h2>
+        <p>使用 @0x30/navigation-react</p>
+      </a>
+    </div>
+    
+    <div class="footer">
+      <p>
+        <a href="https://github.com/0x30/vue-navigation" target="_blank">GitHub</a>
+        &nbsp;·&nbsp;
+        <a href="https://www.npmjs.com/package/@0x30/navigation-core" target="_blank">NPM</a>
+      </p>
+      <p style="margin-top: 8px;">Made with ❤️ by 0x30</p>
+    </div>
+  </div>
+</body>
 </html>

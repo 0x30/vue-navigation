@@ -1,0 +1,275 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ededed;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #ededed;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #191919;
+  }
+  
+  .headerRight {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .icon {
+    font-size: 20px;
+    cursor: pointer;
+  }
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// 消息列表
+.messageList {
+  background: #fff;
+}
+
+.messageItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  
+  &:active {
+    background: #f5f5f5;
+  }
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-right: 12px;
+}
+
+.messageContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.name {
+  font-size: 16px;
+  color: #191919;
+  font-weight: 500;
+}
+
+.time {
+  font-size: 12px;
+  color: #999;
+}
+
+.lastMessage {
+  font-size: 14px;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// 通讯录
+.contacts {
+  .searchBar {
+    padding: 8px 16px;
+    background: #ededed;
+    
+    span {
+      display: block;
+      background: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      color: #999;
+      font-size: 14px;
+    }
+  }
+  
+  .contactSection {
+    background: #fff;
+    margin-top: 8px;
+  }
+  
+  .sectionTitle {
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #999;
+    background: #ededed;
+  }
+  
+  .contactItem {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    
+    &:active {
+      background: #f5f5f5;
+    }
+    
+    .contactIcon {
+      font-size: 24px;
+      margin-right: 12px;
+    }
+  }
+}
+
+// 发现
+.discover {
+  margin-top: 8px;
+}
+
+.discoverItem {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  
+  &:active {
+    background: #f5f5f5;
+  }
+  
+  .discoverIcon {
+    font-size: 24px;
+    margin-right: 12px;
+  }
+  
+  .arrow {
+    margin-left: auto;
+    color: #999;
+    font-size: 20px;
+  }
+}
+
+// 我
+.me {
+  .profile {
+    display: flex;
+    align-items: center;
+    padding: 20px 16px;
+    background: #fff;
+    margin-bottom: 8px;
+    
+    .profileAvatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 4px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin-right: 16px;
+    }
+    
+    .profileInfo {
+      .profileName {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      
+      .profileId {
+        font-size: 14px;
+        color: #999;
+      }
+    }
+  }
+  
+  .meSection {
+    background: #fff;
+    margin-bottom: 8px;
+  }
+  
+  .meItem {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:active {
+      background: #f5f5f5;
+    }
+    
+    .meIcon {
+      font-size: 24px;
+      margin-right: 12px;
+    }
+  }
+}
+
+// TabBar
+.tabBar {
+  background: #f7f7f7;
+  border-top: 1px solid #e5e5e5;
+}
+
+.tabBarContent {
+  display: flex;
+  padding: 4px 0 8px;
+}
+
+.tabItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  
+  .tabIcon {
+    font-size: 24px;
+    margin-bottom: 2px;
+    opacity: 0.6;
+  }
+  
+  .tabLabel {
+    font-size: 10px;
+    color: #999;
+  }
+  
+  &.active {
+    .tabIcon {
+      opacity: 1;
+    }
+    
+    .tabLabel {
+      color: #07c160;
+    }
+  }
+}

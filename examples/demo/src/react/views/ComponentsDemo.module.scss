@@ -1,0 +1,212 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #f5f5f5;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #ededed;
+  
+  .backBtn {
+    color: #191919;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 16px;
+  }
+  
+  .title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #191919;
+  }
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.section {
+  margin-top: 8px;
+  background: #fff;
+}
+
+.sectionTitle {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #999;
+  background: #f5f5f5;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  
+  &:active {
+    background: #f5f5f5;
+  }
+  
+  .arrow {
+    color: #999;
+    font-size: 18px;
+  }
+}
+
+.desc {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 2;
+  color: #666;
+  
+  p {
+    margin: 0;
+  }
+}
+
+// 底部弹出
+.bottomSheet {
+  background: #fff;
+  border-radius: 12px 12px 0 0;
+  min-height: 300px;
+  
+  .sheetHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 16px;
+    font-weight: 600;
+    
+    .closeBtn {
+      cursor: pointer;
+      font-size: 20px;
+      color: #999;
+    }
+  }
+  
+  .sheetContent {
+    padding: 20px 16px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.8;
+  }
+}
+
+// 右侧抽屉
+.rightDrawer {
+  background: #fff;
+  width: 280px;
+  height: 100%;
+  
+  .drawerHeader {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 16px;
+    font-weight: 600;
+    
+    .backBtn {
+      font-size: 24px;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+  }
+  
+  .drawerContent {
+    padding: 20px 16px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.8;
+  }
+}
+
+// 中心弹窗
+.centerModal {
+  background: #fff;
+  border-radius: 12px;
+  width: 280px;
+  overflow: hidden;
+  
+  .modalHeader {
+    padding: 20px 16px 12px;
+    font-size: 17px;
+    font-weight: 600;
+    text-align: center;
+  }
+  
+  .modalContent {
+    padding: 0 16px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+  }
+  
+  .modalActions {
+    display: flex;
+    border-top: 1px solid #f0f0f0;
+    
+    button {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      background: none;
+      font-size: 16px;
+      cursor: pointer;
+      
+      &:active {
+        background: #f5f5f5;
+      }
+    }
+    
+    .cancelBtn {
+      color: #666;
+      border-right: 1px solid #f0f0f0;
+    }
+    
+    .confirmBtn {
+      color: #07c160;
+      font-weight: 500;
+    }
+  }
+}
+
+// 普通页面
+.simplePage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #f5f5f5;
+  
+  .simpleHeader {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: #ededed;
+    
+    .backBtn {
+      color: #191919;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 16px;
+    }
+  }
+  
+  .simpleContent {
+    flex: 1;
+    padding: 20px 16px;
+    font-size: 14px;
+    color: #666;
+    line-height: 2;
+  }
+}

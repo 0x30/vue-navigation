@@ -27,6 +27,8 @@ import { mounted, unmounted, type LifeCycleHooks, type VueRouterStackItem } from
 import { getLeaveBefore, setLeaveBefore } from './hooks/leaveBefore'
 import { getProgressExitAnimated } from './hooks/progressExitAnimated'
 
+let isInitialized = false
+
 // 注册 Vue 相关的回调
 const setupVueCallbacks = () => {
   // 注册 unmount 回调
@@ -58,9 +60,25 @@ const setupVueCallbacks = () => {
 }
 
 /**
+ * 初始化导航（自动调用，无需手动调用）
+ */
+const initNavigation = () => {
+  if (isInitialized) return
+  isInitialized = true
+
+  setupVueCallbacks()
+
+  const { add } = listenPopState(true)
+  add()
+  startScreenEdgePanGestureRecognizer()
+}
+
+/**
  * 前进方法
  */
 export const push = async (component: Component | VNode, hooks?: LifeCycleHooks) => {
+  initNavigation()
+  
   disableBodyPointerEvents()
   const item = await mounted(component, false, hooks)
 
@@ -82,6 +100,8 @@ export const push = async (component: Component | VNode, hooks?: LifeCycleHooks)
  * 替换方法
  */
 export const replace = async (component: Component | VNode, hooks?: LifeCycleHooks) => {
+  initNavigation()
+  
   disableBodyPointerEvents()
   const item = await mounted(component, true, hooks)
 
