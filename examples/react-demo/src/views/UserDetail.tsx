@@ -35,7 +35,7 @@ const ImagePreview: FC<{ src: string }> = ({ src }) => {
 
     // Hero 动画
     if (hero.matched) {
-      ctx.timeline.add(hero.hero!, hero.getEnterParams()!, 0)
+      ctx.timeline.add(hero.hero!, hero.getEnterParams(), 0)
     } else {
       // 降级动画
       ctx.timeline.add(ctx.mainElement!, { scale: [0.8, 1], opacity: [0, 1] }, 0)
@@ -55,7 +55,7 @@ const ImagePreview: FC<{ src: string }> = ({ src }) => {
 
     // Hero 动画
     if (hero.matched) {
-      ctx.timeline.add(hero.hero!, hero.getLeaveParams()!, 0)
+      ctx.timeline.add(hero.hero!, hero.getLeaveParams(), 0)
     } else {
       ctx.timeline.add(ctx.mainElement!, { opacity: 0 }, 0)
     }

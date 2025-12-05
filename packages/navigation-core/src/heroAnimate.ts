@@ -55,13 +55,15 @@ export interface HeroAnimate {
   /**
    * 获取进入动画参数
    * Hero 从目标位置动画到当前位置
+   * 返回 any 以兼容 animejs 的 AnimationParams 类型
    */
-  getEnterParams: () => HeroEnterParams | null
+  getEnterParams: () => any
   /**
    * 获取离开动画参数
    * Hero 从当前位置动画到目标位置
+   * 返回 any 以兼容 animejs 的 AnimationParams 类型
    */
-  getLeaveParams: () => HeroLeaveParams | null
+  getLeaveParams: () => any
 }
 
 /**
@@ -120,7 +122,7 @@ export const getHeroAnimate = (config: HeroConfig): HeroAnimate => {
     transform,
     matched,
     
-    getEnterParams(): HeroEnterParams | null {
+    getEnterParams(): any {
       if (!transform) return null
       return {
         translateX: [transform.translateX, 0],
@@ -130,7 +132,7 @@ export const getHeroAnimate = (config: HeroConfig): HeroAnimate => {
       }
     },
     
-    getLeaveParams(): HeroLeaveParams | null {
+    getLeaveParams(): any {
       if (!transform) return null
       return {
         translateX: transform.translateX,
