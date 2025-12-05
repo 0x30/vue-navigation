@@ -1,6 +1,5 @@
 import { defineComponent } from 'vue'
-import { NavPage, back, push, SidePage, useQuietPage, Page, showLoading } from '@0x30/navigation-vue'
-import { useToast } from '@0x30/navigation-vue'
+import { NavPage, back, push, SidePage, useQuietPage, Page, showLoading, hideLoading, showSuccess, showError, showToast } from '@0x30/navigation-vue'
 import styles from './ComponentsDemo.module.scss'
 
 // 底部弹出组件演示
@@ -59,7 +58,7 @@ const CenterModal = defineComponent({
           <div class={styles.modalActions}>
             <button class={styles.cancelBtn} onClick={() => back()}>取消</button>
             <button class={styles.confirmBtn} onClick={() => {
-              useToast('已确认')
+              showToast('已确认')
               back()
             }}>确认</button>
           </div>
@@ -92,21 +91,21 @@ export default defineComponent({
   name: 'ComponentsDemo',
   setup() {
     const handleShowLoading = async () => {
-      showLoading(0, '加载中...')
+      await showLoading('加载中...')
       await new Promise(r => setTimeout(r, 1500))
-      showLoading(3)
+      await hideLoading()
     }
 
     const handleShowSuccess = () => {
-      showLoading(1, '操作成功')
+      showSuccess('操作成功')
     }
 
     const handleShowError = () => {
-      showLoading(2, '操作失败')
+      showError('操作失败')
     }
 
     const handleShowToast = () => {
-      useToast('这是一条 Toast 消息')
+      showToast('这是一条 Toast 消息')
     }
 
     return () => (

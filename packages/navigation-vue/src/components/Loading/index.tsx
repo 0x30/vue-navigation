@@ -1,164 +1,293 @@
-import { back, push } from '../../navigation'
-import { useQuietPage, useLeaveBefore } from '../../hooks'
 import { enableBodyPointerEvents, disableBodyPointerEvents } from '@0x30/navigation-core'
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { animate } from 'animejs'
+import { push, back } from '../../navigation'
+import { useLeaveBefore, useQuietPage } from '../../hooks'
 
 import styles from './index.module.scss'
-import { Popup } from '../../utils/Popup'
 
-import loadingImg from './imgs/loading.svg'
-import errorImg from './imgs/error.svg'
-import successImg from './imgs/success.svg'
-import { animate } from 'animejs'
+// 内置 SVG 图标组件
+const LoadingSvg = defineComponent({
+  name: 'LoadingSvg',
+  setup: () => () => (
+    <svg viewBox="0 0 100 100" class={styles.spinner}>
+      <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="none" stroke-linecap="round" />
+    </svg>
+  ),
+})
 
-let customLoadingImg: string | undefined = undefined
-let customErrorImg: string | undefined = undefined
-let customSuccessImg: string | undefined = undefined
-let autoCloseTimeout = 1500
+const SuccessSvg = defineComponent({
+  name: 'SuccessSvg',
+  setup: () => () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  ),
+})
 
-/**
- * 配置loading的配置
- * @param param0
- */
-const setLoadingConfig = ({
-  successImg,
-  failedImg,
-  loadingImg,
-  closeTimeout,
-}: {
-  /**
-   * 成功的图片
-   */
+const ErrorSvg = defineComponent({
+  name: 'ErrorSvg',
+  setup: () => () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  ),
+})
+
+type Status = 'loading' | 'success' | 'error' | 'hidden'
+
+interface LoadingConfig {
   successImg?: string
-  /**
-   * 失败的图片
-   */
-  failedImg?: string
-  /**
-   * 加载的图片
-   */
+  errorImg?: string
   loadingImg?: string
-  /**
-   * 自动关闭的时间 ms 默认1500ms
-   */
   closeTimeout?: number
-}) => {
-  loadingImg && (customLoadingImg = loadingImg)
-  failedImg && (customErrorImg = failedImg)
-  successImg && (customSuccessImg = successImg)
-  closeTimeout !== undefined && (autoCloseTimeout = closeTimeout)
+}
+
+let config: LoadingConfig = {
+  closeTimeout: 1500,
 }
 
 /**
- * 0: 展示 loading toast
- * 1: 展示 success toast
- * 2: 展示 failed toast
- * 3: 立即隐藏
+ * 配置 Loading 组件
  */
-type Status = 0 | 1 | 2 | 3
+export const setLoadingConfig = (newConfig: LoadingConfig) => {
+  config = { ...config, ...newConfig }
+}
 
-const statusRef = ref<Status>()
-const messageRef = ref<string>()
-const closeRef = ref<() => Promise<void>>()
+// 全局状态管理
+interface LoadingState {
+  status: Status
+  message?: string
+}
 
-const imageRef = ref<string>()
+let globalState: LoadingState = { status: 'hidden' }
+let listeners: Set<(state: LoadingState) => void> = new Set()
+let isLoadingPagePushed = false
+let canLeave = false
 
-const setStatus = (status: Status) => {
-  statusRef.value = status
+const setState = (state: LoadingState) => {
+  globalState = state
+  listeners.forEach(listener => listener(state))
 
-  if (status === 0) {
+  if (state.status === 'loading') {
     disableBodyPointerEvents()
   } else {
     enableBodyPointerEvents()
   }
-
-  if (status === 0) imageRef.value = customLoadingImg ?? loadingImg
-  if (status === 1) imageRef.value = customSuccessImg ?? successImg
-  if (status === 2) imageRef.value = customErrorImg ?? errorImg
 }
 
-const Component = defineComponent({
-  name: 'LoadingView',
+/**
+ * Loading 实例接口 - 用于控制 loading 的状态和内容
+ */
+export interface LoadingInstance {
+  /** 更新 loading 消息 */
+  setMessage: (message: string) => void
+  /** 切换为成功状态并自动关闭 */
+  success: (message?: string, duration?: number) => void
+  /** 切换为失败状态并自动关闭 */
+  error: (message?: string, duration?: number) => void
+  /** 立即隐藏 */
+  hide: () => void
+}
+
+/**
+ * Loading 页面组件 - 用于阻止用户返回
+ */
+const LoadingPage = defineComponent({
+  name: 'LoadingPage',
   setup: () => {
-    return () => (
-      <div class={styles.body}>
-        <div class={styles.main}>
-          {imageRef.value ? <img src={imageRef.value} /> : null}
-          {messageRef.value ? <span>{messageRef.value}</span> : null}
-        </div>
-      </div>
-    )
+    // 阻止返回，只有 canLeave 为 true 时才允许
+    useLeaveBefore(() => canLeave)
+    // 静默页面，不触发其他页面的生命周期
+    useQuietPage()
+    
+    return () => null
   },
 })
 
-const Loading = defineComponent(() => {
-  useLeaveBefore(() => isShowLoading === false)
-  useQuietPage()
-  return () => <div />
+/**
+ * Loading UI 组件 - 显示 loading 的 UI
+ */
+const LoadingUI = defineComponent({
+  name: 'LoadingUI',
+  setup: () => {
+    const state = ref<LoadingState>(globalState)
+
+    const listener = (newState: LoadingState) => {
+      state.value = newState
+    }
+
+    onMounted(() => {
+      listeners.add(listener)
+    })
+
+    onUnmounted(() => {
+      listeners.delete(listener)
+    })
+
+    const handleAnimateIn = (el: Element | null) => {
+      if (el && state.value.status !== 'hidden') {
+        animate(el, {
+          opacity: [0, 1],
+          scale: [0.8, 1],
+          duration: 300,
+          ease: 'outQuad',
+        })
+      }
+    }
+
+    const renderIcon = () => {
+      switch (state.value.status) {
+        case 'loading':
+          return config.loadingImg ? <img src={config.loadingImg} alt="" /> : <LoadingSvg />
+        case 'success':
+          return config.successImg ? <img src={config.successImg} alt="" /> : <SuccessSvg />
+        case 'error':
+          return config.errorImg ? <img src={config.errorImg} alt="" /> : <ErrorSvg />
+        default:
+          return null
+      }
+    }
+
+    return () => {
+      if (state.value.status === 'hidden') return null
+
+      return (
+        <div class={styles.body}>
+          <div class={styles.main} ref={handleAnimateIn}>
+            <div class={styles.icon}>{renderIcon()}</div>
+            {state.value.message && <span>{state.value.message}</span>}
+          </div>
+        </div>
+      )
+    }
+  },
 })
 
-const showLoadingComponent = async () => {
-  /// 如果当前为展示 loading 组件 popup
-  if (closeRef.value !== undefined) return
-
-  const [show, close] = Popup({
-    onLeave(el, onComplete) {
-      animate(el.querySelector(`.${styles.main}`)!, {
-        duration: 200,
-        opacity: [1, 0],
-        ease: 'outExpo',
-        onComplete,
-      })
-    },
-  })
-  closeRef.value = async () => {
-    closeRef.value = undefined
-    await close()
-  }
-
-  await show(<Component />)
-}
-
-let closeLoadingTimer: number | undefined = undefined
-let isShowLoading = false
 /**
- * 展示 loading 页面
- * @param type
- * 0: 展示 loading toast
- * 1: 展示 success toast
- * 2: 展示 failed toast
- * 3: 立即隐藏
- * @param message
+ * Loading 容器组件 - 需要在应用根部渲染一次
  */
-const showLoading = async (status: Status, message?: string) => {
-  window.clearTimeout(closeLoadingTimer)
+export const LoadingContainer = LoadingUI
 
-  if (status === 0) {
-    isShowLoading = true
-    await push(<Loading />)
-  } else {
-    if (isShowLoading) {
-      isShowLoading = false
-      await back()
-    }
-  }
+let hideTimer: ReturnType<typeof setTimeout> | null = null
 
-  /// 状态 ref
-  setStatus(status)
-  messageRef.value = message
-  await showLoadingComponent()
-
-  if (status === 0) return
-
-  if (status === 3) {
-    closeLoadingTimer = window.setTimeout(() => {
-      closeRef.value?.()
-    }, 150)
-  } else {
-    closeLoadingTimer = window.setTimeout(() => {
-      closeRef.value?.()
-    }, autoCloseTimeout)
+/**
+ * 创建一个 Loading 实例
+ */
+const createLoadingInstance = (): LoadingInstance => {
+  return {
+    setMessage: (message: string) => {
+      if (globalState.status !== 'hidden') {
+        setState({ ...globalState, message })
+      }
+    },
+    success: (message?: string, duration?: number) => {
+      showSuccess(message, duration)
+    },
+    error: (message?: string, duration?: number) => {
+      showError(message, duration)
+    },
+    hide: () => {
+      hideLoading()
+    },
   }
 }
 
-export { showLoading, setLoadingConfig }
+/**
+ * 关闭 loading 页面
+ */
+const closeLoadingPage = async () => {
+  if (isLoadingPagePushed) {
+    canLeave = true
+    await back()
+    canLeave = false
+    isLoadingPagePushed = false
+  }
+}
+
+/**
+ * 显示 Loading
+ * @param message 可选的提示消息
+ * @returns LoadingInstance 可用于后续控制 loading 状态
+ */
+export const showLoading = async (message?: string): Promise<LoadingInstance> => {
+  if (hideTimer) {
+    clearTimeout(hideTimer)
+    hideTimer = null
+  }
+  
+  // 如果还没有 push loading 页面，先 push
+  if (!isLoadingPagePushed) {
+    isLoadingPagePushed = true
+    canLeave = false
+    await push(<LoadingPage />)
+  }
+  
+  setState({ status: 'loading', message })
+  return createLoadingInstance()
+}
+
+/**
+ * 隐藏 Loading
+ */
+export const hideLoading = async () => {
+  if (hideTimer) {
+    clearTimeout(hideTimer)
+    hideTimer = null
+  }
+  setState({ status: 'hidden' })
+  await closeLoadingPage()
+}
+
+/**
+ * 显示成功提示
+ * @param message 可选的提示消息
+ * @param duration 可选的显示时长（毫秒）
+ */
+export const showSuccess = async (message?: string, duration?: number) => {
+  if (hideTimer) {
+    clearTimeout(hideTimer)
+    hideTimer = null
+  }
+  
+  // 先关闭 loading 页面（如果有的话），允许用户返回
+  await closeLoadingPage()
+  
+  setState({ status: 'success', message })
+  hideTimer = setTimeout(() => {
+    setState({ status: 'hidden' })
+  }, duration ?? config.closeTimeout)
+}
+
+/**
+ * 显示失败提示
+ * @param message 可选的提示消息
+ * @param duration 可选的显示时长（毫秒）
+ */
+export const showError = async (message?: string, duration?: number) => {
+  if (hideTimer) {
+    clearTimeout(hideTimer)
+    hideTimer = null
+  }
+  
+  // 先关闭 loading 页面（如果有的话），允许用户返回
+  await closeLoadingPage()
+  
+  setState({ status: 'error', message })
+  hideTimer = setTimeout(() => {
+    setState({ status: 'hidden' })
+  }, duration ?? config.closeTimeout)
+}
+
+/**
+ * 使用 Loading 的组合式函数
+ */
+export const useLoading = () => {
+  return {
+    show: showLoading,
+    hide: hideLoading,
+    success: showSuccess,
+    error: showError,
+  }
+}

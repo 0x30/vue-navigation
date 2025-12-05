@@ -1,6 +1,5 @@
 import { defineComponent, ref } from 'vue'
-import { NavPage, push, SafeBottomSpace, showLoading } from '@0x30/navigation-vue'
-import { useToast } from '@0x30/navigation-vue'
+import { NavPage, push, SafeBottomSpace, showLoading, hideLoading, showToast } from '@0x30/navigation-vue'
 import UserDetail from './UserDetail'
 import ComponentsDemo from './ComponentsDemo'
 import styles from './Home.module.scss'
@@ -25,13 +24,13 @@ export default defineComponent({
     }
 
     const handleShowToast = () => {
-      useToast('这是一条提示消息')
+      showToast('这是一条提示消息')
     }
 
     const handleShowLoading = async () => {
-      showLoading(0, '加载中...')
+      await showLoading('加载中...')
       await new Promise(r => setTimeout(r, 2000))
-      showLoading(3)
+      await hideLoading()
     }
 
     const handleComponentsDemo = () => {

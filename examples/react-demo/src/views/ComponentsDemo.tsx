@@ -81,9 +81,9 @@ const SimplePage: FC = () => {
 
 const ComponentsDemo: FC = () => {
   const handleShowLoading = async () => {
-    showLoading('加载中...')
+    await showLoading('加载中...')
     await new Promise(r => setTimeout(r, 1500))
-    hideLoading()
+    await hideLoading()
   }
 
   const handleShowSuccess = () => {

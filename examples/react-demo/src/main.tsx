@@ -6,7 +6,7 @@ import {
   ToastContainer 
 } from '@0x30/navigation-react'
 import Home from './views/Home'
-import '../styles/react.scss'
+import './styles/global.scss'
 
 // 初始化导航
 initNavigation()

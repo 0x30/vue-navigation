@@ -1,0 +1,26 @@
+{
+  "name": "react-navigation-demo",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host --port 5174",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@0x30/navigation-core": "workspace:*",
+    "@0x30/navigation-react": "workspace:*",
+    "animejs": "^4.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
+    "@vitejs/plugin-react": "^4.4.1",
+    "sass": "^1.89.0",
+    "typescript": "^5.8.2",
+    "vite": "^5.4.19"
+  }
+}

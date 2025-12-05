@@ -6,9 +6,10 @@
   ],
   "scripts": {
     "dev": "vite --host",
+    "dev:landing": "pnpm --dir ./examples/landing dev",
     "dev:vue": "pnpm --dir ./examples/vue-demo dev",
     "dev:react": "pnpm --dir ./examples/react-demo dev",
-    "dev:all": "concurrently \"pnpm dev\" \"pnpm dev:vue\" \"pnpm dev:react\"",
+    "demo": "concurrently \"pnpm dev:landing\" \"pnpm dev:vue\" \"pnpm dev:react\"",
     "build-packages": "pnpm --dir ./packages/navigation-core build && pnpm --dir ./packages/navigation-vue build && pnpm --dir ./packages/navigation-react build",
     "build": "vite build",
     "preview": "vite preview"

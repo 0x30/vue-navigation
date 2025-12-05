@@ -1,6 +1,5 @@
 import { defineComponent, ref, type PropType } from 'vue'
-import { NavPage, back, useLeaveBefore, SidePage, push } from '@0x30/navigation-vue'
-import { useToast } from '@0x30/navigation-vue'
+import { NavPage, back, useLeaveBefore, SidePage, push, showToast } from '@0x30/navigation-vue'
 import styles from './UserDetail.module.scss'
 
 interface User {
@@ -50,7 +49,7 @@ export default defineComponent({
 
     const handleSend = () => {
       if (!inputValue.value.trim()) {
-        useToast('请输入消息内容')
+        showToast('请输入消息内容')
         return
       }
       
@@ -60,7 +59,7 @@ export default defineComponent({
         content: inputValue.value,
       })
       inputValue.value = ''
-      useToast('消息已发送')
+      showToast('消息已发送')
     }
 
     const handleImageClick = () => {

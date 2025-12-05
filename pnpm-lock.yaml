@@ -21,7 +21,13 @@ importers:
         specifier: ^5.4.19
         version: 5.4.19(@types/node@24.5.2)(sass@1.89.0)
 
-  examples/demo:
+  examples/landing:
+    devDependencies:
+      vite:
+        specifier: ^5.4.2
+        version: 5.4.19(@types/node@24.5.2)(sass@1.89.0)
+
+  examples/react-demo:
     dependencies:
       '@0x30/navigation-core':
         specifier: workspace:*
@@ -29,9 +35,6 @@ importers:
       '@0x30/navigation-react':
         specifier: workspace:*
         version: link:../../packages/navigation-react
-      '@0x30/navigation-vue':
-        specifier: workspace:*
-        version: link:../../packages/navigation-vue
       animejs:
         specifier: ^4.0.2
         version: 4.0.2
@@ -41,9 +44,6 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
-      vue:
-        specifier: ^3.5.13
-        version: 3.5.14(typescript@5.8.3)
     devDependencies:
       '@types/react':
         specifier: ^18.3.20
@@ -54,60 +54,11 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.4.1
         version: 4.7.0(vite@5.4.19(@types/node@24.5.2)(sass@1.89.0))
-      '@vitejs/plugin-vue':
-        specifier: ^5.2.3
-        version: 5.2.4(vite@5.4.19(@types/node@24.5.2)(sass@1.89.0))(vue@3.5.14(typescript@5.8.3))
-      '@vitejs/plugin-vue-jsx':
-        specifier: ^4.1.2
-        version: 4.2.0(vite@5.4.19(@types/node@24.5.2)(sass@1.89.0))(vue@3.5.14(typescript@5.8.3))
       sass:
         specifier: ^1.89.0
         version: 1.89.0
       typescript:
         specifier: ^5.8.2
-        version: 5.8.3
-      vite:
-        specifier: ^5.4.19
-        version: 5.4.19(@types/node@24.5.2)(sass@1.89.0)
-
-  examples/landing:
-    devDependencies:
-      typescript:
-        specifier: ^5.8.2
-        version: 5.8.3
-      vite:
-        specifier: ^5.4.19
-        version: 5.4.19(@types/node@24.5.2)(sass@1.89.0)
-
-  examples/react-demo:
-    dependencies:
-      '@0x30/navigation-react':
-        specifier: workspace:*
-        version: link:../../packages/navigation-react
-      animejs:
-        specifier: ^4.0.2
-        version: 4.0.2
-      react:
-        specifier: ^18.2.0
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.3.1(react@18.3.1)
-    devDependencies:
-      '@types/react':
-        specifier: ^18.2.0
-        version: 18.3.27
-      '@types/react-dom':
-        specifier: ^18.2.0
-        version: 18.3.7(@types/react@18.3.27)
-      '@vitejs/plugin-react':
-        specifier: ^4.2.0
-        version: 4.7.0(vite@5.4.19(@types/node@24.5.2)(sass@1.89.0))
-      sass:
-        specifier: ^1.89.0
-        version: 1.89.0
-      typescript:
-        specifier: ^5.8.3
         version: 5.8.3
       vite:
         specifier: ^5.4.19
@@ -143,9 +94,6 @@ importers:
       vite:
         specifier: ^5.4.19
         version: 5.4.19(@types/node@24.5.2)(sass@1.89.0)
-      vue-tsc:
-        specifier: ^2.0.6
-        version: 2.2.10(typescript@5.8.3)
 
   packages/core:
     dependencies:
