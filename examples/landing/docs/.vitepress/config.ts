@@ -20,8 +20,8 @@ export default defineConfig({
       {
         text: 'Demo',
         items: [
-          { text: 'Vue Demo', link: isDev ? 'http://localhost:5171' : '/vue-navigation/vue/' },
-          { text: 'React Demo', link: isDev ? 'http://localhost:5172' : '/vue-navigation/react/' },
+          { text: 'Vue Demo', link: isDev ? 'http://localhost:5171' : '/vue/' },
+          { text: 'React Demo', link: isDev ? 'http://localhost:5172' : '/react/' },
         ]
       },
       { text: 'GitHub', link: 'https://github.com/0x30/vue-navigation' }
