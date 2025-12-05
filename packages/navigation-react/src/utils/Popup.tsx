@@ -65,11 +65,13 @@ export const Popup = (options?: TransitionCallbacks) => {
         const ref = useRef<HTMLDivElement>(null)
         
         useEffect(() => {
-          if (ref.current && !enterCalled) {
+          // 获取实际渲染的第一个子元素
+          const actualElement = ref.current?.firstElementChild as Element | null
+          if (actualElement && !enterCalled) {
             enterCalled = true
-            currentElement = ref.current
+            currentElement = actualElement
             if (options?.onEnter) {
-              options.onEnter(ref.current, () => {
+              options.onEnter(actualElement, () => {
                 showResolve?.()
               })
             } else {
@@ -78,7 +80,8 @@ export const Popup = (options?: TransitionCallbacks) => {
           }
         }, [])
 
-        return <div ref={ref}>{content}</div>
+        // 使用透明容器，不影响样式
+        return <div ref={ref} style={{ display: 'contents' }}>{content}</div>
       }
 
       root = createRoot(container)

@@ -227,3 +227,44 @@
     color: #333;
   }
 }
+
+// Popup 演示
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popupDemo {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 280px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.popupTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.popupContent {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 20px;
+  text-align: center;
+  
+  p {
+    margin: 4px 0;
+  }
+}

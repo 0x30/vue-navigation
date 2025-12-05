@@ -60,17 +60,6 @@ export const showToast = (message: string, options?: ToastOptions | number) => {
 }
 
 /**
- * @deprecated 不再需要使用 ToastContainer，Toast 现在会自动创建 DOM
- */
-export const ToastContainer = defineComponent({
-  name: 'ToastContainer',
-  setup: () => {
-    console.warn('ToastContainer is deprecated and no longer needed. Toast now creates DOM dynamically.')
-    return () => null
-  },
-})
-
-/**
  * 兼容旧版 API
  * @deprecated 请使用 showToast 代替
  */

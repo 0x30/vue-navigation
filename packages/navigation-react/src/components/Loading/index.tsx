@@ -250,11 +250,3 @@ export const useLoading = () => {
     error: showError,
   }
 }
-
-/**
- * @deprecated 不再需要使用 LoadingContainer，Loading 现在会自动创建 DOM
- */
-export const LoadingContainer: FC = () => {
-  console.warn('LoadingContainer is deprecated and no longer needed. Loading now creates DOM dynamically.')
-  return null
-}

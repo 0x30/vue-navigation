@@ -28,34 +28,23 @@ export const showToast = (message: string, options?: ToastOptions | number) => {
 
   const [show, close] = Popup({
     onEnter(el, done) {
-      // 找到实际的 toast 元素
-      const toastEl = el.firstElementChild as HTMLElement
-      if (toastEl) {
-        utils.set(toastEl, { transform: 'translateX(-50%)' })
-        animate(toastEl, {
-          opacity: [0, 1],
-          scale: [0.8, 1],
-          translateX: '-50%',
-          duration: 500,
-          ease: 'outElastic',
-          onComplete: done,
-        })
-      } else {
-        done()
-      }
+      utils.set(el, { transform: 'translateX(-50%)' })
+      animate(el, {
+        opacity: [0, 1],
+        scale: [0.8, 1],
+        translateX: '-50%',
+        duration: 500,
+        ease: 'outElastic',
+        onComplete: done,
+      })
     },
     onLeave(el, done) {
-      const toastEl = el.firstElementChild as HTMLElement
-      if (toastEl) {
-        animate(toastEl, {
-          opacity: [1, 0],
-          duration: 300,
-          ease: 'inQuad',
-          onComplete: done,
-        })
-      } else {
-        done()
-      }
+      animate(el, {
+        opacity: [1, 0],
+        duration: 300,
+        ease: 'inQuad',
+        onComplete: done,
+      })
     },
   })
 
@@ -70,12 +59,4 @@ export const useToast = () => {
   return {
     show: showToast,
   }
-}
-
-/**
- * @deprecated 不再需要使用 ToastContainer，Toast 现在会自动创建 DOM
- */
-export const ToastContainer: FC = () => {
-  console.warn('ToastContainer is deprecated and no longer needed. Toast now creates DOM dynamically.')
-  return null
 }

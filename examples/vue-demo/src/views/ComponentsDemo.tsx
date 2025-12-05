@@ -1,9 +1,11 @@
 import { defineComponent, ref, type PropType } from 'vue'
+import { animate } from 'animejs'
 import { 
   NavPage, back, push, SidePage, useQuietPage, Page, 
   showLoading, hideLoading, showSuccess, showError, showToast,
   useLeaveBefore, blackBoxBack,
-  onWillAppear, onDidAppear, onWillDisappear, onDidDisappear
+  onWillAppear, onDidAppear, onWillDisappear, onDidDisappear,
+  Popup
 } from '@0x30/navigation-vue'
 import styles from './ComponentsDemo.module.scss'
 
@@ -381,6 +383,45 @@ export default defineComponent({
       showToast('这是一条 Toast 消息')
     }
 
+    // 演示 Popup API - 动态创建弹窗
+    const handleShowPopup = () => {
+      const [show, close] = Popup({
+        onEnter(el, done) {
+          animate(el, {
+            opacity: [0, 1],
+            scale: [0.8, 1],
+            duration: 300,
+            ease: 'outExpo',
+            onComplete: done,
+          })
+        },
+        onLeave(el, done) {
+          animate(el, {
+            opacity: [1, 0],
+            scale: [1, 0.8],
+            duration: 200,
+            ease: 'inQuad',
+            onComplete: done,
+          })
+        },
+      })
+
+      show(
+        <div class={styles.popupOverlay} onClick={() => close()}>
+          <div class={styles.popupDemo} onClick={(e: MouseEvent) => e.stopPropagation()}>
+            <div class={styles.popupTitle}>🎯 Popup 演示</div>
+            <div class={styles.popupContent}>
+              <p>这是使用 Popup() 创建的自定义弹窗</p>
+              <p>无需预渲染，完全动态创建 DOM</p>
+            </div>
+            <button class={styles.confirmBtn} onClick={() => close()}>
+              关闭
+            </button>
+          </div>
+        </div>
+      )
+    }
+
     return () => (
       <NavPage class={styles.container}>
         <div class={styles.header}>
@@ -458,6 +499,14 @@ export default defineComponent({
           </div>
 
           <div class={styles.section}>
+            <div class={styles.sectionTitle}>Popup 工具</div>
+            <div class={styles.item} onClick={handleShowPopup}>
+              <span>🎯 自定义 Popup</span>
+              <span class={styles.arrow}>›</span>
+            </div>
+          </div>
+
+          <div class={styles.section}>
             <div class={styles.sectionTitle}>API 说明</div>
             <div class={styles.desc}>
               <p>• <strong>showLoading(msg)</strong>: 返回 LoadingInstance</p>
@@ -466,6 +515,7 @@ export default defineComponent({
               <p>• <strong>instance.error(msg)</strong>: 显示错误后关闭</p>
               <p>• <strong>instance.hide()</strong>: 直接关闭</p>
               <p>• <strong>showToast(msg, duration?)</strong>: 显示轻提示</p>
+              <p>• <strong>Popup(options)</strong>: 创建动态弹窗</p>
             </div>
           </div>
 
