@@ -1,5 +1,5 @@
 import { type FC, useState, useEffect, useCallback, useRef } from 'react'
-import { animate, utils } from 'animejs'
+import { animate } from 'animejs'
 import styles from './index.module.scss'
 
 interface ToastItem {
@@ -54,11 +54,9 @@ const ToastItem: FC<ToastItem> = ({ message, className }) => {
 
   useEffect(() => {
     if (ref.current) {
-      utils.set(ref.current, { translateX: '-50%' })
       animate(ref.current, {
         opacity: [0, 1],
         scale: [0.8, 1],
-        translateX: '-50%',
         duration: 500,
         ease: 'outElastic',
       })

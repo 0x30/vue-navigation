@@ -1,5 +1,5 @@
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
-import { animate, utils } from 'animejs'
+import { animate } from 'animejs'
 import styles from './index.module.scss'
 
 interface ToastItem {
@@ -40,11 +40,9 @@ const ToastItemComponent = defineComponent({
 
     onMounted(() => {
       if (itemRef.value) {
-        utils.set(itemRef.value, { translateX: '-50%' })
         animate(itemRef.value, {
           opacity: [0, 1],
           scale: [0.8, 1],
-          translateX: '-50%',
           duration: 500,
           ease: 'outElastic',
         })
