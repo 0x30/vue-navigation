@@ -7,6 +7,25 @@ import { routerStack, getLastRouterItem } from './state'
 import { disableBodyPointerEvents, enableBodyPointerEvents } from './pointer-events'
 import { back } from './navigation'
 
+/**
+ * 手势禁用标志
+ */
+let isGestureDisabled = false
+
+/**
+ * 禁用手势返回
+ */
+export const disableGesture = () => {
+  isGestureDisabled = true
+}
+
+/**
+ * 启用手势返回
+ */
+export const enableGesture = () => {
+  isGestureDisabled = false
+}
+
 declare global {
   interface Window {
     addEventListener<K extends keyof CustomEventMap>(
@@ -122,6 +141,9 @@ export const startScreenEdgePanGestureRecognizer = () => {
   }
 
   window.addEventListener('onNativateIosScreenEdgePanEvent', (ev) => {
+    // 如果手势被禁用，忽略事件
+    if (isGestureDisabled) return
+    
     if (routerStack.length < 2) return
 
     const lastItem = getLastRouterItem()
@@ -129,9 +151,12 @@ export const startScreenEdgePanGestureRecognizer = () => {
 
     const hook = getLeaveBeforeHookForGesture?.(lastItem)
 
-    // 如果有拦截返回的数据，有拦截就不再处理返回手势逻辑，而是直接触发返回事件然后拦截
+    // 如果有拦截返回的 hook，只在手势结束且用户想要完成返回时才触发 back
     if (hook !== undefined) {
-      back()
+      // 只处理 ended 状态且 isFinish 为 true 的情况
+      if (ev.detail.state === GestureState.ended && ev.detail.isFinish) {
+        back()
+      }
       return
     }
 

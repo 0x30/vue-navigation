@@ -178,9 +178,23 @@ const createLoadingInstance = (): LoadingInstance => {
       internalShowLoading(2, message, duration)
     },
     hide: () => {
-      internalShowLoading(3)
+      closeLoadingToast()
     },
   }
+}
+
+/**
+ * 关闭 Loading Toast（内部方法）
+ * 关闭 popup 并返回上一页
+ */
+const closeLoadingToast = async () => {
+  if (isShowLoading === false) return
+  isShowLoading = false
+  window.clearTimeout(closeLoadingTimer)
+  closeLoadingTimer = window.setTimeout(() => {
+    closePopup?.()
+  }, 150)
+  await back()
 }
 
 /**
@@ -210,17 +224,11 @@ const internalShowLoading = async (status: Status, message?: string, duration?: 
 
   if (status === 0) return
 
+  // 如果 loading 已经关闭了，不需要处理
+  if (isShowLoading === false) return
+
   // status !== 0 时，设置 isShowLoading = false，允许用户返回
   isShowLoading = false
-
-  // status === 3: 立即隐藏，快速关闭 popup 并返回
-  if (status === 3) {
-    closeLoadingTimer = window.setTimeout(async () => {
-      await closePopup?.()
-      await back()
-    }, 150)
-    return
-  }
 
   // status === 1/2: success/error，显示一段时间后关闭 popup 并返回
   closeLoadingTimer = window.setTimeout(async () => {
@@ -243,7 +251,7 @@ export const showLoading = async (message?: string): Promise<LoadingInstance> =>
  * 隐藏 Loading
  */
 export const hideLoading = async () => {
-  await internalShowLoading(3)
+  await closeLoadingToast()
 }
 
 /**

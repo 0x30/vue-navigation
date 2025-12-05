@@ -21,7 +21,12 @@ import {
   currentSessionId,
   setCurrentState,
 } from '@0x30/navigation-core'
-import { mounted, unmounted, type LifeCycleHooks, type VueRouterStackItem } from './manage'
+import {
+  mounted,
+  unmounted,
+  type LifeCycleHooks,
+  type VueRouterStackItem,
+} from './manage'
 import { getLeaveBefore, setLeaveBefore } from './hooks/leaveBefore'
 import { getProgressExitAnimated } from './hooks/progressExitAnimated'
 
@@ -30,10 +35,12 @@ let isInitialized = false
 // 注册 Vue 相关的回调
 const setupVueCallbacks = () => {
   // 注册 unmount 回调
-  registerUnmountCallback((item, needAnimated, needApplyBackHook, backHookId) => {
-    const vueItem = item as VueRouterStackItem
-    unmounted(needAnimated, needApplyBackHook, vueItem.context, backHookId)
-  })
+  registerUnmountCallback(
+    (item, needAnimated, needApplyBackHook, backHookId) => {
+      const vueItem = item as VueRouterStackItem
+      unmounted(needAnimated, needApplyBackHook, vueItem.context, backHookId)
+    }
+  )
 
   // 注册 leaveBefore hooks
   registerLeaveBeforeHooks(
@@ -74,9 +81,10 @@ const initNavigation = () => {
 /**
  * 前进方法
  */
-export const push = async (component: Component | VNode, hooks?: LifeCycleHooks) => {
-  initNavigation()
-  
+export const push = async (
+  component: Component | VNode,
+  hooks?: LifeCycleHooks
+) => {
   disableBodyPointerEvents()
   const item = await mounted(component, false, hooks)
 
@@ -97,9 +105,10 @@ export const push = async (component: Component | VNode, hooks?: LifeCycleHooks)
 /**
  * 替换方法
  */
-export const replace = async (component: Component | VNode, hooks?: LifeCycleHooks) => {
-  initNavigation()
-  
+export const replace = async (
+  component: Component | VNode,
+  hooks?: LifeCycleHooks
+) => {
   disableBodyPointerEvents()
   const item = await mounted(component, true, hooks)
 
@@ -152,11 +161,9 @@ export const backToHome = async () => {
 export const Navigator = defineComponent({
   name: 'NavigatorController',
   setup: (_, { slots }) => {
-    setupVueCallbacks()
-
     const currentApp = getCurrentInstance()!.appContext.app
 
-    // 将当前 app 添加到路由栈
+    // 将当前 app 添加到路由栈（必须在 initNavigation 之前！）
     const container = currentApp._container as HTMLElement
     const item: VueRouterStackItem = {
       id: randomId(),
@@ -165,9 +172,9 @@ export const Navigator = defineComponent({
     }
     pushRouterItem(item)
 
-    const { add } = listenPopState(true)
-    onMounted(add)
-    onMounted(startScreenEdgePanGestureRecognizer)
+    // 初始化导航（会注册 popstate 监听器和手势识别器）
+    // 此时 routerStack 已经有首页了，所以 index 会是 0
+    initNavigation()
 
     return () => slots.default?.()
   },

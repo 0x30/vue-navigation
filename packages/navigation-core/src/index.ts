@@ -41,8 +41,6 @@ export {
   startBlackBack,
   registerLeaveBeforeHooks,
   registerUnmountCallback,
-  setCancelBatchId,
-  getCancelBatchId,
   type LeaveBeforeHook,
 } from './back'
 
