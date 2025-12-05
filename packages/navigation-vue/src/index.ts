@@ -66,4 +66,10 @@ export {
   disableBodyPointerEvents,
   enableBodyPointerEvents,
   routerStack,
+  getHeroAnimate,
+  type HeroConfig,
+  type HeroTransform,
+  type HeroAnimate,
+  type HeroEnterParams,
+  type HeroLeaveParams,
 } from '@0x30/navigation-core'

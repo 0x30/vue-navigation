@@ -24,7 +24,9 @@ export interface SidePageAnimationContext {
   done: () => void
 }
 
-export type SidePageAnimationHandler = (context: SidePageAnimationContext) => void
+export type SidePageAnimationHandler = (
+  context: SidePageAnimationContext
+) => void
 
 interface SidePageProps {
   children?: ReactNode
@@ -56,10 +58,12 @@ const mainClassName = `.${styles.main}`
 /**
  * 创建默认进入动画
  */
-const createDefaultEnterAnime = (position: Position): SidePageAnimationHandler => {
+const createDefaultEnterAnime = (
+  position: Position
+): SidePageAnimationHandler => {
   return ({ backElement, mainElement, timeline }) => {
     timeline.add(backElement!, { opacity: [0, 1] })
-    
+
     switch (position) {
       case 'bottom':
         timeline.add(mainElement!, { translateY: ['100%', '0'] }, 0)
@@ -74,9 +78,7 @@ const createDefaultEnterAnime = (position: Position): SidePageAnimationHandler =
         timeline.add(mainElement!, { translateX: ['100%', '0'] }, 0)
         break
       case 'center':
-        timeline.set(backElement!, { opacity: 0.5 })
-        timeline.add(backElement!, { opacity: 1, ease: 'linear' })
-        timeline.add(mainElement!, { scale: [0.1, 1], opacity: 1, ease: 'outElastic', duration: 800 }, 0)
+        timeline.add(mainElement!, { scale: [0.9, 1], opacity: [0, 1] }, 0)
         break
     }
   }
@@ -85,25 +87,33 @@ const createDefaultEnterAnime = (position: Position): SidePageAnimationHandler =
 /**
  * 创建默认离开动画
  */
-const createDefaultLeaveAnime = (position: Position): SidePageAnimationHandler => {
+const createDefaultLeaveAnime = (
+  position: Position
+): SidePageAnimationHandler => {
   return ({ backElement, mainElement, timeline }) => {
-    timeline.add(backElement!, { opacity: 0 })
-    
     switch (position) {
       case 'bottom':
+        timeline.add(backElement!, { opacity: 0 })
         timeline.add(mainElement!, { translateY: '100%' }, 0)
         break
       case 'top':
+        timeline.add(backElement!, { opacity: 0 })
         timeline.add(mainElement!, { translateY: '-100%' }, 0)
         break
       case 'left':
+        timeline.add(backElement!, { opacity: 0 })
         timeline.add(mainElement!, { translateX: '-100%' }, 0)
         break
       case 'right':
+        timeline.add(backElement!, { opacity: 0 })
         timeline.add(mainElement!, { translateX: '100%' }, 0)
         break
       case 'center':
-        timeline.add([backElement, mainElement], { opacity: 0, duration: 150, ease: 'linear' })
+        timeline.add([backElement, mainElement], {
+          opacity: 0,
+          duration: 150,
+          ease: 'linear',
+        })
         break
     }
   }
@@ -124,12 +134,12 @@ export const SidePage: FC<SidePageProps> = ({
   useTransitionEnter((elements, done) => {
     const backElement = elements.to?.querySelector(backClassName) ?? null
     const mainElement = elements.to?.querySelector(mainClassName) ?? null
-    
+
     const timeline = createTimeline({
       defaults: { duration: 500, ease: 'outExpo' },
       onComplete: done,
     })
-    
+
     const context: SidePageAnimationContext = {
       backElement,
       mainElement,
@@ -138,7 +148,7 @@ export const SidePage: FC<SidePageProps> = ({
       timeline,
       done,
     }
-    
+
     if (onEnter) {
       onEnter(context)
     } else {
@@ -150,12 +160,12 @@ export const SidePage: FC<SidePageProps> = ({
   useTransitionLeave((elements, done) => {
     const backElement = elements.from?.querySelector(backClassName) ?? null
     const mainElement = elements.from?.querySelector(mainClassName) ?? null
-    
+
     const timeline = createTimeline({
       defaults: { duration: 500, ease: 'outExpo' },
       onComplete: done,
     })
-    
+
     const context: SidePageAnimationContext = {
       backElement,
       mainElement,
@@ -164,7 +174,7 @@ export const SidePage: FC<SidePageProps> = ({
       timeline,
       done,
     }
-    
+
     if (onLeave) {
       onLeave(context)
     } else {
@@ -177,7 +187,9 @@ export const SidePage: FC<SidePageProps> = ({
   // 为子元素添加 main class
   const childWithClass = isValidElement(children)
     ? cloneElement(children, {
-        className: `${styles.main} ${(children.props as { className?: string })?.className ?? ''} ${className ?? ''}`,
+        className: `${styles.main} ${
+          (children.props as { className?: string })?.className ?? ''
+        } ${className ?? ''}`,
       } as { className: string })
     : children
 

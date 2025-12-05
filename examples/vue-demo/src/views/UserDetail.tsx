@@ -1,5 +1,5 @@
 import { defineComponent, ref, type PropType } from 'vue'
-import { NavPage, back, useLeaveBefore, SidePage, push, showToast, useQuietPage, type SidePageAnimationContext } from '@0x30/navigation-vue'
+import { NavPage, back, useLeaveBefore, SidePage, push, showToast, useQuietPage, getHeroAnimate, type SidePageAnimationContext } from '@0x30/navigation-vue'
 import styles from './UserDetail.module.scss'
 
 interface User {
@@ -14,17 +14,6 @@ interface User {
 const DEMO_IMAGE_URL = 'https://picsum.photos/id/237/400/300'
 const DEMO_IMAGE_THUMB_URL = 'https://picsum.photos/id/237/200/150'
 
-/**
- * 计算 Hero 动画的变换参数
- */
-const calculateHeroTransform = (fromRect: DOMRect, toRect: DOMRect) => {
-  const scaleX = fromRect.width / toRect.width
-  const scaleY = fromRect.height / toRect.height
-  const translateX = fromRect.left - toRect.left + (fromRect.width - toRect.width) / 2
-  const translateY = fromRect.top - toRect.top + (fromRect.height - toRect.height) / 2
-  return { scaleX, scaleY, translateX, translateY }
-}
-
 // 图片预览组件 - 使用 SidePage 的 onEnter/onLeave 实现 Hero 动画
 const ImagePreview = defineComponent({
   props: {
@@ -35,23 +24,18 @@ const ImagePreview = defineComponent({
 
     // 进入动画 - Hero 效果
     const handleEnter = (ctx: SidePageAnimationContext) => {
-      const fromHero = ctx.from?.querySelector('[data-hero-image]')
-      const toHero = ctx.mainElement?.querySelector('img')
+      const hero = getHeroAnimate({
+        root: ctx.mainElement,
+        target: ctx.from,
+        id: 'image',
+      })
 
       // 背景渐入
       ctx.timeline.add(ctx.backElement!, { opacity: [0, 1] })
 
-      if (fromHero && toHero) {
-        const fromRect = fromHero.getBoundingClientRect()
-        const toRect = toHero.getBoundingClientRect()
-        const transform = calculateHeroTransform(fromRect, toRect)
-
-        ctx.timeline.add(toHero, {
-          translateX: [transform.translateX, 0],
-          translateY: [transform.translateY, 0],
-          scaleX: [transform.scaleX, 1],
-          scaleY: [transform.scaleY, 1],
-        }, 0)
+      // Hero 动画
+      if (hero.matched) {
+        ctx.timeline.add(hero.hero!, hero.getEnterParams()!, 0)
       } else {
         // 降级动画
         ctx.timeline.add(ctx.mainElement!, { scale: [0.8, 1], opacity: [0, 1] }, 0)
@@ -60,23 +44,18 @@ const ImagePreview = defineComponent({
 
     // 离开动画 - Hero 效果
     const handleLeave = (ctx: SidePageAnimationContext) => {
-      const fromHero = ctx.to?.querySelector('[data-hero-image]')
-      const toHero = ctx.mainElement?.querySelector('img')
+      const hero = getHeroAnimate({
+        root: ctx.mainElement,
+        target: ctx.to,
+        id: 'image',
+      })
 
       // 背景渐出
       ctx.timeline.add(ctx.backElement!, { opacity: 0 })
 
-      if (fromHero && toHero) {
-        const fromRect = fromHero.getBoundingClientRect()
-        const toRect = toHero.getBoundingClientRect()
-        const transform = calculateHeroTransform(fromRect, toRect)
-
-        ctx.timeline.add(toHero, {
-          translateX: transform.translateX,
-          translateY: transform.translateY,
-          scaleX: transform.scaleX,
-          scaleY: transform.scaleY,
-        }, 0)
+      // Hero 动画
+      if (hero.matched) {
+        ctx.timeline.add(hero.hero!, hero.getLeaveParams()!, 0)
       } else {
         ctx.timeline.add(ctx.mainElement!, { opacity: 0 }, 0)
       }
@@ -90,7 +69,7 @@ const ImagePreview = defineComponent({
         onLeave={handleLeave}
       >
         <div class={styles.imagePreview}>
-          <img src={props.src} alt="" />
+          <img data-hero-image src={props.src} alt="" />
         </div>
       </SidePage>
     )

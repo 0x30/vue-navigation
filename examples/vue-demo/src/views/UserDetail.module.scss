@@ -11,19 +11,19 @@
   justify-content: space-between;
   padding: 12px 16px;
   background: #ededed;
-  
+
   .backBtn {
     color: #191919;
     font-size: 16px;
     cursor: pointer;
   }
-  
+
   .title {
     font-size: 17px;
     font-weight: 600;
     color: #191919;
   }
-  
+
   .more {
     font-size: 20px;
     font-weight: bold;
@@ -43,27 +43,27 @@
   display: flex;
   align-items: flex-start;
   margin-bottom: 16px;
-  
+
   &.sent {
     flex-direction: row-reverse;
-    
+
     .msgAvatar {
       margin-left: 8px;
       margin-right: 0;
     }
-    
+
     .msgBubble {
       background: #95ec69;
       margin-left: 0;
       margin-right: 0;
     }
   }
-  
+
   &.received {
     .msgAvatar {
       margin-right: 8px;
     }
-    
+
     .msgBubble {
       background: #fff;
       margin-left: 0;
@@ -95,7 +95,7 @@
 .msgImage {
   margin-left: 8px;
   cursor: pointer;
-  
+
   img {
     max-width: 150px;
     border-radius: 4px;
@@ -110,12 +110,13 @@
   background: #f7f7f7;
   border-top: 1px solid #e5e5e5;
   gap: 8px;
-  
-  .voice, .emoji {
+
+  .voice,
+  .emoji {
     font-size: 24px;
     cursor: pointer;
   }
-  
+
   .input {
     flex: 1;
     padding: 8px 12px;
@@ -125,7 +126,7 @@
     outline: none;
     background: #fff;
   }
-  
+
   .sendBtn {
     padding: 6px 12px;
     background: #07c160;
@@ -133,7 +134,7 @@
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
-    
+
     &:active {
       opacity: 0.8;
     }
@@ -146,8 +147,7 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  
+
   img {
     max-width: 90%;
     max-height: 90%;

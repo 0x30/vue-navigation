@@ -37,24 +37,22 @@ export const useLeaveBefore = (hook: () => boolean | Promise<boolean>) => {
 
 /**
  * 设置进入动画
+ * 注意：同步设置以确保在组件渲染时就已经注册
  */
 export const useTransitionEnter = (hook: TransitionAnimatorHook) => {
   const { updateHooks } = usePageContext()
-
-  useEffect(() => {
-    updateHooks({ transitionEnter: hook })
-  }, [hook, updateHooks])
+  // 同步设置，确保在渲染时就已经注册
+  updateHooks({ transitionEnter: hook })
 }
 
 /**
  * 设置离开动画
+ * 注意：同步设置以确保在组件渲染时就已经注册
  */
 export const useTransitionLeave = (hook: TransitionAnimatorHook) => {
   const { updateHooks } = usePageContext()
-
-  useEffect(() => {
-    updateHooks({ transitionLeave: hook })
-  }, [hook, updateHooks])
+  // 同步设置，确保在渲染时就已经注册
+  updateHooks({ transitionLeave: hook })
 }
 
 /**

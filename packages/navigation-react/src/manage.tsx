@@ -116,6 +116,10 @@ const PageWrapper: React.FC<PageWrapperProps> = ({
       if (!item.hooks.isQuietPage && nextItem) {
         triggerDidAppear(nextItem.id, false)
       }
+      // 调用离开完成回调
+      if (item.hooks.onLeaveComplete) {
+        item.hooks.onLeaveComplete()
+      }
       onUnmounting(() => {
         setIsVisible(false)
       })
@@ -159,6 +163,9 @@ export const mounted = (
     const root = createRoot(container)
     const item = createReactRouterItem(element, container, root)
 
+    // 用于触发离开动画的回调
+    let setLeavingCallback: ((leaving: boolean) => void) | null = null
+
     const onMounted = () => {
       // 替换模式：移除倒数第二个页面
       if (replace && routerStack.length > 1) {
@@ -174,9 +181,28 @@ export const mounted = (
       done()
     }
 
+    // 设置触发离开动画的方法
+    item.hooks.triggerLeave = (done: () => void) => {
+      if (setLeavingCallback) {
+        // 存储 done 回调
+        item.hooks.onLeaveComplete = done
+        setLeavingCallback(true)
+      } else {
+        done()
+      }
+    }
+
     // 使用一个包装组件来管理状态
     const App = () => {
-      const [leaving] = useState(false)
+      const [leaving, setLeaving] = useState(false)
+      
+      // 保存 setLeaving 的引用
+      useEffect(() => {
+        setLeavingCallback = setLeaving
+        return () => {
+          setLeavingCallback = null
+        }
+      }, [])
 
       return (
         <PageWrapper
@@ -216,7 +242,11 @@ export const unmounted = (
     }
   }
 
-  if (needAnimated && item.hooks.onClose) {
+  if (needAnimated && item.hooks.triggerLeave) {
+    // 触发离开动画
+    item.hooks.triggerLeave(doUnmount)
+  } else if (needAnimated && item.hooks.onClose) {
+    // 兼容旧方式
     item.hooks.onClose(doUnmount)
   } else {
     doUnmount()

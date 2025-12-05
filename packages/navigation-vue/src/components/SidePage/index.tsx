@@ -7,10 +7,7 @@ import {
 } from 'vue'
 
 import styles from './index.module.scss'
-import {
-  useTransitionEnter,
-  useTransitionLeave,
-} from '../../hooks'
+import { useTransitionEnter, useTransitionLeave } from '../../hooks'
 import { createTimeline, type Timeline } from 'animejs'
 
 const backClassName = `.${styles.back}`
@@ -19,7 +16,7 @@ const mainClassName = `.${styles.main}`
 const cloneSlot = (
   slot?: Slot,
   extraProps?: (Record<string, unknown> & VNodeProps) | null,
-  mergeRef?: boolean,
+  mergeRef?: boolean
 ) => {
   const elements = slot?.()
   if (elements === undefined || elements.length > 1) return undefined
@@ -45,17 +42,21 @@ export interface SidePageAnimationContext {
   done: () => void
 }
 
-export type SidePageAnimationHandler = (context: SidePageAnimationContext) => void
+export type SidePageAnimationHandler = (
+  context: SidePageAnimationContext
+) => void
 
 type Position = 'left' | 'right' | 'bottom' | 'top' | 'center'
 
 /**
  * 创建默认进入动画
  */
-const createDefaultEnterAnime = (position: Position): SidePageAnimationHandler => {
+const createDefaultEnterAnime = (
+  position: Position
+): SidePageAnimationHandler => {
   return ({ backElement, mainElement, timeline }) => {
     timeline.add(backElement!, { opacity: [0, 1] })
-    
+
     switch (position) {
       case 'bottom':
         timeline.add(mainElement!, { translateY: ['100%', '0'] }, 0)
@@ -70,9 +71,7 @@ const createDefaultEnterAnime = (position: Position): SidePageAnimationHandler =
         timeline.add(mainElement!, { translateX: ['100%', '0'] }, 0)
         break
       case 'center':
-        timeline.set(backElement!, { opacity: 0.5 })
-        timeline.add(backElement!, { opacity: 1, ease: 'linear' })
-        timeline.add(mainElement!, { scale: [0.1, 1], opacity: 1, ease: 'outElastic', duration: 800 }, 0)
+        timeline.add(mainElement!, { scale: [0.9, 1], opacity: [0, 1] }, 0)
         break
     }
   }
@@ -81,25 +80,33 @@ const createDefaultEnterAnime = (position: Position): SidePageAnimationHandler =
 /**
  * 创建默认离开动画
  */
-const createDefaultLeaveAnime = (position: Position): SidePageAnimationHandler => {
+const createDefaultLeaveAnime = (
+  position: Position
+): SidePageAnimationHandler => {
   return ({ backElement, mainElement, timeline }) => {
-    timeline.add(backElement!, { opacity: 0 })
-    
     switch (position) {
       case 'bottom':
+        timeline.add(backElement!, { opacity: 0 })
         timeline.add(mainElement!, { translateY: '100%' }, 0)
         break
       case 'top':
+        timeline.add(backElement!, { opacity: 0 })
         timeline.add(mainElement!, { translateY: '-100%' }, 0)
         break
       case 'left':
+        timeline.add(backElement!, { opacity: 0 })
         timeline.add(mainElement!, { translateX: '-100%' }, 0)
         break
       case 'right':
+        timeline.add(backElement!, { opacity: 0 })
         timeline.add(mainElement!, { translateX: '100%' }, 0)
         break
       case 'center':
-        timeline.add([backElement, mainElement], { opacity: 0, duration: 150, ease: 'linear' })
+        timeline.add([backElement, mainElement], {
+          opacity: 0,
+          duration: 150,
+          ease: 'linear',
+        })
         break
     }
   }
@@ -140,12 +147,12 @@ const Component = defineComponent({
     useTransitionEnter((elements, done) => {
       const backElement = elements.to?.querySelector(backClassName) ?? null
       const mainElement = elements.to?.querySelector(mainClassName) ?? null
-      
+
       const timeline = createTimeline({
         defaults: { duration: 500, ease: 'outExpo' },
         onComplete: done,
       })
-      
+
       const context: SidePageAnimationContext = {
         backElement,
         mainElement,
@@ -154,7 +161,7 @@ const Component = defineComponent({
         timeline,
         done,
       }
-      
+
       if (props.onEnter) {
         props.onEnter(context)
       } else {
@@ -166,12 +173,12 @@ const Component = defineComponent({
     useTransitionLeave((elements, done) => {
       const backElement = elements.from?.querySelector(backClassName) ?? null
       const mainElement = elements.from?.querySelector(mainClassName) ?? null
-      
+
       const timeline = createTimeline({
         defaults: { duration: 500, ease: 'outExpo' },
         onComplete: done,
       })
-      
+
       const context: SidePageAnimationContext = {
         backElement,
         mainElement,
@@ -180,7 +187,7 @@ const Component = defineComponent({
         timeline,
         done,
       }
-      
+
       if (props.onLeave) {
         props.onLeave(context)
       } else {

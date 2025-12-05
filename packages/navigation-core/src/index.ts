@@ -64,3 +64,13 @@ export {
 
 // Utils
 export { randomId, applyFuns } from './utils'
+
+// Hero Animation
+export {
+  getHeroAnimate,
+  type HeroConfig,
+  type HeroTransform,
+  type HeroAnimate,
+  type HeroEnterParams,
+  type HeroLeaveParams,
+} from './heroAnimate'

@@ -16,6 +16,8 @@ export interface ReactRouterStackItem extends RouterStackItem {
   hooks: {
     leaveBefore?: () => boolean | Promise<boolean>
     onClose?: (done: () => void) => void
+    triggerLeave?: (done: () => void) => void
+    onLeaveComplete?: () => void
     transitionEnter?: TransitionAnimatorHook
     transitionLeave?: TransitionAnimatorHook
     progressExitAnimated?: ProgressExitAnimatedHandler
