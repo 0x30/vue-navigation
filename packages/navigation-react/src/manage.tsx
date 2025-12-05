@@ -3,6 +3,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
 } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -27,11 +28,14 @@ import {
 } from './hooks'
 
 /**
- * 获取容器的第一个子元素
+ * 获取容器的页面内容元素
+ * container 的第一个子元素就是实际的页面内容
  */
-const getChildren = (ele?: HTMLElement): Element | undefined => {
-  if (ele?.childElementCount === 1) return ele.children[0]
-  return ele
+const getPageElement = (container?: HTMLElement): Element | undefined => {
+  if (container?.childElementCount === 1) {
+    return container.children[0]
+  }
+  return container
 }
 
 /**
@@ -39,6 +43,7 @@ const getChildren = (ele?: HTMLElement): Element | undefined => {
  */
 interface PageWrapperProps {
   item: ReactRouterStackItem
+  lastItem: ReactRouterStackItem | undefined
   children: ReactElement
   onMounted: () => void
   onUnmounting: (done: () => void) => void
@@ -47,13 +52,12 @@ interface PageWrapperProps {
 
 const PageWrapper: React.FC<PageWrapperProps> = ({
   item,
+  lastItem,
   children,
   onMounted,
   onUnmounting,
   isLeaving,
 }) => {
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
   const hasEntered = useRef(false)
 
   const updateHooks = useCallback(
@@ -63,17 +67,14 @@ const PageWrapper: React.FC<PageWrapperProps> = ({
     [item]
   )
 
-  // 进入动画
-  useEffect(() => {
+  // 进入动画 - 使用 useLayoutEffect 确保在子组件渲染后、浏览器绑制前执行
+  useLayoutEffect(() => {
     if (hasEntered.current) return
     hasEntered.current = true
 
-    setIsVisible(true)
-
-    // 获取上一个页面的元素
-    const lastItem = routerStack[routerStack.length - 2] as ReactRouterStackItem | undefined
-    const from = getChildren(lastItem?.container)
-    const to = containerRef.current?.children[0]
+    // 获取上一个页面的元素（使用传入的 lastItem，而不是从 routerStack 获取）
+    const from = getPageElement(lastItem?.container)
+    const to = getPageElement(item.container)
 
     // 触发生命周期
     if (!item.hooks.isQuietPage && lastItem) {
@@ -102,8 +103,8 @@ const PageWrapper: React.FC<PageWrapperProps> = ({
     if (!isLeaving) return
 
     const nextItem = getLastReactItem()
-    const from = containerRef.current?.children[0]
-    const to = getChildren(nextItem?.container)
+    const from = getPageElement(item.container)
+    const to = getPageElement(nextItem?.container)
 
     // 触发生命周期
     triggerWillDisappear(item.id)
@@ -120,9 +121,7 @@ const PageWrapper: React.FC<PageWrapperProps> = ({
       if (item.hooks.onLeaveComplete) {
         item.hooks.onLeaveComplete()
       }
-      onUnmounting(() => {
-        setIsVisible(false)
-      })
+      onUnmounting(() => {})
     }
 
     // 执行离开动画
@@ -142,9 +141,7 @@ const PageWrapper: React.FC<PageWrapperProps> = ({
 
   return (
     <PageContext.Provider value={{ item, updateHooks }}>
-      <div ref={containerRef} style={{ display: isVisible ? 'block' : 'none' }}>
-        {children}
-      </div>
+      {children}
     </PageContext.Provider>
   )
 }
@@ -162,6 +159,9 @@ export const mounted = (
 
     const root = createRoot(container)
     const item = createReactRouterItem(element, container, root)
+
+    // 在渲染前获取上一个页面，和 Vue 保持一致
+    const lastItem = getLastReactItem()
 
     // 用于触发离开动画的回调
     let setLeavingCallback: ((leaving: boolean) => void) | null = null
@@ -207,6 +207,7 @@ export const mounted = (
       return (
         <PageWrapper
           item={item}
+          lastItem={lastItem}
           onMounted={onMounted}
           onUnmounting={onUnmounting}
           isLeaving={leaving}
