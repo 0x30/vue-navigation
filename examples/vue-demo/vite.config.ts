@@ -4,7 +4,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import { resolve } from 'path'
 
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/vue/' : '/',
+  base: command === 'build' ? '/vue-navigation/vue/' : '/',
   plugins: [
     vue(),
     vueJsx(),
