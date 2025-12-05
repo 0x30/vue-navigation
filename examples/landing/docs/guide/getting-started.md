@@ -5,11 +5,11 @@
 ::: code-group
 
 ```bash [Vue]
-pnpm add @0x30/navigation-vue animejs
+pnpm add @0x30/navigation-vue
 ```
 
 ```bash [React]
-pnpm add @0x30/navigation-react animejs
+pnpm add @0x30/navigation-react
 ```
 
 :::

@@ -20,12 +20,12 @@
     "pub": "pnpm run build && npm publish --access public --registry https://registry.npmjs.org"
   },
   "dependencies": {
-    "@0x30/navigation-core": "workspace:*"
+    "@0x30/navigation-core": "workspace:*",
+    "animejs": "^4.0.2"
   },
   "peerDependencies": {
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "animejs": "^4.0.2"
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

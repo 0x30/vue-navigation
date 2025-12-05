@@ -20,11 +20,11 @@
     "pub": "pnpm run build && npm publish --access public --registry https://registry.npmjs.org"
   },
   "dependencies": {
-    "@0x30/navigation-core": "workspace:*"
+    "@0x30/navigation-core": "workspace:*",
+    "animejs": "^4.0.2"
   },
   "peerDependencies": {
-    "vue": "^3.3.0",
-    "animejs": "^4.0.2"
+    "vue": "^3.3.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue-jsx": "^4.2.0",
