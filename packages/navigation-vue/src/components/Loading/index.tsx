@@ -1,5 +1,5 @@
 import { enableBodyPointerEvents, disableBodyPointerEvents } from '@0x30/navigation-core'
-import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue'
 import { animate } from 'animejs'
 import { push, back } from '../../navigation'
 import { useLeaveBefore, useQuietPage } from '../../hooks'
@@ -126,8 +126,8 @@ const LoadingUI = defineComponent({
       listeners.delete(listener)
     })
 
-    const handleAnimateIn = (el: Element | null) => {
-      if (el && state.value.status !== 'hidden') {
+    const handleAnimateIn = (el: Element | ComponentPublicInstance | null) => {
+      if (el && el instanceof Element && state.value.status !== 'hidden') {
         animate(el, {
           opacity: [0, 1],
           scale: [0.8, 1],

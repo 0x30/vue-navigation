@@ -5,7 +5,7 @@ import {
   setValueToAppContext,
 } from './core'
 
-export type LeaveBeforeHook = (() => boolean) | (() => Promise<boolean>)
+export type LeaveBeforeHook = () => boolean | Promise<boolean>
 
 /**
  * 在页面即将返回的时候，会调用 hook 方法，返回是否可以返回

@@ -1,5 +1,6 @@
 import { defineComponent, ref, type PropType } from 'vue'
-import { NavPage, back, useLeaveBefore, SidePage, push, showToast } from '@0x30/navigation-vue'
+import { NavPage, back, useLeaveBefore, SidePage, push, showToast, useQuietPage } from '@0x30/navigation-vue'
+import { createTimeline } from 'animejs'
 import styles from './UserDetail.module.scss'
 
 interface User {
@@ -10,14 +11,105 @@ interface User {
   time: string
 }
 
-// 图片预览组件
+// Hero 动画的唯一标识 class
+const HERO_IMAGE_CLASS = 'hero-image-source'
+
+// 图片预览组件 - 带 Hero 动画
 const ImagePreview = defineComponent({
   props: {
     src: { type: String, required: true },
   },
   setup(props) {
+    useQuietPage()
+
+    // 自定义进入动画 - Hero 效果
+    const heroEnterAnime = (
+      elements: { from?: Element; to?: Element },
+      done: () => void,
+      target: { backElement?: Element | null; mainElement?: Element | null }
+    ) => {
+      const sourceImg = elements.from?.querySelector(`.${HERO_IMAGE_CLASS}`)
+      const targetImg = target.mainElement?.querySelector('img')
+
+      if (sourceImg && targetImg) {
+        const sourceRect = sourceImg.getBoundingClientRect()
+        const targetRect = targetImg.getBoundingClientRect()
+
+        // 计算初始位置和缩放
+        const scaleX = sourceRect.width / targetRect.width
+        const scaleY = sourceRect.height / targetRect.height
+        const translateX = sourceRect.left - targetRect.left + (sourceRect.width - targetRect.width) / 2
+        const translateY = sourceRect.top - targetRect.top + (sourceRect.height - targetRect.height) / 2
+
+        const timeline = createTimeline({
+          defaults: { duration: 350, ease: 'outQuart' },
+          onComplete: done,
+        })
+
+        timeline.add(target.backElement!, { opacity: [0, 1] })
+        timeline.add(targetImg, {
+          translateX: [translateX, 0],
+          translateY: [translateY, 0],
+          scaleX: [scaleX, 1],
+          scaleY: [scaleY, 1],
+        }, 0)
+      } else {
+        // 降级到普通动画
+        const timeline = createTimeline({
+          defaults: { duration: 300 },
+          onComplete: done,
+        })
+        timeline.add(target.backElement!, { opacity: [0, 1] })
+        timeline.add(target.mainElement!, { scale: [0.8, 1], opacity: [0, 1] }, 0)
+      }
+    }
+
+    // 自定义离开动画 - Hero 效果
+    const heroLeaveAnime = (
+      elements: { from?: Element; to?: Element },
+      done: () => void,
+      target: { backElement?: Element | null; mainElement?: Element | null }
+    ) => {
+      const sourceImg = elements.to?.querySelector(`.${HERO_IMAGE_CLASS}`)
+      const targetImg = target.mainElement?.querySelector('img')
+
+      if (sourceImg && targetImg) {
+        const sourceRect = sourceImg.getBoundingClientRect()
+        const targetRect = targetImg.getBoundingClientRect()
+
+        const scaleX = sourceRect.width / targetRect.width
+        const scaleY = sourceRect.height / targetRect.height
+        const translateX = sourceRect.left - targetRect.left + (sourceRect.width - targetRect.width) / 2
+        const translateY = sourceRect.top - targetRect.top + (sourceRect.height - targetRect.height) / 2
+
+        const timeline = createTimeline({
+          defaults: { duration: 300, ease: 'inOutQuart' },
+          onComplete: done,
+        })
+
+        timeline.add(target.backElement!, { opacity: 0 })
+        timeline.add(targetImg, {
+          translateX: translateX,
+          translateY: translateY,
+          scaleX: scaleX,
+          scaleY: scaleY,
+        }, 0)
+      } else {
+        const timeline = createTimeline({
+          defaults: { duration: 200 },
+          onComplete: done,
+        })
+        timeline.add([target.backElement!, target.mainElement!], { opacity: 0 })
+      }
+    }
+
     return () => (
-      <SidePage position="center" onClickBack={back}>
+      <SidePage 
+        position="center" 
+        onClickBack={back}
+        overrideEnterAnime={heroEnterAnime}
+        overrideLeaveAnime={heroLeaveAnime}
+      >
         <div class={styles.imagePreview}>
           <img src={props.src} alt="" />
         </div>
@@ -96,7 +188,7 @@ export default defineComponent({
           <div class={[styles.message, styles.received]}>
             <div class={styles.msgAvatar}>{props.user.avatar}</div>
             <div class={styles.msgImage} onClick={handleImageClick}>
-              <img src="https://picsum.photos/200/150" alt="" />
+              <img class={HERO_IMAGE_CLASS} src="https://picsum.photos/200/150" alt="" />
             </div>
           </div>
         </div>

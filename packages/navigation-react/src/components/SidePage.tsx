@@ -6,20 +6,33 @@ import styles from './SidePage.module.scss'
 
 type Position = 'left' | 'right' | 'bottom' | 'top' | 'center'
 
+type AnimeType = (
+  elements: { from?: Element; to?: Element },
+  onComplete: () => void
+) => void
+
+type CustomAnimeType = (
+  elements: { from?: Element; to?: Element },
+  done: () => void,
+  target: {
+    backElement?: Element | null
+    mainElement?: Element | null
+  }
+) => void
+
 interface SidePageProps {
   children?: ReactNode
   position?: Position
   onClickBack?: () => void
   className?: string
+  /** 重写进入动画 */
+  overrideEnterAnime?: CustomAnimeType
+  /** 重写离开动画 */
+  overrideLeaveAnime?: CustomAnimeType
 }
 
 const backClassName = `.${styles.back}`
 const mainClassName = `.${styles.main}`
-
-type AnimeType = (
-  elements: { from?: Element; to?: Element },
-  onComplete: () => void
-) => void
 
 const createEnterAnime = (position: Position): AnimeType => {
   return ({ to }, onComplete) => {
@@ -91,9 +104,36 @@ export const SidePage: FC<SidePageProps> = ({
   position = 'bottom',
   onClickBack,
   className,
+  overrideEnterAnime,
+  overrideLeaveAnime,
 }) => {
-  useTransitionEnter(createEnterAnime(position))
-  useTransitionLeave(createLeaveAnime(position))
+  // 创建自定义动画包装器
+  const createCustomEnterAnime = (custom: CustomAnimeType): AnimeType => {
+    return (elements, onComplete) => {
+      const back = elements.to?.querySelector(backClassName)
+      const main = elements.to?.querySelector(mainClassName)
+      custom(elements, onComplete, { backElement: back, mainElement: main })
+    }
+  }
+
+  const createCustomLeaveAnime = (custom: CustomAnimeType): AnimeType => {
+    return (elements, onComplete) => {
+      const back = elements.from?.querySelector(backClassName)
+      const main = elements.from?.querySelector(mainClassName)
+      custom(elements, onComplete, { backElement: back, mainElement: main })
+    }
+  }
+
+  const enterAnime = overrideEnterAnime 
+    ? createCustomEnterAnime(overrideEnterAnime) 
+    : createEnterAnime(position)
+  
+  const leaveAnime = overrideLeaveAnime 
+    ? createCustomLeaveAnime(overrideLeaveAnime) 
+    : createLeaveAnime(position)
+
+  useTransitionEnter(enterAnime)
+  useTransitionLeave(leaveAnime)
 
   const bodyClassName = styles[`${position}Body`] ?? styles.body
 

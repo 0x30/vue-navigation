@@ -210,3 +210,20 @@
     line-height: 2;
   }
 }
+
+// 日志盒子
+.logBox {
+  margin-top: 16px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 12px;
+  font-family: monospace;
+  
+  p {
+    margin: 4px 0;
+    color: #333;
+  }
+}
