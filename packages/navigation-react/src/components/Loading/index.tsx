@@ -1,4 +1,4 @@
-import { type FC } from 'react'
+import { type FC, useState, useEffect } from 'react'
 import { animate } from 'animejs'
 import { enableBodyPointerEvents, disableBodyPointerEvents } from '@0x30/navigation-core'
 import { push, back } from '../../navigation'
@@ -53,7 +53,9 @@ export const setLoadingConfig = (newConfig: LoadingConfig) => {
 let currentStatus: Status | undefined = undefined
 let currentMessage: string | undefined = undefined
 let closePopup: (() => Promise<void>) | undefined = undefined
+let updatePopupUI: (() => void) | undefined = undefined  // 用于触发 popup UI 更新
 let isShowLoading = false
+let isTransitioning = false
 let closeLoadingTimer: number | undefined = undefined
 
 const setStatus = (status: Status) => {
@@ -96,6 +98,16 @@ const LoadingPage: FC = () => {
  * Loading UI 组件 - Popup 内容
  */
 const LoadingUI: FC = () => {
+  const [, forceUpdate] = useState(0)
+
+  // 注册更新回调
+  useEffect(() => {
+    updatePopupUI = () => forceUpdate(n => n + 1)
+    return () => {
+      updatePopupUI = undefined
+    }
+  }, [])
+
   const renderIcon = () => {
     switch (currentStatus) {
       case 0:
@@ -157,6 +169,7 @@ const createLoadingInstance = (): LoadingInstance => {
   return {
     setMessage: (message: string) => {
       currentMessage = message
+      updatePopupUI?.()  // 触发 UI 更新
     },
     success: (message?: string, duration?: number) => {
       internalShowLoading(1, message, duration)
@@ -176,32 +189,44 @@ const createLoadingInstance = (): LoadingInstance => {
 const internalShowLoading = async (status: Status, message?: string, duration?: number) => {
   window.clearTimeout(closeLoadingTimer)
 
+  // status === 0: 显示 loading，需要 push LoadingPage
   if (status === 0) {
+    if (isShowLoading || isTransitioning) return
+    isTransitioning = true
     isShowLoading = true
     await push(<LoadingPage />)
-  } else {
-    if (isShowLoading) {
-      isShowLoading = false
-      await back()
-    }
+    isTransitioning = false
   }
 
   // 设置状态
   setStatus(status)
   currentMessage = message
+  
+  // 显示 popup
   await showLoadingPopup()
+  
+  // 触发 UI 更新（React 需要手动触发）
+  updatePopupUI?.()
 
   if (status === 0) return
 
+  // status !== 0 时，设置 isShowLoading = false，允许用户返回
+  isShowLoading = false
+
+  // status === 3: 立即隐藏，快速关闭 popup 并返回
   if (status === 3) {
-    closeLoadingTimer = window.setTimeout(() => {
-      closePopup?.()
+    closeLoadingTimer = window.setTimeout(async () => {
+      await closePopup?.()
+      await back()
     }, 150)
-  } else {
-    closeLoadingTimer = window.setTimeout(() => {
-      closePopup?.()
-    }, duration ?? config.closeTimeout)
+    return
   }
+
+  // status === 1/2: success/error，显示一段时间后关闭 popup 并返回
+  closeLoadingTimer = window.setTimeout(async () => {
+    await closePopup?.()
+    await back()
+  }, duration ?? config.closeTimeout)
 }
 
 /**

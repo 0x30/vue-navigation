@@ -68,6 +68,7 @@ const messageRef = ref<string>()
 const closePopupRef = ref<() => Promise<void>>()
 
 let isShowLoading = false
+let isTransitioning = false  // 防止重复调用
 let closeLoadingTimer: number | undefined = undefined
 
 const setStatus = (status: Status) => {
@@ -129,7 +130,7 @@ const LoadingUI = defineComponent({
  * 显示 Loading UI Popup
  */
 const showLoadingPopup = async () => {
-  // 如果已经有 popup 在显示，不重复创建
+  // 如果已经有 popup 在显示，不需要重新创建，直接复用（内容会响应式更新）
   if (closePopupRef.value !== undefined) return
 
   const [show, close] = Popup({
@@ -196,32 +197,41 @@ const createLoadingInstance = (): LoadingInstance => {
 const internalShowLoading = async (status: Status, message?: string, duration?: number) => {
   window.clearTimeout(closeLoadingTimer)
 
+  // status === 0: 显示 loading，需要 push LoadingPage
   if (status === 0) {
+    if (isShowLoading || isTransitioning) return
+    isTransitioning = true
     isShowLoading = true
     await push(<LoadingPage />)
-  } else {
-    if (isShowLoading) {
-      isShowLoading = false
-      await back()
-    }
+    isTransitioning = false
   }
 
-  // 设置状态
+  // 设置状态（会响应式更新 popup 内容）
   setStatus(status)
   messageRef.value = message
+
+  // 显示 popup（如果已存在会直接 return，内容通过响应式更新）
   await showLoadingPopup()
 
   if (status === 0) return
 
+  // status !== 0 时，设置 isShowLoading = false，允许用户返回
+  isShowLoading = false
+
+  // status === 3: 立即隐藏，快速关闭 popup 并返回
   if (status === 3) {
-    closeLoadingTimer = window.setTimeout(() => {
-      closePopupRef.value?.()
+    closeLoadingTimer = window.setTimeout(async () => {
+      await closePopupRef.value?.()
+      await back()
     }, 150)
-  } else {
-    closeLoadingTimer = window.setTimeout(() => {
-      closePopupRef.value?.()
-    }, duration ?? config.closeTimeout)
+    return
   }
+
+  // status === 1/2: success/error，显示一段时间后关闭 popup 并返回
+  closeLoadingTimer = window.setTimeout(async () => {
+    await closePopupRef.value?.()
+    await back()
+  }, duration ?? config.closeTimeout)
 }
 
 /**
