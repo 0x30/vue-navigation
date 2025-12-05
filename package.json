@@ -7,7 +7,8 @@
   ],
   "scripts": {
     "dev": "concurrently \"pnpm --dir ./examples/landing dev\" \"pnpm --dir ./examples/vue-demo dev\" \"pnpm --dir ./examples/react-demo dev\"",
-    "build": "pnpm --dir ./examples/landing build && pnpm --dir ./examples/vue-demo build && pnpm --dir ./examples/react-demo build && node scripts/merge-dist.js",
+    "build": "pnpm --dir ./packages/navigation-core build && pnpm --dir ./packages/navigation-vue build && pnpm --dir ./packages/navigation-react build",
+    "page": "pnpm --dir ./examples/landing build && pnpm --dir ./examples/vue-demo build && pnpm --dir ./examples/react-demo build && node scripts/merge-dist.js",
     "pub": "pnpm --dir ./packages/navigation-core pub && pnpm --dir ./packages/navigation-vue pub && pnpm --dir ./packages/navigation-react pub"
   },
   "devDependencies": {
