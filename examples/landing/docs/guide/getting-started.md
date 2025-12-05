@@ -24,7 +24,11 @@ import { createApp } from 'vue'
 import { Navigator } from '@0x30/navigation-vue'
 import Home from './views/Home'
 
-createApp(() => <Navigator homePage={<Home />} />).mount('#app')
+createApp(() => (
+  <Navigator>
+    <Home />
+  </Navigator>
+)).mount('#app')
 ```
 
 ```tsx
@@ -58,7 +62,9 @@ import { Navigator } from '@0x30/navigation-react'
 import Home from './views/Home'
 
 createRoot(document.getElementById('root')!).render(
-  <Navigator homePage={<Home />} />
+  <Navigator>
+    <Home />
+  </Navigator>
 )
 ```
 

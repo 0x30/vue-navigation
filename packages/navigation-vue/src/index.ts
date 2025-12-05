@@ -13,7 +13,6 @@ export {
   blackBoxBack,
   backToHome,
   Navigator,
-  navigation,
 } from './navigation'
 
 // Manage

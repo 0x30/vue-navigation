@@ -1,10 +1,8 @@
 import {
-  type App,
   getCurrentInstance,
   onMounted,
   defineComponent,
   type VNode,
-  type Plugin,
   type Component,
 } from 'vue'
 import {
@@ -174,25 +172,3 @@ export const Navigator = defineComponent({
     return () => slots.default?.()
   },
 })
-
-/**
- * Vue Plugin
- */
-export const navigation: Plugin = {
-  install(app: App) {
-    setupVueCallbacks()
-
-    // 将当前 app 添加到路由栈
-    const container = app._container as HTMLElement
-    const item: VueRouterStackItem = {
-      id: randomId(),
-      context: app,
-      container,
-    }
-    pushRouterItem(item)
-
-    const { add } = listenPopState(true)
-    add()
-    startScreenEdgePanGestureRecognizer()
-  },
-}

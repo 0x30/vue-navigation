@@ -277,7 +277,9 @@ function MyComponent() {
 </App>
 
 // ✅ Navigation 方案
-<Navigator homePage={<Home />} />  // 只需要这一行
+<Navigator>
+  <Home />
+</Navigator>  // 只需要这一行
 // Loading 和 Toast 会自动创建 DOM
 ```
 

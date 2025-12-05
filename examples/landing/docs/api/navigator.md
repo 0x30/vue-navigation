@@ -7,11 +7,15 @@
 ::: code-group
 
 ```tsx [Vue]
-<Navigator homePage={<HomePage />} />
+<Navigator>
+  <HomePage />
+</Navigator>
 ```
 
 ```tsx [React]
-<Navigator homePage={<HomePage />} />
+<Navigator>
+  <HomePage />
+</Navigator>
 ```
 
 :::
@@ -20,7 +24,8 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `homePage` | `ReactNode \| VNode` | ✅ | 首页组件 |
+| `children` | `ReactNode` | ✅ | 首页组件（React） |
+| `default slot` | `VNode` | ✅ | 首页组件（Vue） |
 
 ## 示例
 
@@ -32,7 +37,11 @@ import { createApp } from 'vue'
 import { Navigator } from '@0x30/navigation-vue'
 import Home from './views/Home'
 
-createApp(() => <Navigator homePage={<Home />} />).mount('#app')
+createApp(() => (
+  <Navigator>
+    <Home />
+  </Navigator>
+)).mount('#app')
 ```
 
 ### React
@@ -44,7 +53,9 @@ import { Navigator } from '@0x30/navigation-react'
 import Home from './views/Home'
 
 createRoot(document.getElementById('root')!).render(
-  <Navigator homePage={<Home />} />
+  <Navigator>
+    <Home />
+  </Navigator>
 )
 ```
 
