@@ -7,7 +7,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true,
     },
-    project: ['./tsconfig.json', './packages/core/tsconfig.json','./packages/layout/tsconfig.json']
+    project: ['./tsconfig.json', './packages/navigation-core/tsconfig.json', './packages/navigation-vue/tsconfig.json', './packages/navigation-react/tsconfig.json']
   },
   extends: [
     'plugin:vue/vue3-recommended',

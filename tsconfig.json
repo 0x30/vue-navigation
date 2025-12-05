@@ -15,8 +15,9 @@
     "jsxImportSource": "vue",
     "baseUrl": ".",
     "paths": {
-      "@0x30/vue-navigation": ["./packages/core/src/index.ts"],
-      "@0x30/vue-navigation-layout": ["./packages/layout/src/index.ts"]
+      "@0x30/navigation-core": ["./packages/navigation-core/src/index.ts"],
+      "@0x30/navigation-vue": ["./packages/navigation-vue/src/index.ts"],
+      "@0x30/navigation-react": ["./packages/navigation-react/src/index.ts"]
     }
   },
   "include": [
