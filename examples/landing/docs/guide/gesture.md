@@ -1,41 +1,103 @@
 # 手势返回
 
-Navigation 内置了原生级的手势返回支持，从屏幕左边缘向右滑动即可触发返回。
+Navigation 支持 iOS 原生手势返回，通过 WebView 与 JavaScript 通信实现丝滑的跟手动画效果。
 
-## 基础使用
+## 工作原理
 
-手势返回默认启用，无需额外配置。
+手势返回需要 iOS 原生端配合。原生端通过 `UIScreenEdgePanGestureRecognizer` 监听屏幕左边缘滑动手势，并通过 `evaluateJavaScript` 通知 Web 端进度变化。
 
-::: code-group
-
-```tsx [Vue]
-import { NavPage } from '@0x30/navigation-vue'
-
-// NavPage 自动支持手势返回
-<NavPage>
-  <div>从左边缘向右滑动返回上一页</div>
-</NavPage>
+```
+┌──────────────────────────────────────────────────────────────┐
+│  iOS 原生                           Web (Navigation)         │
+│                                                              │
+│  手势开始  ─────────────────────>  ScreenEdgePanGestureRecognizerStart()    │
+│  手势移动  ─────────────────────>  ScreenEdgePanGestureRecognizerChange(progress)  │
+│  手势结束  ─────────────────────>  ScreenEdgePanGestureRecognizerEnded(finish)     │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-```tsx [React]
-import { NavPage } from '@0x30/navigation-react'
+## iOS 原生端配置
 
-// NavPage 自动支持手势返回
-<NavPage>
-  <div>从左边缘向右滑动返回上一页</div>
-</NavPage>
+### 1. 禁用 WebView 默认手势
+
+首先需要禁用 WKWebView 的默认前进/后退手势：
+
+```swift
+webView.allowsBackForwardNavigationGestures = false
 ```
 
-:::
+### 2. 添加手势处理器
+
+```swift
+import UIKit
+import WebKit
+
+class PanGestureRecongnizerBackProcessor: NSObject {
+    static let shared = PanGestureRecongnizerBackProcessor()
+
+    private lazy var gesture: UIScreenEdgePanGestureRecognizer = {
+        let gesture = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        gesture.edges = .left
+        gesture.delegate = self
+        return gesture
+    }()
+
+    @objc func handlePan(_ event: UIPanGestureRecognizer) {
+        guard let webView = event.view as? WKWebView else { return }
+        switch event.state {
+        case .possible:
+            return
+        case .began:
+            webView.evaluateJavaScript("ScreenEdgePanGestureRecognizerStart()")
+        case .changed:
+            let progress = event.location(in: webView).x / webView.frame.width
+            webView.evaluateJavaScript("ScreenEdgePanGestureRecognizerChange(\(progress))")
+        case .cancelled, .failed, .ended:
+            let progress = event.location(in: webView).x / webView.frame.width
+            let velocity = event.velocity(in: gesture.view).x > 800
+            let finish = progress > 0.5 || velocity ? "true" : "false"
+            webView.evaluateJavaScript("ScreenEdgePanGestureRecognizerEnded(\(finish))")
+        @unknown default:
+            webView.evaluateJavaScript("ScreenEdgePanGestureRecognizerEnded(false)")
+        }
+    }
+
+    func stick(_ webView: WKWebView) {
+        webView.addGestureRecognizer(gesture)
+    }
+}
+
+extension PanGestureRecongnizerBackProcessor: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_: UIGestureRecognizer, shouldBeRequiredToFailBy _: UIGestureRecognizer) -> Bool {
+        return true
+    }
+}
+```
+
+### 3. 绑定到 WebView
+
+```swift
+PanGestureRecongnizerBackProcessor.shared.stick(webView)
+```
+
+## Web 端
+
+Navigation 已自动注册全局函数，无需额外配置：
+
+- `ScreenEdgePanGestureRecognizerStart()` - 手势开始
+- `ScreenEdgePanGestureRecognizerChange(progress)` - 手势进度变化
+- `ScreenEdgePanGestureRecognizerEnded(finish)` - 手势结束
+
+`NavPage` 组件内置了跟手动画，会根据 progress 值自动更新页面位置。
 
 ## useProgressExitAnimated
 
-获取手势返回的进度，实现跟手动画。
+如果你需要在手势返回时执行自定义动画，可以使用 `useProgressExitAnimated` 获取实时进度：
 
 ::: code-group
 
 ```tsx [Vue]
-import { defineComponent, ref } from 'vue'
+import { ref, defineComponent } from 'vue'
 import { useProgressExitAnimated, NavPage } from '@0x30/navigation-vue'
 
 export default defineComponent({
@@ -45,8 +107,6 @@ export default defineComponent({
     useProgressExitAnimated((p) => {
       progress.value = p
       // p: 0 ~ 1，表示返回手势的进度
-      // 0: 未开始
-      // 1: 完成返回
     })
 
     return () => (
@@ -67,9 +127,6 @@ function DetailPage() {
   
   useProgressExitAnimated((p) => {
     setProgress(p)
-    // p: 0 ~ 1，表示返回手势的进度
-    // 0: 未开始
-    // 1: 完成返回
   })
 
   return (
@@ -96,7 +153,7 @@ function DetailPage() {
 
 ## 阻止手势返回
 
-使用 `useLeaveBefore` 可以阻止手势返回。
+使用 `useLeaveBefore` 可以阻止手势返回：
 
 ::: code-group
 
@@ -121,7 +178,6 @@ import { useLeaveBefore, NavPage } from '@0x30/navigation-react'
 
 function LockedPage() {
   useLeaveBefore(() => {
-    // 返回 false 阻止手势返回
     return false
   })
 
@@ -130,31 +186,14 @@ function LockedPage() {
 ```
 
 :::
-```
 
-## 手势触发区域
+## 手势判定
 
-默认从屏幕左边缘 20px 范围内开始滑动即可触发手势返回。
+iOS 原生端会根据以下条件判断是否完成返回：
 
-```
-┌──────────────────────────────────┐
-│←20px→│                           │
-│      │                           │
-│ 触发 │      页面内容区域          │
-│ 区域 │                           │
-│      │                           │
-└──────────────────────────────────┘
-```
-
-## 手势状态
-
-手势返回过程中会经历以下状态：
-
-1. **Start** - 手势开始，触摸屏幕左边缘
-2. **Move** - 手势移动，进度从 0 向 1 变化
-3. **End** - 手势结束
-   - 如果进度 > 阈值：执行返回
-   - 如果进度 < 阈值：取消返回，页面回弹
+- **进度 > 50%** - 完成返回
+- **滑动速度 > 800** - 快速滑动完成返回
+- 否则取消返回，页面回弹
 
 ## 配合生命周期
 

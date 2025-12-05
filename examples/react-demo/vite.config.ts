@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
 export default defineConfig({
+  base: '/vue-navigation/react/',
   plugins: [react()],
   resolve: {
     alias: {

@@ -1,18 +1,14 @@
 {
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*",
     "examples/*"
   ],
   "scripts": {
-    "dev": "vite --host",
-    "dev:landing": "pnpm --dir ./examples/landing dev",
-    "dev:vue": "pnpm --dir ./examples/vue-demo dev",
-    "dev:react": "pnpm --dir ./examples/react-demo dev",
-    "demo": "concurrently \"pnpm dev:landing\" \"pnpm dev:vue\" \"pnpm dev:react\"",
-    "build-packages": "pnpm --dir ./packages/navigation-core build && pnpm --dir ./packages/navigation-vue build && pnpm --dir ./packages/navigation-react build",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "concurrently \"pnpm --dir ./examples/landing dev\" \"pnpm --dir ./examples/vue-demo dev\" \"pnpm --dir ./examples/react-demo dev\"",
+    "build": "pnpm --dir ./examples/landing build && pnpm --dir ./examples/vue-demo build && pnpm --dir ./examples/react-demo build && node scripts/merge-dist.js",
+    "pub": "pnpm --dir ./packages/navigation-core pub && pnpm --dir ./packages/navigation-vue pub && pnpm --dir ./packages/navigation-react pub"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",

@@ -48,26 +48,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build packages
-        run: pnpm build-packages
-
-      - name: Build docs (VitePress)
-        run: pnpm --dir ./examples/landing build
-
-      - name: Build Vue demo
-        run: pnpm --dir ./examples/vue-demo build --base=/vue-navigation/vue/
-
-      - name: Build React demo
-        run: pnpm --dir ./examples/react-demo build --base=/vue-navigation/react/
-
-      - name: Prepare dist folder
-        run: |
-          mkdir -p dist
-          cp -r examples/landing/docs/.vitepress/dist/* dist/
-          mkdir -p dist/vue
-          cp -r examples/vue-demo/dist/* dist/vue/
-          mkdir -p dist/react
-          cp -r examples/react-demo/dist/* dist/react/
+      - name: Build
+        run: pnpm build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
