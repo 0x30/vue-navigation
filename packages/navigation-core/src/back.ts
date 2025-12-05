@@ -108,8 +108,6 @@ const backCheck = (deltaCount: number, backHookId?: string) => {
   const { index, session } = getCurrentState()!
   const start = index - deltaCount + 1
   for (let i = 0; i < deltaCount; i++) {
-    console.log('!!! 前进', start + i)
-
     window.history.pushState(setCurrentState({ index: start + i, session }), '')
   }
 
@@ -119,13 +117,9 @@ const backCheck = (deltaCount: number, backHookId?: string) => {
       setLastBackHookId(backHookId)
       setLeaveBeforeHook?.(routerItem!, undefined)
       window.history.go(-deltaCount)
-
-      console.log('!!! 要前进', -deltaCount)
     }
 
     const result = hook()
-
-    console.log('当前是否可以返回', result)
 
     if (typeof result === 'boolean') {
       if (result && isSameBatchId()) reBack()
@@ -183,9 +177,6 @@ export const listenPopState = (isReplace = false) => {
         )
       })
     } else {
-      /// 检查 是否可以返回
-      console.log('diffvalue', diffValue)
-
       await backCheck(-diffValue, localLastBackHookId)
       const items = spliceRouterItems(
         routerStack.length - Math.abs(diffValue),
