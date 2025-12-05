@@ -1,9 +1,10 @@
 import { defineConfig } from 'vitepress'
 
+const isDev = process.env.NODE_ENV !== 'production'
+
 export default defineConfig({
   title: 'Navigation',
   description: 'A powerful navigation library for Vue & React',
-  base: '/vue-navigation/',
   
   head: [
     ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' }],
@@ -18,8 +19,8 @@ export default defineConfig({
       {
         text: 'Demo',
         items: [
-          { text: 'Vue Demo', link: '/vue/', target: '_blank' },
-          { text: 'React Demo', link: '/react/', target: '_blank' },
+          { text: 'Vue Demo', link: isDev ? 'http://localhost:5171' : '/vue/' },
+          { text: 'React Demo', link: isDev ? 'http://localhost:5172' : '/react/' },
         ]
       },
       { text: 'GitHub', link: 'https://github.com/0x30/vue-navigation' }

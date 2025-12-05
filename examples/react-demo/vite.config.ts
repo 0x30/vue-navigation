@@ -2,8 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
-export default defineConfig({
-  base: '/vue-navigation/react/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/react/' : '/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -11,4 +11,4 @@ export default defineConfig({
       '@0x30/navigation-react': resolve(__dirname, '../../packages/navigation-react/src/index.ts'),
     },
   },
-})
+}))

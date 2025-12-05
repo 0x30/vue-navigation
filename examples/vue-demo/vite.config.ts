@@ -3,8 +3,8 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import { resolve } from 'path'
 
-export default defineConfig({
-  base: '/vue-navigation/vue/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/vue/' : '/',
   plugins: [
     vue(),
     vueJsx(),
@@ -15,4 +15,4 @@ export default defineConfig({
       '@0x30/navigation-vue': resolve(__dirname, '../../packages/navigation-vue/src/index.ts'),
     },
   },
-})
+}))
