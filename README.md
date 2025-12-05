@@ -38,7 +38,9 @@ import Home from './views/Home.vue'
 
 <template>
   <Navigator>
-    <Page :component="Home" />
+    <Page>
+      <Home />
+    </Page>
   </Navigator>
 </template>
 ```
@@ -56,7 +58,9 @@ import Home from './views/Home'
 function App() {
   return (
     <Navigator>
-      <Page component={Home} />
+      <Page>
+        <Home />
+      </Page>
     </Navigator>
   )
 }
