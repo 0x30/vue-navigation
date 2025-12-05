@@ -16,7 +16,7 @@ export {
 } from './navigation'
 
 // Components
-export { Page, NavPage, SidePage } from './components'
+export { Page, NavPage, SidePage, type SidePageAnimationContext, type SidePageAnimationHandler } from './components'
 export {
   LoadingContainer,
   showLoading,

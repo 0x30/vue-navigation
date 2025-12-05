@@ -1,84 +1,109 @@
 import { type FC, type ReactNode, cloneElement, isValidElement } from 'react'
-import { createTimeline } from 'animejs'
-import { useTransitionEnter, useTransitionLeave, type TransitionAnimatorHook } from '../hooks'
+import { createTimeline, type Timeline } from 'animejs'
+import { useTransitionEnter, useTransitionLeave } from '../hooks'
 
 import styles from './SidePage.module.scss'
 
 type Position = 'left' | 'right' | 'bottom' | 'top' | 'center'
 
-type AnimeType = TransitionAnimatorHook
+/**
+ * 自定义动画回调的上下文
+ */
+export interface SidePageAnimationContext {
+  /** 背景元素 */
+  backElement: Element | null
+  /** 主视图元素 */
+  mainElement: Element | null
+  /** 源页面根元素 */
+  from?: Element
+  /** 目标页面根元素 */
+  to?: Element
+  /** 动画时间线 */
+  timeline: Timeline
+  /** 完成回调 - 动画结束时必须调用 */
+  done: () => void
+}
+
+export type SidePageAnimationHandler = (context: SidePageAnimationContext) => void
 
 interface SidePageProps {
   children?: ReactNode
   position?: Position
   onClickBack?: () => void
   className?: string
-  /** 重写进入动画 */
-  overrideEnterAnime?: TransitionAnimatorHook
-  /** 重写离开动画 */
-  overrideLeaveAnime?: TransitionAnimatorHook
+  /**
+   * 自定义进入动画
+   * @example
+   * ```tsx
+   * <SidePage
+   *   onEnter={({ backElement, mainElement, timeline }) => {
+   *     timeline.add(backElement!, { opacity: [0, 1] })
+   *     timeline.add(mainElement!, { scale: [0.5, 1] }, 0)
+   *   }}
+   * />
+   * ```
+   */
+  onEnter?: SidePageAnimationHandler
+  /**
+   * 自定义离开动画
+   */
+  onLeave?: SidePageAnimationHandler
 }
 
 const backClassName = `.${styles.back}`
 const mainClassName = `.${styles.main}`
 
-const createEnterAnime = (position: Position): AnimeType => {
-  return ({ to }, onComplete) => {
-    const back = to?.querySelector(backClassName)
-    const main = to?.querySelector(mainClassName)
-    const an = createTimeline({
-      defaults: { duration: 500, ease: 'outExpo' },
-      onComplete,
-    })
-
-    an.add(back!, { opacity: [0, 1] })
-
+/**
+ * 创建默认进入动画
+ */
+const createDefaultEnterAnime = (position: Position): SidePageAnimationHandler => {
+  return ({ backElement, mainElement, timeline }) => {
+    timeline.add(backElement!, { opacity: [0, 1] })
+    
     switch (position) {
       case 'bottom':
-        an.add(main!, { translateY: ['100%', '0'] }, 0)
+        timeline.add(mainElement!, { translateY: ['100%', '0'] }, 0)
         break
       case 'top':
-        an.add(main!, { translateY: ['-100%', '0'] }, 0)
+        timeline.add(mainElement!, { translateY: ['-100%', '0'] }, 0)
         break
       case 'left':
-        an.add(main!, { translateX: ['-100%', '0'] }, 0)
+        timeline.add(mainElement!, { translateX: ['-100%', '0'] }, 0)
         break
       case 'right':
-        an.add(main!, { translateX: ['100%', '0'] }, 0)
+        timeline.add(mainElement!, { translateX: ['100%', '0'] }, 0)
         break
       case 'center':
-        an.add(main!, { scale: [0.1, 1], opacity: 1, ease: 'outElastic' }, 0)
+        timeline.set(backElement!, { opacity: 0.5 })
+        timeline.add(backElement!, { opacity: 1, ease: 'linear' })
+        timeline.add(mainElement!, { scale: [0.1, 1], opacity: 1, ease: 'outElastic', duration: 800 }, 0)
         break
     }
   }
 }
 
-const createLeaveAnime = (position: Position): AnimeType => {
-  return ({ from }, onComplete) => {
-    const back = from?.querySelector(backClassName)
-    const main = from?.querySelector(mainClassName)
-    const an = createTimeline({
-      defaults: { duration: 500, ease: 'outExpo' },
-      onComplete,
-    })
-
-    an.add(back!, { opacity: 0 })
-
+/**
+ * 创建默认离开动画
+ */
+const createDefaultLeaveAnime = (position: Position): SidePageAnimationHandler => {
+  return ({ backElement, mainElement, timeline }) => {
+    timeline.add(backElement!, { opacity: 0 })
+    
     switch (position) {
       case 'bottom':
-        an.add(main!, { translateY: '100%' }, 0)
+        timeline.add(mainElement!, { translateY: '100%' }, 0)
         break
       case 'top':
-        an.add(main!, { translateY: '-100%' }, 0)
+        timeline.add(mainElement!, { translateY: '-100%' }, 0)
         break
       case 'left':
-        an.add(main!, { translateX: '-100%' }, 0)
+        timeline.add(mainElement!, { translateX: '-100%' }, 0)
         break
       case 'right':
-        an.add(main!, { translateX: '100%' }, 0)
+        timeline.add(mainElement!, { translateX: '100%' }, 0)
         break
       case 'center':
-        an.add([back, main], { opacity: 0, duration: 150, ease: 'linear' })
+        timeline.add([backElement, mainElement], { opacity: 0, duration: 150, ease: 'linear' })
         break
     }
   }
@@ -92,14 +117,60 @@ export const SidePage: FC<SidePageProps> = ({
   position = 'bottom',
   onClickBack,
   className,
-  overrideEnterAnime,
-  overrideLeaveAnime,
+  onEnter,
+  onLeave,
 }) => {
-  const enterAnime = overrideEnterAnime ?? createEnterAnime(position)
-  const leaveAnime = overrideLeaveAnime ?? createLeaveAnime(position)
+  // 创建进入动画 hook
+  useTransitionEnter((elements, done) => {
+    const backElement = elements.to?.querySelector(backClassName) ?? null
+    const mainElement = elements.to?.querySelector(mainClassName) ?? null
+    
+    const timeline = createTimeline({
+      defaults: { duration: 500, ease: 'outExpo' },
+      onComplete: done,
+    })
+    
+    const context: SidePageAnimationContext = {
+      backElement,
+      mainElement,
+      from: elements.from,
+      to: elements.to,
+      timeline,
+      done,
+    }
+    
+    if (onEnter) {
+      onEnter(context)
+    } else {
+      createDefaultEnterAnime(position)(context)
+    }
+  })
 
-  useTransitionEnter(enterAnime)
-  useTransitionLeave(leaveAnime)
+  // 创建离开动画 hook
+  useTransitionLeave((elements, done) => {
+    const backElement = elements.from?.querySelector(backClassName) ?? null
+    const mainElement = elements.from?.querySelector(mainClassName) ?? null
+    
+    const timeline = createTimeline({
+      defaults: { duration: 500, ease: 'outExpo' },
+      onComplete: done,
+    })
+    
+    const context: SidePageAnimationContext = {
+      backElement,
+      mainElement,
+      from: elements.from,
+      to: elements.to,
+      timeline,
+      done,
+    }
+    
+    if (onLeave) {
+      onLeave(context)
+    } else {
+      createDefaultLeaveAnime(position)(context)
+    }
+  })
 
   const bodyClassName = styles[`${position}Body`] ?? styles.body
 

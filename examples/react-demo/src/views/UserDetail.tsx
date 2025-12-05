@@ -1,6 +1,10 @@
 import { useState, type FC } from 'react'
-import { NavPage, back, useLeaveBefore, SidePage, push, showToast, useQuietPage, useHero } from '@0x30/navigation-react'
+import { NavPage, back, useLeaveBefore, SidePage, push, showToast, useQuietPage, type SidePageAnimationContext } from '@0x30/navigation-react'
 import styles from './UserDetail.module.scss'
+
+// 固定的图片地址，避免随机地址导致动画问题
+const DEMO_IMAGE_URL = 'https://picsum.photos/id/237/400/300'
+const DEMO_IMAGE_THUMB_URL = 'https://picsum.photos/id/237/200/150'
 
 interface User {
   id: number
@@ -14,56 +18,79 @@ interface UserDetailProps {
   user: User
 }
 
-// 图片预览组件 - 使用 useHero 实现共享元素动画
+/**
+ * 计算 Hero 动画的变换参数
+ */
+const calculateHeroTransform = (fromRect: DOMRect, toRect: DOMRect) => {
+  const scaleX = fromRect.width / toRect.width
+  const scaleY = fromRect.height / toRect.height
+  const translateX = fromRect.left - toRect.left + (fromRect.width - toRect.width) / 2
+  const translateY = fromRect.top - toRect.top + (fromRect.height - toRect.height) / 2
+  return { scaleX, scaleY, translateX, translateY }
+}
+
+// 图片预览组件 - 使用 SidePage 的 onEnter/onLeave 实现 Hero 动画
 const ImagePreview: FC<{ src: string }> = ({ src }) => {
   useQuietPage()
 
-  // 使用 useHero 创建 Hero 动画，自定义背景渐变
-  const { enterAnime, leaveAnime } = useHero({
-    id: 'image',
-    onEnter: (ctx) => {
-      // 背景渐入
-      const back = ctx.to?.querySelector('.back')
-      if (back) {
-        ctx.timeline.add(back, { opacity: [0, 1] })
-      }
-      // Hero 元素动画
-      if (ctx.toHero && ctx.transform) {
-        ctx.timeline.add(ctx.toHero, {
-          translateX: [ctx.transform.translateX, 0],
-          translateY: [ctx.transform.translateY, 0],
-          scaleX: [ctx.transform.scaleX, 1],
-          scaleY: [ctx.transform.scaleY, 1],
-        }, 0)
-      }
-    },
-    onLeave: (ctx) => {
-      // 背景渐出
-      const back = ctx.from?.querySelector('.back')
-      if (back) {
-        ctx.timeline.add(back, { opacity: 0 })
-      }
-      // Hero 元素动画
-      if (ctx.toHero && ctx.transform) {
-        ctx.timeline.add(ctx.toHero, {
-          translateX: ctx.transform.translateX,
-          translateY: ctx.transform.translateY,
-          scaleX: ctx.transform.scaleX,
-          scaleY: ctx.transform.scaleY,
-        }, 0)
-      }
-    },
-  })
+  // 进入动画 - Hero 效果
+  const handleEnter = (ctx: SidePageAnimationContext) => {
+    const fromHero = ctx.from?.querySelector('[data-hero-image]')
+    const toHero = ctx.mainElement?.querySelector('img')
+
+    // 背景渐入
+    ctx.timeline.add(ctx.backElement!, { opacity: [0, 1] })
+
+    if (fromHero && toHero) {
+      const fromRect = fromHero.getBoundingClientRect()
+      const toRect = toHero.getBoundingClientRect()
+      const transform = calculateHeroTransform(fromRect, toRect)
+
+      ctx.timeline.add(toHero, {
+        translateX: [transform.translateX, 0],
+        translateY: [transform.translateY, 0],
+        scaleX: [transform.scaleX, 1],
+        scaleY: [transform.scaleY, 1],
+      }, 0)
+    } else {
+      // 降级动画
+      ctx.timeline.add(ctx.mainElement!, { scale: [0.8, 1], opacity: [0, 1] }, 0)
+    }
+  }
+
+  // 离开动画 - Hero 效果
+  const handleLeave = (ctx: SidePageAnimationContext) => {
+    const fromHero = ctx.to?.querySelector('[data-hero-image]')
+    const toHero = ctx.mainElement?.querySelector('img')
+
+    // 背景渐出
+    ctx.timeline.add(ctx.backElement!, { opacity: 0 })
+
+    if (fromHero && toHero) {
+      const fromRect = fromHero.getBoundingClientRect()
+      const toRect = toHero.getBoundingClientRect()
+      const transform = calculateHeroTransform(fromRect, toRect)
+
+      ctx.timeline.add(toHero, {
+        translateX: transform.translateX,
+        translateY: transform.translateY,
+        scaleX: transform.scaleX,
+        scaleY: transform.scaleY,
+      }, 0)
+    } else {
+      ctx.timeline.add(ctx.mainElement!, { opacity: 0 }, 0)
+    }
+  }
 
   return (
     <SidePage 
       position="center" 
       onClickBack={back}
-      overrideEnterAnime={enterAnime}
-      overrideLeaveAnime={leaveAnime}
+      onEnter={handleEnter}
+      onLeave={handleLeave}
     >
       <div className={styles.imagePreview}>
-        <img data-hero-image src={src} alt="" />
+        <img src={src} alt="" />
       </div>
     </SidePage>
   )
@@ -101,7 +128,7 @@ const UserDetail: FC<UserDetailProps> = ({ user }) => {
   }
 
   const handleImageClick = () => {
-    push(<ImagePreview src="https://picsum.photos/400/300" />)
+    push(<ImagePreview src={DEMO_IMAGE_URL} />)
   }
 
   return (
@@ -134,7 +161,7 @@ const UserDetail: FC<UserDetailProps> = ({ user }) => {
         <div className={`${styles.message} ${styles.received}`}>
           <div className={styles.msgAvatar}>{user.avatar}</div>
           <div className={styles.msgImage} onClick={handleImageClick}>
-            <img data-hero-image src="https://picsum.photos/200/150" alt="" />
+            <img data-hero-image src={DEMO_IMAGE_THUMB_URL} alt="" />
           </div>
         </div>
       </div>

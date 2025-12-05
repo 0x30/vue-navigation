@@ -99,12 +99,35 @@ const QuietPageDemo = defineComponent({
     return () => (
       <SidePage position="center" onClickBack={back}>
         <div class={styles.centerModal}>
-          <div class={styles.modalHeader}>useQuietPage 演示</div>
+          <div class={styles.modalHeader}>✅ 安静页面 (useQuietPage)</div>
           <div class={styles.modalContent}>
             <p>这个弹窗使用了 <strong>useQuietPage()</strong></p>
-            <p>打开时不会触发下层页面的 onWillDisappear</p>
-            <p>关闭时不会触发下层页面的 onWillAppear</p>
-            <p>适用于：弹窗、Toast、Loading 等临时覆盖层</p>
+            <p>打开时<strong>不会</strong>触发下层页面的 onWillDisappear</p>
+            <p>关闭时<strong>不会</strong>触发下层页面的 onWillAppear</p>
+            <p>查看下方日志区域，没有新的日志输出</p>
+          </div>
+          <div class={styles.modalActions}>
+            <button class={styles.confirmBtn} onClick={() => back()}>关闭</button>
+          </div>
+        </div>
+      </SidePage>
+    )
+  },
+})
+
+// 不安静页面演示 - 会触发下层页面的生命周期（用于对比）
+const NormalPageDemo = defineComponent({
+  setup() {
+    // 注意：没有使用 useQuietPage()
+    return () => (
+      <SidePage position="center" onClickBack={back}>
+        <div class={styles.centerModal}>
+          <div class={styles.modalHeader}>❌ 普通页面 (无 useQuietPage)</div>
+          <div class={styles.modalContent}>
+            <p>这个弹窗<strong>没有</strong>使用 useQuietPage()</p>
+            <p>打开时<strong>会</strong>触发下层页面的 onWillDisappear</p>
+            <p>关闭时<strong>会</strong>触发下层页面的 onWillAppear</p>
+            <p>查看下方日志区域，有新的日志输出</p>
           </div>
           <div class={styles.modalActions}>
             <button class={styles.confirmBtn} onClick={() => back()}>关闭</button>
@@ -150,12 +173,12 @@ const LeaveBeforeDemo = defineComponent({
           push(
             <ConfirmModal 
               message="有未保存的更改，确定离开吗？" 
-              onConfirm={() => {
-                back()
+              onConfirm={async () => {
+                await back()
                 resolve(true)
               }}
-              onCancel={() => {
-                back()
+              onCancel={async () => {
+                await back()
                 resolve(false)
               }}
             />
@@ -225,13 +248,23 @@ const LifecycleDemo = defineComponent({
               : logs.value.map((log, i) => <p key={i}>{log}</p>)
             }
           </div>
-          <button 
-            class={styles.confirmBtn} 
-            style={{ marginTop: '10px' }}
-            onClick={() => push(<QuietPageDemo />)}
-          >
-            打开安静页面（不触发生命周期）
-          </button>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+            <button 
+              class={styles.confirmBtn}
+              onClick={() => push(<QuietPageDemo />)}
+            >
+              安静页面 ✅
+            </button>
+            <button 
+              class={styles.cancelBtn}
+              onClick={() => push(<NormalPageDemo />)}
+            >
+              普通页面 ❌
+            </button>
+          </div>
+          <p style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>
+            对比：安静页面不触发生命周期，普通页面会触发
+          </p>
         </div>
       </NavPage>
     )
@@ -378,16 +411,12 @@ export default defineComponent({
 
           <div class={styles.section}>
             <div class={styles.sectionTitle}>Hooks API</div>
-            <div class={styles.item} onClick={() => push(<QuietPageDemo />)}>
-              <span>🔇 useQuietPage</span>
+            <div class={styles.item} onClick={() => push(<LifecycleDemo />)}>
+              <span>🔄 生命周期钩子 (含 useQuietPage 对比)</span>
               <span class={styles.arrow}>›</span>
             </div>
             <div class={styles.item} onClick={() => push(<LeaveBeforeDemo />)}>
               <span>🚫 useLeaveBefore</span>
-              <span class={styles.arrow}>›</span>
-            </div>
-            <div class={styles.item} onClick={() => push(<LifecycleDemo />)}>
-              <span>🔄 生命周期钩子</span>
               <span class={styles.arrow}>›</span>
             </div>
             <div class={styles.item} onClick={() => push(<BlackBoxBackDemo />)}>

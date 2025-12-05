@@ -1,5 +1,5 @@
 export { Page, NavPage } from './Page'
-export { SidePage } from './SidePage'
+export { SidePage, type SidePageAnimationContext, type SidePageAnimationHandler } from './SidePage'
 export { 
   LoadingContainer, 
   showLoading, 
