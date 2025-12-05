@@ -23,16 +23,19 @@ export const useQuietPage = () => {
 
 /**
  * 返回前拦截
+ * 注意：同步设置以确保在组件渲染时就已经注册
  */
 export const useLeaveBefore = (hook: () => boolean | Promise<boolean>) => {
   const { updateHooks } = usePageContext()
+  
+  // 同步设置，确保在渲染时就已经注册（否则可能来不及拦截）
+  updateHooks({ leaveBefore: hook })
 
   useEffect(() => {
-    updateHooks({ leaveBefore: hook })
     return () => {
       updateHooks({ leaveBefore: undefined })
     }
-  }, [hook, updateHooks])
+  }, [updateHooks])
 }
 
 /**

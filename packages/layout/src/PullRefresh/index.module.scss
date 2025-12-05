@@ -1,0 +1,26 @@
+.body {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 0;
+  flex-shrink: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+
+  overscroll-behavior: none;
+
+  .contain {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .head {
+    height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    flex-shrink: 0;
+    will-change: height;
+  }
+}
