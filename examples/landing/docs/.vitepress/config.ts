@@ -20,8 +20,8 @@ export default defineConfig({
       {
         text: 'Demo',
         items: [
-          { text: 'Vue Demo', link: isDev ? 'http://localhost:5171' : '/vue/' },
-          { text: 'React Demo', link: isDev ? 'http://localhost:5172' : '/react/' },
+          { text: 'Vue Demo', link: isDev ? 'http://localhost:5171' : 'https://0x30.github.io/navigation/vue/' },
+          { text: 'React Demo', link: isDev ? 'http://localhost:5172' : 'https://0x30.github.io/navigation/react/' },
         ]
       },
       { text: 'GitHub', link: 'https://github.com/0x30/navigation' }
@@ -103,7 +103,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/0x30/vue-navigation' }
+      { icon: 'github', link: 'https://github.com/0x30/navigation' }
     ],
 
     footer: {

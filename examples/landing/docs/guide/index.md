@@ -61,10 +61,10 @@ Navigation 是一个为 Vue 和 React 打造的页面导航库，提供类似原
 ## 快速体验
 
 <div style="display: flex; gap: 12px; margin-top: 20px;">
-  <a href="/vue-navigation/vue/" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #42b883, #35495e); color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
+  <a href="https://0x30.github.io/navigation/vue/" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #42b883, #35495e); color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
     Vue Demo →
   </a>
-  <a href="/vue-navigation/react/" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #61dafb, #282c34); color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
+  <a href="https://0x30.github.io/navigation/react/" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #61dafb, #282c34); color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
     React Demo →
   </a>
 </div>

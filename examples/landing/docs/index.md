@@ -14,7 +14,7 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: 查看 Demo
-      link: /vue/
+      link: https://0x30.github.io/navigation/vue/
     - theme: alt
       text: GitHub
       link: https://github.com/0x30/vue-navigation
