@@ -17,7 +17,7 @@ hero:
       link: https://0x30.github.io/navigation/vue/
     - theme: alt
       text: GitHub
-      link: https://github.com/0x30/vue-navigation
+      link: https://github.com/0x30/navigation
 
 features:
   - icon: 🔄
